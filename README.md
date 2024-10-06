@@ -7,7 +7,7 @@ Retail sales analytics system | Программное средство анал
 ![JavaScript](https://img.shields.io/badge/JavaScript-%23F7DF1E.svg?style=for-the-badge&logo=javascript&logoColor=black) 
 ![Bootstrap](https://img.shields.io/badge/Bootstrap-%23563D7C.svg?style=for-the-badge&logo=bootstrap&logoColor=white) 
 
-## Обобщенное
+## Общее
 
 [Диаграмма C4](https://markdownlivepreview.com/](https://github.com/FranGranDev/RSAS/tree/main/Documentation/Code%20Design/C4))<br>
 [Диаграмма классов](https://github.com/FranGranDev/RSAS/blob/main/Documentation/Code%20Design/Core/ClassDiagram.png)<br>

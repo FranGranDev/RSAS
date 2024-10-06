@@ -9,7 +9,7 @@ Retail sales analytics system | Программное средство анал
 
 ## Общее
 
-[Диаграмма C4](https://markdownlivepreview.com/](https://github.com/FranGranDev/RSAS/tree/main/Documentation/Code%20Design/C4))<br>
+[Диаграмма C4](https://github.com/FranGranDev/RSAS/tree/main/Documentation/Code%20Design/C4)<br>
 [Диаграмма классов](https://github.com/FranGranDev/RSAS/blob/main/Documentation/Code%20Design/Core/ClassDiagram.png)<br>
 [UI Kit](https://bootswatch.com/minty/)<br>
 [Макет дизайна программного средства](https://github.com/FranGranDev/RSAS/tree/main/Documentation/UI%20Design)<br>

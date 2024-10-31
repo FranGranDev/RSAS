@@ -15,7 +15,12 @@ Retail sales analytics system | Программное средство анал
 [Макет дизайна программного средства](https://github.com/FranGranDev/RSAS/tree/main/Documentation/UI%20Design)<br>
 
 ## Архитектура
-[Схема базы данных](https://github.com/FranGranDev/RSAS/blob/main/Documentation/Code%20Design/Database/Database.png)
+[Схема базы данных](https://github.com/FranGranDev/RSAS/blob/main/Documentation/Code%20Design/Database/Database.png)<br>
+[Диаграмма развертывания](https://github.com/FranGranDev/RSAS/blob/main/Documentation/Code%20Design/Core/ComponentsDiagramm_H.png)<br>
+[Диаграмма состояния заказа](https://github.com/FranGranDev/RSAS/blob/main/Documentation/Business%20Analysis/Diagrams/%D0%A1%D0%BE%D1%81%D1%82%D0%BE%D1%8F%D0%BD%D0%B8%D0%B5%20%D0%B7%D0%B0%D0%BA%D0%B0%D0%B7%D0%B0.drawio.png)<br>
+[Диаграмма взаимодействия](https://github.com/FranGranDev/RSAS/blob/main/Documentation/Code%20Design/Core/AnalyticsInteractionDiagram.png)<br>
+[Диаграмма деятельности](https://github.com/FranGranDev/RSAS/blob/main/Documentation/Code%20Design/Core/AnalyticsActivityDiagramm.png)<br>
+[Схема алгоритма аналитики заказов и продаж](https://github.com/FranGranDev/RSAS/blob/main/Documentation/Code%20Design/Core/AnalyticsAlgoritm.png)
 
 ## Пользовательский интерфейс
 

@@ -10,11 +10,9 @@ Retail sales analytics system | Программное средство анал
 ## Общее
 
 [Диаграмма C4](https://github.com/FranGranDev/RSAS/tree/main/Documentation/Code%20Design/C4)<br>
-[Диаграмма классов](https://github.com/FranGranDev/RSAS/blob/main/Documentation/Code%20Design/Core/ClassDiagram.png)<br>
-[UI Kit](https://bootswatch.com/minty/)<br>
-[Макет дизайна программного средства](https://github.com/FranGranDev/RSAS/tree/main/Documentation/UI%20Design)<br>
 
 ## Архитектура
+[Диаграмма классов](https://github.com/FranGranDev/RSAS/blob/main/Documentation/Code%20Design/Core/ClassDiagram.png)<br>
 [Схема базы данных](https://github.com/FranGranDev/RSAS/blob/main/Documentation/Code%20Design/Database/Database.png)<br>
 [Диаграмма развертывания](https://github.com/FranGranDev/RSAS/blob/main/Documentation/Code%20Design/Core/ComponentsDiagramm_H.png)<br>
 [Диаграмма состояния заказа](https://github.com/FranGranDev/RSAS/blob/main/Documentation/Business%20Analysis/Diagrams/%D0%A1%D0%BE%D1%81%D1%82%D0%BE%D1%8F%D0%BD%D0%B8%D0%B5%20%D0%B7%D0%B0%D0%BA%D0%B0%D0%B7%D0%B0.drawio.png)<br>
@@ -24,7 +22,12 @@ Retail sales analytics system | Программное средство анал
 
 ## Пользовательский интерфейс
 
-# User-flow
+### Общее
+[UI Kit](https://bootswatch.com/minty/)<br>
+[Макет дизайна программного средства](https://github.com/FranGranDev/RSAS/tree/main/Documentation/UI%20Design)<br>
+[Примеры экранов UI](https://github.com/FranGranDev/RSAS/tree/main/Documentation/UI%20Design/UI%20Pages)<br>
+
+### User-flow
 [Клиент](https://github.com/FranGranDev/RSAS/blob/main/Documentation/UI%20Design/User%20Flow/UserFlow-%D0%9A%D0%BB%D0%B8%D0%B5%D0%BD%D1%82.drawio.png)<br>
 [Менеджер](https://github.com/FranGranDev/RSAS/blob/main/Documentation/UI%20Design/User%20Flow/UserFlow-%D0%9C%D0%B5%D0%BD%D0%B5%D0%B4%D0%B6%D0%B5%D1%80.drawio.png)<br>
 [Директор](https://github.com/FranGranDev/RSAS/blob/main/Documentation/UI%20Design/User%20Flow/UserFlow-%D0%94%D0%B8%D1%80%D0%B5%D0%BA%D1%82%D0%BE%D1%80.drawio.png)

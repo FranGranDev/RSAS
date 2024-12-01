@@ -37,3 +37,7 @@ Retail sales analytics system | Программное средство анал
 
 ## Оценка качества кода
 [Метрики качества кода](https://github.com/FranGranDev/RSAS/blob/main/Documentation/Code%20Design/Examples/Code%20metrics.png)<br>
+
+## Тестирование
+[Unit-тесты](https://github.com/FranGranDev/RSAS/blob/main/Documentation/Code%20Design/Tests/AnalyticsServiceTests.cs)<br>
+[Интеграционные тесты](https://github.com/FranGranDev/RSAS/blob/main/Documentation/Code%20Design/Tests/AnalyticsPageTests.cs)<br>

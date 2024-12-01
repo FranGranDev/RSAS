@@ -30,4 +30,10 @@ Retail sales analytics system | Программное средство анал
 ### User-flow
 [Клиент](https://github.com/FranGranDev/RSAS/blob/main/Documentation/UI%20Design/User%20Flow/UserFlow-%D0%9A%D0%BB%D0%B8%D0%B5%D0%BD%D1%82.drawio.png)<br>
 [Менеджер](https://github.com/FranGranDev/RSAS/blob/main/Documentation/UI%20Design/User%20Flow/UserFlow-%D0%9C%D0%B5%D0%BD%D0%B5%D0%B4%D0%B6%D0%B5%D1%80.drawio.png)<br>
-[Директор](https://github.com/FranGranDev/RSAS/blob/main/Documentation/UI%20Design/User%20Flow/UserFlow-%D0%94%D0%B8%D1%80%D0%B5%D0%BA%D1%82%D0%BE%D1%80.drawio.png)
+[Директор](https://github.com/FranGranDev/RSAS/blob/main/Documentation/UI%20Design/User%20Flow/UserFlow-%D0%94%D0%B8%D1%80%D0%B5%D0%BA%D1%82%D0%BE%D1%80.drawio.png)<br>
+
+## Документация
+[OpenAPI Postman](https://rsas-bsuir.postman.co/workspace/RSAS-Bsuir-Workspace~b0313347-a597-4c2a-b22a-a32088fec4d0/api/d0c48fe6-2f3d-4525-87ca-0b4d0a05a072?action=share&creator=40115740)<br>
+
+## Оценка качества кода
+[Метрики качества кода](https://github.com/FranGranDev/RSAS/blob/main/Documentation/Code%20Design/Examples/Code%20metrics.png)<br>

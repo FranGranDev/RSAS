@@ -44,3 +44,6 @@ Retail sales analytics system | Программное средство анал
 ## Тестирование
 [Unit-тесты](https://github.com/FranGranDev/RSAS/blob/main/Documentation/Code%20Design/Tests/AnalyticsServiceTests.cs)<br>
 [Интеграционные тесты](https://github.com/FranGranDev/RSAS/blob/main/Documentation/Code%20Design/Tests/AnalyticsPageTests.cs)<br>
+
+## Развертывание
+[Описание развертывание](https://github.com/FranGranDev/RSAS/blob/main/Documentation/Code%20Design/Practise/%D0%9F%D1%80%D0%B0%D0%BA%D1%82%D0%B8%D1%87%D0%B5%D1%81%D0%BA%D0%BE%D0%B5%20%D0%B7%D0%B0%D0%BD%D1%8F%D1%82%D0%B8%D0%B5%20%E2%84%965.docx)<br>

@@ -1,0 +1,64 @@
+﻿@using Application.ViewModel.Catalog;
+@model DeliveryViewModel
+
+<div id="delivery-partial" class="container-fluid">
+    <div class="row">
+        <div class="col-md-6">
+            <div class="form-floating mt-2">
+                <input asp-for="City" class="form-control" aria-required="true" />
+                <label asp-for="City"></label>
+                <span asp-validation-for="City" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="form-floating mt-2">
+                <input asp-for="Street" class="form-control" aria-required="true" />
+                <label asp-for="Street"></label>
+                <span asp-validation-for="Street" class="text-danger"></span>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <div class="form-floating mt-2">
+                <input asp-for="House" class="form-control" aria-required="true" />
+                <label asp-for="House"></label>
+                <span asp-validation-for="House" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="form-floating mt-2">
+                <input asp-for="Flat" class="form-control" aria-required="true" />
+                <label asp-for="Flat"></label>
+                <span asp-validation-for="Flat" class="text-danger"></span>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <div class="form-floating mt-2">
+                <input asp-for="PostalCode" class="form-control" aria-required="true" />
+                <label asp-for="PostalCode"></label>
+                <span asp-validation-for="PostalCode" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="form-group">
+                <label asp-for="DeliveryDate" class="control-label"></label>
+                <input asp-for="DeliveryDate" class="form-control" />
+                <span asp-validation-for="DeliveryDate" class="text-danger"></span>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@if (Model != null && Model.Disabled)
+{
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script type="text/javascript">
+        $(function () {
+            $('#delivery-partial input').prop('disabled', true);
+        });
+    </script>
+}

@@ -1,0 +1,81 @@
+﻿@page
+@model Application.Pages.Companies.OrderingModel
+@{
+    ViewData["Title"] = "Оформление заказа";
+    ViewData["ClientValidationEnabled"] = false;
+}
+
+<div class="container-fluid mb-5">
+    <div class="row">
+        <div class="col-md-10 mx-auto mt-3">
+            <div class="card">
+                <div class="card-header">
+                    <h1>@ViewData["Title"]</h1>
+                </div>
+                @if(Model.Products != null && Model.Products.Count() > 0)
+                {
+                    <form method="post" asp-page-handler="Order">
+                        
+                        <div class="card-body">
+                            <h3>Товары</h3>
+                            <div class="overflow-auto" style="max-height: 50vh">
+                                <partial name="_OrderPartial" model="Model.Products" />
+                            </div>
+                        </div>
+                        <hr />
+                        <div class="card-body">
+                            <h3>Контактная информация</h3>
+                            <div>
+                                <partial name="_ContactPartial" model="Model.Contact"/>
+                            </div>
+                        </div>
+                        <hr />
+                        <div class="card-body">
+                            <h3>Информация о компании</h3>
+                            <div>
+                                <partial name="_CompanyPartial" model="Model.Company" />
+                            </div>
+                            <div class="container-fluid">
+                                <div class="text-end mt-4">
+                                    <a class="btn btn-primary" asp-area="Identity" asp-page="/Account/About/Index">Изменить данные компании</a>
+                                </div>
+                            </div>
+                        </div>
+                        <hr/>
+                        <div class="card-body">
+                            <h3>Доставка</h3>
+                            <div>
+                                <partial name="_DeliveryPartial" model="Model.Delivery" />
+                            </div>
+                        </div>
+                        <hr />
+                        <div class="card-body">
+                            <h3>Реквезиты для оплаты</h3>
+                            Реквезиты для оплаты будут доступны в меню "заказы"
+                            <div class="mt-2">
+                                <partial name="_CompanyPartial" model="Model.AppCompany" />
+                            </div>
+                        </div>
+                        <div class="card-footer text-center">
+                            <button type="submit" class="btn btn-primary btn-lg col-10">
+                                Оформить заказ &ensp; <i class="bi bi-bag"></i>
+                            </button>
+                        </div>
+                    </form>
+                }
+                else
+                {
+                    <div class="mt-4 mb-4 text-center">
+                        <h3>Корзина пуста</h3>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts{
+
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+}

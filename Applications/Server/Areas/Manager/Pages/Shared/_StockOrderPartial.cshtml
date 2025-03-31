@@ -1,0 +1,63 @@
+﻿@using Application.ViewModel.Catalog;
+@using Application.Services;
+@model IEnumerable<CatalogItemViewModel>
+
+<table class="table table-bordered">
+    <thead class="thead-dark text-center align-middle">
+        <tr>
+            <th style="width: 20%;"><button class="sort-btn btn btn-link" data-sort="name">Название</button></th>
+            <th style="width: 30%;"><button class="sort-btn btn btn-link" data-sort="description">Описание</button></th>
+            <th style="width: 10%;"><button class="sort-btn btn btn-link" data-sort="retail-price">Цена единицы</button></th>
+            <th style="width: 10%;"><button class="sort-btn btn btn-link" data-sort="retail-price">Итоговая Цена</button></th>
+            <th style="width: 10%;"><button class="sort-btn btn btn-link" data-sort="quantity">Итоговое<br />Количество</button></th>
+            <th style="width: 10%;"><button class="sort-btn btn btn-link" data-sort="quantity">Количество<br/>на Складе</button></th>
+        </tr>
+    </thead>
+    <tbody>
+
+        @{
+            int count = 0;
+            decimal price = 0;
+
+            bool globalEnought = true;
+
+            foreach (var product in Model)
+            {
+                bool enought = product.Quantity >= product.TakenCount;
+                if(!enought)
+                {
+                    globalEnought = false;
+                }
+
+                <tr>
+                    <td>@product.Name</td>
+                    <td>@product.Description</td>
+                    <td>@product.ProductPrice @CurrencySettings.Symbol</td>
+                    <td>@product.TotalPrice @CurrencySettings.Symbol</td>
+                    <td>@product.TakenCount</td>
+                    <td style="background-color: @(enought ? "#90EE90" : "#FFB6C1")">@product.Quantity</td>
+                </tr>
+
+                count += product.TakenCount;
+                price += product.TotalPrice;
+            }
+
+            <tr class="fw-bold fs-4 align-middle" style="background-color: #F5DEB3">
+                <td>Итого</td>
+                <td></td>
+                <td></td>
+                <td>@price @CurrencySettings.Symbol</td>
+                <td>@count</td>
+                @if(globalEnought)
+                {
+                    <td class="fs-5" style="background-color: #90EE90">Товара хватает</td>
+                }
+                else
+                {
+                    <td class="fs-5" style="background-color: #FFB6C1">Товара не хватает</td>
+                }
+            </tr>
+        }
+
+    </tbody>
+</table>

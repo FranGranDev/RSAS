@@ -1,0 +1,53 @@
+﻿@using Application.ViewModel.Catalog;
+@using Application.Services;
+@model IEnumerable<CatalogItemViewModel>
+
+
+<table class="table table-bordered shadow">
+    <thead class="thead-dark text-center align-middle">
+        <tr>
+            <th style="width: 15%;"><button class="sort-btn btn btn-link" data-sort="name">Название</button></th>
+            <th style="width: 25%;"><button class="sort-btn btn btn-link" data-sort="description">Описание</button></th>
+            <th style="width: 10%;"><button class="sort-btn btn btn-link" data-sort="price">Цена</button></th>
+            <th style="width: 10%;"><button class="sort-btn btn btn-link" data-sort="quantity">Наличие<br />на Складе</button></th>
+            <th style="width: 13%;"><button class="sort-btn btn btn-link" data-sort="taken">Итоговое<br/>Количество</button></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var product in Model)
+        {
+            <tr>
+                <td>@product.Name</td>
+                <td>@product.Description</td>
+                <td>@product.ProductPrice @CurrencySettings.Symbol</td>
+                <td>
+                    <div class="text-center">
+                        @if (product.Quantity > 0)
+                        {
+                            <i class="bi bi-check-circle fs-4" style="color: #32CD32"></i>
+                        }
+                        else
+                        {
+                            <i class="bi bi-x-circle fs-4" style="color: red"></i>
+                        }
+                    </div>
+                </td>
+                <td>
+                    <div class="input-group input-group-sm">
+                        <div class="input-group-prepend">
+                            <button class="remove-cart btn btn-secondary align-middle" data-product-id="@product.Id">
+                                <i class="bi bi-dash-circle"></i>
+                            </button>
+                        </div>
+                        <input type="text" class="quantity form-control text-center fs-5" value="@product.TakenCount" data-product-id="@product.Id">
+                        <div class="input-group-append">
+                            <button class="add-cart btn btn-primary align-middle" data-product-id="@product.Id">
+                                <i class="bi bi-plus-circle"></i>
+                            </button>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

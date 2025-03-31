@@ -1,0 +1,34 @@
+﻿@using Application.Services;
+@using Application.ViewModel.Sales
+@model IEnumerable<SaleViewModel>
+
+
+<table class="table table-bordered shadow">
+    <thead class="thead-dark text-center align-middle">
+        <tr>
+            <th style="width: 10%"><button class="sort-btn btn btn-link" data-sort="date">Дата продажи</button></th>
+            <th style="width: 10%"><button class="sort-btn btn btn-link" data-sort="type">Тип продажи</button></th>
+            <th style="width: 20%"><button class="sort-btn btn btn-link" data-sort="stock">Склад</button></th>
+            <th style="width: 5%"><button class="sort-btn btn btn-link" data-sort="quantity">Количество товаров</button></th>
+            <th style="width: 20%"><button class="sort-btn btn btn-link" data-sort="price">Сумма чека</button></th>
+            <th style="width: 7%"></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var sale in Model)
+        {
+            <tr>
+                <td>@sale.OrderDate.ToString("dd.MM.yyyy HH:mm")</td>
+                <td>@sale.SaleType.GetDisplayName()</td>
+                <td>@sale.StockView.Name</td>
+                <td>@sale.Products.Select(x => x.Quantity).Sum()</td>
+                <td>@sale.Products.Select(x => x.ProductPrice * x.Quantity).Sum() @CurrencySettings.Symbol</td>
+                <td>
+                    <button class="btn btn-primary col-12 info-btn" data-sale-id="@sale.Id">
+                        <i class="bi bi-info-circle"></i>
+                    </button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

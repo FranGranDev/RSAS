@@ -1,0 +1,306 @@
+﻿@page
+@model Application.Areas.Admin.Pages.Analytics.IndexModel
+
+@{
+    ViewData["Title"] = "Аналитика продаж";
+}
+
+
+<div class="container-lg">
+    <h1>@ViewData["Title"]</h1>
+    <div class="row">
+        <div class="col-md-8 d-flex">
+            <div class="me-2">
+                <label for="startDate">Дата начала:</label>
+                <input type="date" id="startDate" name="startDate" value="@Model.StartDate" class="form-control">
+            </div>
+            <div class="me-2">
+                <label for="endDate">Дата конца:</label>
+                <input type="date" id="endDate" name="endDate" value="@Model.EndDate" class="form-control">
+            </div>
+            <div class="me-2">
+                <button type="button" class="btn btn-primary mt-4" id="applyDateButton">
+                    <i class="bi bi-check2-circle"></i>
+                </button>
+            </div>
+            <div>
+                <button type="button" class="btn btn-outline-secondary mt-4" id="clearDateButton">
+                    <i class="bi bi-x-circle"></i>
+                </button>
+            </div>
+            <div class="border border-left mx-4"></div>
+            <div class="me-2 col-3">
+                <label for="endDate">Тип продаж</label>
+                <select asp-items="@Model.SalesTypesList" asp-for="SaleTypeFilter" id="sales-type-select" class="form-control"></select>
+            </div>
+        </div>
+        <div class="col-md-4 d-flex">
+            <div class="me-2 col-12">
+                <label for="endDate">Тип аналитики</label>
+                <select asp-items="@Model.AnalyticsTypesList" asp-for="AnalyticsTypeFilter" id="analytic-type-select" class="form-control"></select>
+            </div>
+        </div>
+    </div>
+    <hr />
+    <div class="row">
+        <div class="col-md-7">
+            <div id="sales" class="sort-asc" style="height: 60vh; overflow-x:auto;">
+                
+            </div>
+        </div>
+        <div class="col-md-5">
+            <div id="analytics" style="height: 60vh; overflow-x:auto;">
+
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts {
+    <script type="text/javascript">
+        $.ajaxSetup({
+            headers: {
+                'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
+            }
+        });
+
+        $(document).ready(function () {
+            var $sales = $("#sales");
+            var $analytics = $("#analytics");
+
+            $sales.html('<div class="d-flex justify-content-center"><div class="spinner-border" role="status"><span class="visually-hidden">Загрузка...</span></div></div>');
+            $analytics.html('<div class="d-flex justify-content-center"><div class="spinner-border" role="status"><span class="visually-hidden">Загрузка...</span></div></div>');
+
+
+            $.ajax({
+                type: "GET",
+                url: "/Admin/Analytics/Index?handler=Sales",
+                success: function (data) {
+                    $sales.html(data);
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    $sales.html('Error: ' + xhr.responseText);
+                }
+            });
+
+            $.ajax({
+                type: "GET",
+                url: "/Admin/Analytics/Index?handler=Analytics",
+                success: function (data) {
+                    $analytics.html(data);
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    $analytics.html('Error: ' + xhr.responseText);
+                }
+            });
+        });
+
+        $(document).on('click', 'table .sort-btn', function () {
+
+            var $orders = $('#sales');
+
+            var sortBy = $(this).data('sort');
+            var sortOrder = $orders.hasClass('sort-asc') ? 'desc' : 'asc';
+
+            $.ajax({
+                url: "/Admin/Analytics/Index?handler=Sort",
+                type: "POST",
+                data: {
+                    sortBy: sortBy,
+                    sortOrder: sortOrder
+                },
+                success: function (result) {
+                    $('#sales').html(result);
+                    $orders.toggleClass('sort-asc sort-desc');
+                }
+            });
+        });
+
+
+        $(document).on('click', '#applyDateButton', function () {
+            var startDate = $("#startDate").val();
+            var endDate = $("#endDate").val();
+            var button = $(this);
+
+            var originalHtml = button.html();
+
+            button.prop('disabled', true).addClass('btn-loading');
+            button.html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>');
+
+            $.ajax({
+                type: "POST",
+                url: "/Admin/Analytics/Index?handler=SetDate",
+                data: { startDate: startDate, endDate: endDate },
+                success: function (result) {
+                    $("#sales").html(result);
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    alert("Error: " + xhr.responseText);
+                },
+                complete: function () {
+                    button.prop('disabled', false).removeClass('btn-loading');
+                    button.html(originalHtml);
+                    button.removeClass("focus");
+
+                    $.ajax({
+                        type: "GET",
+                        url: "/Admin/Analytics/Index?handler=Analytics",
+                        success: function (data) {
+                            $("#analytics").html(data);
+                        },
+                        error: function (xhr, ajaxOptions, thrownError) {
+                            $("#analytics").html('Error: ' + xhr.responseText);
+                        }
+                    });
+                }
+            });
+        });
+
+        $(document).on('click', '#clearDateButton', function () {
+            var button = $(this);
+
+            $("#startDate").val("");
+            $("#endDate").val("");
+
+            var originalHtml = button.html();
+
+            button.prop('disabled', true).addClass('btn-loading');
+            button.html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>');
+
+            $.ajax({
+                type: "POST",
+                url: "/Admin/Analytics/Index?handler=ClearDate",
+                success: function (result) {
+                    $("#sales").html(result);
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    alert("Error: " + xhr.responseText);
+                },
+                complete: function () {
+                    button.prop('disabled', false).removeClass('btn-loading');
+                    button.html(originalHtml);
+                    button.removeClass("focus");
+
+                    $.ajax({
+                        type: "GET",
+                        url: "/Admin/Analytics/Index?handler=Analytics",
+                        success: function (data) {
+                            $("#analytics").html(data);
+                        },
+                        error: function (xhr, ajaxOptions, thrownError) {
+                            $("#analytics").html('Error: ' + xhr.responseText);
+                        }
+                    });
+                }
+            });
+        });
+
+
+        $(document).on('change', '#sales-type-select', function () {
+
+            var $sales = $("#sales");
+            var selectedValue = $('#sales-type-select').val();
+
+            $sales.html('<div class="d-flex justify-content-center"><div class="spinner-border" role="status"><span class="visually-hidden">Загрузка...</span></div></div>');
+
+            $.ajax({
+                type: "POST",
+                url: "/Admin/Analytics/Index?handler=SaleType",
+                data: {value: selectedValue },
+                success: function (result) {
+                    $("#sales").html(result);
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    alert("Error: " + xhr.responseText);
+                },
+                complete: function () {
+                    $.ajax({
+                        type: "GET",
+                        url: "/Admin/Analytics/Index?handler=Analytics",
+                        success: function (data) {
+                            $("#analytics").html(data);
+                        },
+                        error: function (xhr, ajaxOptions, thrownError) {
+                            $("#analytics").html('Error: ' + xhr.responseText);
+                        }
+                    });
+                }
+            });
+        });
+
+        $(document).on('change', '#analytic-type-select', function () {
+
+            var $sales = $("#sales");
+            var selectedValue = $('#analytic-type-select').val();
+
+            $sales.html('<div class="d-flex justify-content-center"><div class="spinner-border" role="status"><span class="visually-hidden">Загрузка...</span></div></div>');
+
+            $.ajax({
+                type: "POST",
+                url: "/Admin/Analytics/Index?handler=AnalyticsType",
+                data: { value: selectedValue },
+                success: function (result) {
+                    $("#sales").html(result);
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    alert("Error: " + xhr.responseText);
+                },
+                complete: function () {
+                    $.ajax({
+                        type: "GET",
+                        url: "/Admin/Analytics/Index?handler=Analytics",
+                        success: function (data) {
+                            $("#analytics").html(data);
+                        },
+                        error: function (xhr, ajaxOptions, thrownError) {
+                            $("#analytics").html('Error: ' + xhr.responseText);
+                        }
+                    });
+                }
+            });
+        });
+
+
+        $(document).on('click', '.info-btn', function () {
+
+            var $analytics = $("#analytics");
+            var saleId = $(this).data("sale-id")
+
+            var $btn = $(this)
+
+            $btn.prop('disabled', true).addClass('btn-loading');
+
+            $.ajax({
+                url: '/Admin/Analytics/Index?handler=Info',
+                type: 'GET',
+                data: {
+                    Id: saleId
+                },
+                success: function (data) {
+                    $analytics.html(data);
+                },
+                complete: function () {
+                    $btn.prop('disabled', false).addClass('btn-loading');
+                }
+            });
+        });
+
+        $(document).on('click', '#close-info', function () {
+
+            var $analytics = $("#analytics");
+
+            $.ajax({
+                type: "GET",
+                url: "/Admin/Analytics/Index?handler=Analytics",
+                success: function (data) {
+                    $analytics.html(data);
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    $analytics.html('Error: ' + xhr.responseText);
+                }
+            });
+        });
+
+
+    </script>
+}

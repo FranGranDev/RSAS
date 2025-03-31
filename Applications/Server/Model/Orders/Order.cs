@@ -2,7 +2,6 @@
 using Application.Areas.Identity.Data;
 using System.ComponentModel.DataAnnotations;
 using Microsoft.VisualBasic;
-using Application.Model.Sales;
 
 namespace Application.Model.Orders
 {
@@ -20,10 +19,7 @@ namespace Application.Model.Orders
 
         public DateTime ChangeDate { get; set; }
         public DateTime OrderDate { get; set; }
-        public SaleTypes Type { get; set; }
         public States State { get; set; }
-
-
 
         public virtual AppUser User { get; set; }
         public virtual Delivery Delivery { get; set; }

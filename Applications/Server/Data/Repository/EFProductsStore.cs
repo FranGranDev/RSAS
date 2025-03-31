@@ -1,55 +1,52 @@
-﻿using Application.Model.Stocks;
-using Application.Services;
+﻿using Application.Model.Products;
 using Microsoft.EntityFrameworkCore;
 
 namespace Application.Data.Repository
 {
     public class EFProductsStore : IProductsStore
     {
+        private readonly AppDbContext dbContext;
+
         public EFProductsStore(AppDbContext dbContext)
         {
             this.dbContext = dbContext;
         }
 
-        private readonly AppDbContext dbContext;
+        public IQueryable<Product> All => dbContext.Products;
 
-        public IQueryable<Product> All
+        public async Task<IEnumerable<Product>> GetAllAsync()
         {
-            get => dbContext.Products
-                .Include(x => x.StockProducts);
+            return await dbContext.Products.ToListAsync();
         }
 
-        public void Delete(Product product)
+        public async Task<Product> GetByIdAsync(int id)
         {
-            if(product.Id == default)
-            {
-                return;
-            }
-            dbContext.Entry(product).State = EntityState.Deleted;
-            dbContext.SaveChanges();
+            return await dbContext.Products.FindAsync(id);
         }
 
-        public Product Get(int id)
+        public async Task<Product> Save(Product product)
         {
-            return dbContext.Products
-                .Include(x => x.StockProducts)
-                .FirstOrDefault(x => x.Id == id);
-        }
-
-        public void Save(Product product)
-        {
-            if (product == null)
-            {
-                dbContext.SaveChanges();
-                return;
-            }
-
             if (product.Id == default)
-                dbContext.Entry(product).State = EntityState.Added;
+            {
+                dbContext.Products.Add(product);
+            }
             else
-                dbContext.Entry(product).State = EntityState.Modified;
+            {
+                dbContext.Products.Update(product);
+            }
 
-            dbContext.SaveChanges();
+            await dbContext.SaveChangesAsync();
+            return product;
+        }
+
+        public async Task Delete(int id)
+        {
+            var product = await GetByIdAsync(id);
+            if (product != null)
+            {
+                dbContext.Products.Remove(product);
+                await dbContext.SaveChangesAsync();
+            }
         }
     }
 }

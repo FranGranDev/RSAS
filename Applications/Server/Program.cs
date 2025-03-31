@@ -71,15 +71,14 @@ namespace Application
 
             // Services
             builder.Services.AddScoped<IJwtService, JwtService>();
-            builder.Services.AddTransient<IStockStore, EFStockStore>();
-            builder.Services.AddTransient<IProductsStore, EFProductsStore>();
-            builder.Services.AddTransient<IStockProductsStore, EFStockProductsStore>();
-            builder.Services.AddTransient<IOrderStore, EFOrderStore>();
-            builder.Services.AddTransient<ISalesStore, EFSalesStore>();
+            builder.Services.AddScoped<IStockStore, EFStockStore>();
+            builder.Services.AddScoped<IProductsStore, EFProductsStore>();
+            builder.Services.AddScoped<IStockProductsStore, EFStockProductsStore>();
+            builder.Services.AddScoped<IOrderStore, EFOrderStore>();
+            builder.Services.AddScoped<ISalesStore, EFSalesStore>();
             builder.Services.AddTransient<DataManager>();
-            builder.Services.AddTransient<IClientsStore, EFClientStore>();
-            builder.Services.AddTransient<IEmployeeStore, EFEmployeeStore>();
-            builder.Services.AddTransient<ICompanyStore, EFCompanyStore>();
+            builder.Services.AddScoped<IClientsStore, EFClientStore>();
+            builder.Services.AddScoped<IEmployeeStore, EFEmployeeStore>();
 
             // API
             builder.Services.AddControllers();

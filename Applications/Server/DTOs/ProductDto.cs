@@ -7,8 +7,7 @@ namespace Application.DTOs
     {
         public int Id { get; set; }
         public string Name { get; set; }
-        public decimal WholesalePrice { get; set; }
-        public decimal RetailPrice { get; set; }
+        public decimal Price { get; set; }
         public string Description { get; set; }
         public ICollection<StockProductDto> StockProducts { get; set; }
     }
@@ -16,16 +15,14 @@ namespace Application.DTOs
     public class CreateProductDto
     {
         public string Name { get; set; }
-        public decimal WholesalePrice { get; set; }
-        public decimal RetailPrice { get; set; }
+        public decimal Price { get; set; }
         public string Description { get; set; }
     }
 
     public class UpdateProductDto
     {
         public string Name { get; set; }
-        public decimal WholesalePrice { get; set; }
-        public decimal RetailPrice { get; set; }
+        public decimal Price { get; set; }
         public string Description { get; set; }
     }
 } 

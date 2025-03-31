@@ -2,48 +2,83 @@
 using System.Linq;
 using Application.Areas.Identity.Data;
 using Application.Services;
+using Application.Model.Users;
+using Microsoft.EntityFrameworkCore;
 
 namespace Application.Data.Repository
 {
     public class EFEmployeeStore : IEmployeeStore
     {
+        private readonly AppDbContext dbContext;
+
         public EFEmployeeStore(AppDbContext dbContext)
         {
             this.dbContext = dbContext;
         }
 
-        private readonly AppDbContext dbContext;
+        public IQueryable<Employee> All => dbContext.Employees;
 
-
-        public Employee Get(AppUser user)
+        public async Task<IEnumerable<Employee>> GetAllAsync()
         {
-            if (user == null)
-                return null;
-            return dbContext.Employees.FirstOrDefault(x => x.UserId == user.Id);
+            return await dbContext.Employees.ToListAsync();
         }
-        public void Save(AppUser user, Employee client)
+
+        public async Task<Employee> GetByIdAsync(int id)
         {
-            if (client == null)
+            return await dbContext.Employees.FirstOrDefaultAsync(x => x.Id == id);
+        }
+
+        public Employee Get(int id)
+        {
+            return dbContext.Employees.FirstOrDefault(x => x.Id == id);
+        }
+
+        public void Save(Employee employee)
+        {
+            if (employee == null)
             {
+                dbContext.SaveChanges();
                 return;
             }
 
-            client.UserId = user.Id;
-
-            Employee other = dbContext.Employees.FirstOrDefault(x => x.UserId == client.UserId);
-            if (other != null)
-            {
-                other.FirstName = client.FirstName;
-                other.LastName = client.LastName;
-                other.Role = client.Role;
-                other.Phone = client.Phone;
-            }
+            if (employee.Id == default)
+                dbContext.Entry(employee).State = EntityState.Added;
             else
-            {
-                dbContext.Employees.Add(client);
-            }
+                dbContext.Entry(employee).State = EntityState.Modified;
 
             dbContext.SaveChanges();
+        }
+
+        public void Delete(Employee employee)
+        {
+            if (employee.Id == default)
+            {
+                return;
+            }
+            dbContext.Entry(employee).State = EntityState.Deleted;
+            dbContext.SaveChanges();
+        }
+
+        public async Task CreateAsync(Employee employee)
+        {
+            await dbContext.Employees.AddAsync(employee);
+            await dbContext.SaveChangesAsync();
+        }
+
+        public async Task UpdateAsync(Employee employee)
+        {
+            dbContext.Entry(employee).State = EntityState.Modified;
+            await dbContext.SaveChangesAsync();
+        }
+
+        public async Task DeleteAsync(int id)
+        {
+            var employee = await GetByIdAsync(id);
+            if (employee != null)
+            {
+                dbContext.Employees.Remove(employee);
+                await dbContext.SaveChangesAsync();
+            }
         }
     }
 }

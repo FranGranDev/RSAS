@@ -1,53 +1,52 @@
 ﻿using Application.Model.Stocks;
-using Application.Services;
 using Microsoft.EntityFrameworkCore;
 
 namespace Application.Data.Repository
 {
     public class EFStockStore : IStockStore
     {
+        private readonly AppDbContext dbContext;
+
         public EFStockStore(AppDbContext dbContext)
         {
             this.dbContext = dbContext;
         }
 
-        private readonly AppDbContext dbContext;
+        public IQueryable<Stock> All => dbContext.Stocks;
 
-        public IQueryable<Stock> All
+        public async Task<IEnumerable<Stock>> GetAllAsync()
         {
-            get => dbContext.Stocks;
+            return await dbContext.Stocks.ToListAsync();
         }
 
-        public void Delete(int id)
+        public async Task<Stock> GetByIdAsync(int id)
         {
-            var stock = dbContext.Stocks.FirstOrDefault(x => x.Id == id);
+            return await dbContext.Stocks.FindAsync(id);
+        }
+
+        public async Task<Stock> Save(Stock stock)
+        {
+            if (stock.Id == default)
+            {
+                dbContext.Stocks.Add(stock);
+            }
+            else
+            {
+                dbContext.Stocks.Update(stock);
+            }
+
+            await dbContext.SaveChangesAsync();
+            return stock;
+        }
+
+        public async Task Delete(int id)
+        {
+            var stock = await GetByIdAsync(id);
             if (stock != null)
             {
                 dbContext.Stocks.Remove(stock);
-                dbContext.SaveChanges();
+                await dbContext.SaveChangesAsync();
             }
-        }
-
-        public Stock Get(int id)
-        {
-            return dbContext.Stocks
-                .FirstOrDefault(x => x.Id == id);
-        }
-
-        public void Save(Stock stock)
-        {
-            if(stock == null)
-            {
-                dbContext.SaveChanges();
-                return;
-            }    
-
-            if (stock.Id == default)
-                dbContext.Entry(stock).State = EntityState.Added;
-            else
-                dbContext.Entry(stock).State = EntityState.Modified;
-
-            dbContext.SaveChanges();
         }
     }
 }

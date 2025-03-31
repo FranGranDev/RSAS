@@ -9,51 +9,49 @@ namespace Application.Data.Repository
 {
     public class EFOrderStore : IOrderStore
     {
+        private readonly AppDbContext dbContext;
+
         public EFOrderStore(AppDbContext dbContext)
         {
             this.dbContext = dbContext;
         }
-        private readonly AppDbContext dbContext;
 
+        public IQueryable<Order> All => dbContext.Orders;
 
-
-        public IQueryable<Order> All
+        public async Task<IEnumerable<Order>> GetAllAsync()
         {
-            get => dbContext.Orders;
+            return await dbContext.Orders.ToListAsync();
         }
-        public void Delete(Order order)
+
+        public async Task<Order> GetByIdAsync(int id)
+        {
+            return await dbContext.Orders.FindAsync(id);
+        }
+
+        public async Task<Order> Save(Order order)
         {
             if (order.Id == default)
             {
-                return;
-            }
-            dbContext.Entry(order).State = EntityState.Deleted;
-            dbContext.SaveChanges();
-        }
-        public Order Get(int id)
-        {
-            return dbContext.Orders.FirstOrDefault(o => o.Id == id);
-        }
-        public void Save(Order order)
-        {
-            if (order == null)
-            {
-                return;
-            }
-
-            order.ChangeDate = DateTime.Now;
-            if (order.Id == default)
-            {
-                dbContext.Entry(order).State = EntityState.Added;
+                dbContext.Orders.Add(order);
             }
             else
             {
-                dbContext.Entry(order).State = EntityState.Modified;
+                dbContext.Orders.Update(order);
             }
 
-            dbContext.SaveChanges();
+            await dbContext.SaveChangesAsync();
+            return order;
         }
 
+        public async Task Delete(int id)
+        {
+            var order = await GetByIdAsync(id);
+            if (order != null)
+            {
+                dbContext.Orders.Remove(order);
+                await dbContext.SaveChangesAsync();
+            }
+        }
 
         public async Task<Order> CreateOrder(Order order, IEnumerable<CatalogItemViewModel> items, Delivery delivery)
         {
@@ -70,7 +68,6 @@ namespace Application.Data.Repository
 
             order.Products = new List<OrderProduct>();
 
-
             foreach(CatalogItemViewModel item in items)
             {
                 var product = await dbContext.Products.FindAsync(item.Id);
@@ -82,10 +79,9 @@ namespace Application.Data.Repository
                 {
                     ProductId = product.Id,
                     Quantity = item.TakenCount,
-
                     ProductName = product.Name,
                     ProductDescription = product.Description,
-                    ProductPrice = order.Type == Model.Sales.SaleTypes.Retail ? product.RetailPrice : product.WholesalePrice,
+                    ProductPrice = product.Price,
                 };
 
                 order.Products.Add(orderProduct);

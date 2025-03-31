@@ -17,24 +17,33 @@ namespace Application.Controllers
             _productsStore = productsStore;
         }
 
+        // GET: api/Products
         [HttpGet]
         public async Task<ActionResult<IEnumerable<ProductDto>>> GetProducts()
         {
-            var products = await _productsStore.GetAllProductsAsync();
+            var products = await _productsStore.GetAllAsync();
             return Ok(products.Select(p => new ProductDto
             {
                 Id = p.Id,
                 Name = p.Name,
                 Description = p.Description,
                 Price = p.Price,
-                Category = p.Category
+                StockProducts = p.StockProducts?.Select(sp => new StockProductDto
+                {
+                    Id = sp.Id,
+                    StockId = sp.StockId,
+                    ProductId = sp.ProductId,
+                    Quantity = sp.Quantity,
+                    Price = sp.Product?.Price ?? 0
+                }).ToList()
             }));
         }
 
+        // GET: api/Products/5
         [HttpGet("{id}")]
         public async Task<ActionResult<ProductDto>> GetProduct(int id)
         {
-            var product = await _productsStore.GetProductByIdAsync(id);
+            var product = await _productsStore.GetByIdAsync(id);
             if (product == null)
             {
                 return NotFound();
@@ -46,10 +55,18 @@ namespace Application.Controllers
                 Name = product.Name,
                 Description = product.Description,
                 Price = product.Price,
-                Category = product.Category
+                StockProducts = product.StockProducts?.Select(sp => new StockProductDto
+                {
+                    Id = sp.Id,
+                    StockId = sp.StockId,
+                    ProductId = sp.ProductId,
+                    Quantity = sp.Quantity,
+                    Price = sp.Product?.Price ?? 0
+                }).ToList()
             });
         }
 
+        // POST: api/Products
         [HttpPost]
         [Authorize(Policy = "RequireAdminRole")]
         public async Task<ActionResult<ProductDto>> CreateProduct(CreateProductDto createProductDto)
@@ -58,27 +75,29 @@ namespace Application.Controllers
             {
                 Name = createProductDto.Name,
                 Description = createProductDto.Description,
-                Price = createProductDto.Price,
-                Category = createProductDto.Category
+                Price = createProductDto.Price
             };
 
-            await _productsStore.CreateProductAsync(product);
+            await _productsStore.Save(product);
 
-            return CreatedAtAction(nameof(GetProduct), new { id = product.Id }, new ProductDto
-            {
-                Id = product.Id,
-                Name = product.Name,
-                Description = product.Description,
-                Price = product.Price,
-                Category = product.Category
-            });
+            return CreatedAtAction(
+                nameof(GetProduct),
+                new { id = product.Id },
+                new ProductDto
+                {
+                    Id = product.Id,
+                    Name = product.Name,
+                    Description = product.Description,
+                    Price = product.Price
+                });
         }
 
+        // PUT: api/Products/5
         [HttpPut("{id}")]
         [Authorize(Policy = "RequireAdminRole")]
         public async Task<IActionResult> UpdateProduct(int id, UpdateProductDto updateProductDto)
         {
-            var product = await _productsStore.GetProductByIdAsync(id);
+            var product = await _productsStore.GetByIdAsync(id);
             if (product == null)
             {
                 return NotFound();
@@ -87,24 +106,24 @@ namespace Application.Controllers
             product.Name = updateProductDto.Name;
             product.Description = updateProductDto.Description;
             product.Price = updateProductDto.Price;
-            product.Category = updateProductDto.Category;
 
-            await _productsStore.UpdateProductAsync(product);
+            await _productsStore.Save(product);
 
             return NoContent();
         }
 
+        // DELETE: api/Products/5
         [HttpDelete("{id}")]
         [Authorize(Policy = "RequireAdminRole")]
         public async Task<IActionResult> DeleteProduct(int id)
         {
-            var product = await _productsStore.GetProductByIdAsync(id);
+            var product = await _productsStore.GetByIdAsync(id);
             if (product == null)
             {
                 return NotFound();
             }
 
-            await _productsStore.DeleteProductAsync(id);
+            await _productsStore.Delete(id);
 
             return NoContent();
         }

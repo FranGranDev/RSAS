@@ -61,7 +61,16 @@ namespace Application
                 };
             });
 
+            // Authorization Policies
+            builder.Services.AddAuthorization(options =>
+            {
+                options.AddPolicy("RequireAdminRole", policy => policy.RequireRole("Admin"));
+                options.AddPolicy("RequireManagerRole", policy => policy.RequireRole("Admin", "Manager"));
+                options.AddPolicy("RequireUserRole", policy => policy.RequireRole("Admin", "Manager", "User"));
+            });
+
             // Services
+            builder.Services.AddScoped<IJwtService, JwtService>();
             builder.Services.AddTransient<IStockStore, EFStockStore>();
             builder.Services.AddTransient<IProductsStore, EFProductsStore>();
             builder.Services.AddTransient<IStockProductsStore, EFStockProductsStore>();

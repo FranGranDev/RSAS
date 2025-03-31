@@ -56,5 +56,15 @@ namespace Application.Data.Repository
 
             Save(sale);
         }
+
+        public void Delete(int id)
+        {
+            var sale = Get(id);
+            if (sale != null)
+            {
+                dbContext.Sales.Remove(sale);
+                dbContext.SaveChanges();
+            }
+        }
     }
 }

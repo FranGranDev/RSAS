@@ -13,5 +13,6 @@ namespace Application.Services
 
 
         public void CreateSale(Order order);
+        public void Delete(int id);
     }
 }

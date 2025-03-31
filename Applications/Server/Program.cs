@@ -1,14 +1,17 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using Application.Areas.Identity.Data;
-using Microsoft.AspNetCore.Authentication.Cookies;
 using Application.Data;
 using Application.Services;
 using Application.Data.Repository;
 using System.Globalization;
-using Application.MyTagHelpers;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
-using System.Configuration;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Microsoft.OpenApi.Models;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 namespace Application
 {
@@ -18,11 +21,13 @@ namespace Application
         {
             var builder = WebApplication.CreateBuilder(args);
 
-
+            // Database
             builder.Services.AddDbContext<AppDbContext>(options =>
             {
                 options.UseSqlServer(builder.Configuration.GetConnectionString("AppDbContextConnection"));
             });
+
+            // Identity
             builder.Services.Configure<IdentityOptions>(options =>
             {
                 options.Password.RequiredLength = 8;
@@ -32,47 +37,86 @@ namespace Application
                 options.Password.RequireNonAlphanumeric = false;
             });
 
-            builder.Services.AddDefaultIdentity<AppUser>()
-                .AddDefaultTokenProviders()
-                .AddRoles<IdentityRole>()
-                .AddEntityFrameworkStores<AppDbContext>();
+            builder.Services.AddIdentity<AppUser, IdentityRole>()
+                .AddEntityFrameworkStores<AppDbContext>()
+                .AddDefaultTokenProviders();
 
-            builder.Services.AddSession(options =>
+            // JWT Authentication
+            builder.Services.AddAuthentication(options =>
             {
-                options.IdleTimeout = TimeSpan.FromMinutes(30);
-                options.Cookie.HttpOnly = true;
-                options.Cookie.IsEssential = true;
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+            .AddJwtBearer(options =>
+            {
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+                    ValidIssuer = builder.Configuration["Jwt:Issuer"],
+                    ValidAudience = builder.Configuration["Jwt:Audience"],
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
+                };
             });
-            builder.Services.AddMemoryCache();
 
-
-            builder.Services.AddSingleton<IConfiguration>(builder.Configuration);
-
-
-            builder.Services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
-
-
-            builder.Services.AddTransient<ShowIfRoleTagHelper>();
-
+            // Services
             builder.Services.AddTransient<IStockStore, EFStockStore>();
             builder.Services.AddTransient<IProductsStore, EFProductsStore>();
             builder.Services.AddTransient<IStockProductsStore, EFStockProductsStore>();
             builder.Services.AddTransient<IOrderStore, EFOrderStore>();
             builder.Services.AddTransient<ISalesStore, EFSalesStore>();
             builder.Services.AddTransient<DataManager>();
-
-
             builder.Services.AddTransient<IClientsStore, EFClientStore>();
             builder.Services.AddTransient<IEmployeeStore, EFEmployeeStore>();
             builder.Services.AddTransient<ICompanyStore, EFCompanyStore>();
 
+            // API
+            builder.Services.AddControllers();
+            builder.Services.AddEndpointsApiExplorer();
+            builder.Services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "RSAS API", Version = "v1" });
+                c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                {
+                    Description = "JWT Authorization header using the Bearer scheme",
+                    Name = "Authorization",
+                    In = ParameterLocation.Header,
+                    Type = SecuritySchemeType.ApiKey,
+                    Scheme = "Bearer"
+                });
+                c.AddSecurityRequirement(new OpenApiSecurityRequirement
+                {
+                    {
+                        new OpenApiSecurityScheme
+                        {
+                            Reference = new OpenApiReference
+                            {
+                                Type = ReferenceType.SecurityScheme,
+                                Id = "Bearer"
+                            }
+                        },
+                        Array.Empty<string>()
+                    }
+                });
+            });
 
-
-            builder.Services.AddRazorPages();
-
+            // CORS
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("AllowFrontend",
+                    builder =>
+                    {
+                        builder.WithOrigins("http://localhost:5001") // Frontend URL
+                               .AllowAnyMethod()
+                               .AllowAnyHeader();
+                    });
+            });
 
             var app = builder.Build();
 
+            // Seed Data
             using(var scope = app.Services.CreateScope())
             {
                 var services = scope.ServiceProvider;
@@ -83,12 +127,17 @@ namespace Application
                 await AppDbConfigure.SeedUsers(userManager, employeeStore);
             }
 
-
-            if (!app.Environment.IsDevelopment())
+            // Configure the HTTP request pipeline
+            if (app.Environment.IsDevelopment())
             {
-                app.UseExceptionHandler("/Error");
-                app.UseHsts();
+                app.UseSwagger();
+                app.UseSwaggerUI();
             }
+
+            app.UseHttpsRedirection();
+            app.UseCors("AllowFrontend");
+
+            // Culture settings
             app.Use(async (context, next) =>
             {
                 var currentThreadCulture = (CultureInfo)Thread.CurrentThread.CurrentCulture.Clone();
@@ -100,17 +149,10 @@ namespace Application
                 await next();
             });
 
-            app.UseHttpsRedirection();
-            app.UseStaticFiles();
-
-
-            app.UseRouting();
-
             app.UseAuthentication();
             app.UseAuthorization();
 
-            app.UseSession();
-            app.MapRazorPages();
+            app.MapControllers();
 
             app.Run();
         }

@@ -1,0 +1,46 @@
+@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Главная";
+}
+
+<div class="text-center">
+    <h1 class="display-4">Добро пожаловать в RSAS</h1>
+    <p>Система анализа заказов и продаж</p>
+    @if (!User.Identity?.IsAuthenticated ?? true)
+    {
+        <p>Пожалуйста, <a asp-page="/Account/Login">войдите</a> для доступа к системе.</p>
+    }
+    else
+    {
+        <div class="row mt-4">
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Заказы</h5>
+                        <p class="card-text">Управление заказами и их статусами</p>
+                        <a asp-page="/Orders/Index" class="btn btn-primary">Перейти к заказам</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Продажи</h5>
+                        <p class="card-text">Анализ продаж и статистика</p>
+                        <a asp-page="/Sales/Index" class="btn btn-primary">Перейти к продажам</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Товары</h5>
+                        <p class="card-text">Управление товарами и складом</p>
+                        <a asp-page="/Products/Index" class="btn btn-primary">Перейти к товарам</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div> 

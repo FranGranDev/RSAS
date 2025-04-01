@@ -3,190 +3,158 @@ using Application.Exceptions;
 using Application.Model.Orders;
 using Application.Services.Repository;
 using AutoMapper;
+using Server.Services.Repository;
 
-namespace Application.Services
+namespace Server.Services.Orders
 {
     public class OrderService : IOrderService
     {
+        private readonly IOrderRepository _orderRepository;
+        private readonly IStockRepository _stockRepository;
         private readonly IMapper _mapper;
-        private readonly IOrderStore _orderStore;
-        private readonly IStockProductsStore _stockProductsStore;
-        private readonly IStockStore _stockStore;
 
         public OrderService(
-            IOrderStore orderStore,
-            IStockStore stockStore,
-            IStockProductsStore stockProductsStore,
+            IOrderRepository orderRepository,
+            IStockRepository stockRepository,
             IMapper mapper)
         {
-            _orderStore = orderStore;
-            _stockStore = stockStore;
-            _stockProductsStore = stockProductsStore;
+            _orderRepository = orderRepository;
+            _stockRepository = stockRepository;
             _mapper = mapper;
         }
 
         public async Task<IEnumerable<OrderDto>> GetAllOrdersAsync()
         {
-            var orders = await _orderStore.GetAllAsync();
+            var orders = await _orderRepository.GetAllWithDetailsAsync();
             return _mapper.Map<IEnumerable<OrderDto>>(orders);
         }
 
         public async Task<OrderDto> GetOrderByIdAsync(int id)
         {
-            var order = await _orderStore.GetByIdAsync(id);
+            var order = await _orderRepository.GetWithDetailsAsync(id);
             if (order == null)
-            {
                 throw new BusinessException($"Заказ с ID {id} не найден");
-            }
 
             return _mapper.Map<OrderDto>(order);
         }
 
-        public async Task<OrderDto> CreateOrderAsync(CreateOrderDto createOrderDto)
+        public async Task<OrderDto> CreateOrderAsync(CreateOrderDto createOrderDto, string userId)
         {
             if (!createOrderDto.StockId.HasValue)
-            {
                 throw new BusinessException("Не указан склад");
-            }
 
             // Проверяем наличие склада
-            var stock = await _stockStore.GetByIdAsync(createOrderDto.StockId.Value);
+            var stock = await _stockRepository.GetByIdAsync(createOrderDto.StockId.Value);
             if (stock == null)
-            {
                 throw new BusinessException($"Склад с ID {createOrderDto.StockId} не найден");
-            }
 
             // Проверяем наличие товаров на складе
             foreach (var product in createOrderDto.Products)
             {
-                var stockProduct = await _stockProductsStore.GetByStockAndProductIdAsync(
-                    createOrderDto.StockId.Value, product.ProductId);
-
-                if (stockProduct == null || stockProduct.Quantity < product.Quantity)
-                {
-                    throw new BusinessException($"Недостаточно товара {product.ProductId} на складе");
-                }
+                var stockProduct = await _stockRepository.GetWithStockProductsAsync(createOrderDto.StockId.Value);
+                var productInStock = stockProduct.StockProducts.FirstOrDefault(sp => sp.ProductId == product.ProductId);
+                
+                if (productInStock == null)
+                    throw new BusinessException($"Товар с ID {product.ProductId} отсутствует на складе");
+                
+                if (productInStock.Quantity < product.Quantity)
+                    throw new BusinessException($"Недостаточно товара с ID {product.ProductId} на складе");
             }
 
             var order = _mapper.Map<Order>(createOrderDto);
+            order.UserId = userId;
             order.OrderDate = DateTime.UtcNow;
             order.ChangeDate = DateTime.UtcNow;
             order.State = Order.States.New;
 
-            await _orderStore.SaveAsync(order);
+            await _orderRepository.AddAsync(order);
             return _mapper.Map<OrderDto>(order);
         }
 
         public async Task<OrderDto> UpdateOrderAsync(int id, UpdateOrderDto updateOrderDto)
         {
-            var order = await _orderStore.GetByIdAsync(id);
+            var order = await _orderRepository.GetWithDetailsAsync(id);
             if (order == null)
-            {
                 throw new BusinessException($"Заказ с ID {id} не найден");
-            }
 
-            if (order.State != Order.States.New)
-            {
-                throw new BusinessException("Можно обновлять только новые заказы");
-            }
+            if (order.State == Order.States.Completed)
+                throw new BusinessException("Нельзя изменить завершенный заказ");
+
+            if (order.State == Order.States.Cancelled)
+                throw new BusinessException("Нельзя изменить отмененный заказ");
 
             _mapper.Map(updateOrderDto, order);
             order.ChangeDate = DateTime.UtcNow;
 
-            await _orderStore.SaveAsync(order);
+            await _orderRepository.UpdateAsync(order);
             return _mapper.Map<OrderDto>(order);
         }
 
         public async Task DeleteOrderAsync(int id)
         {
-            var order = await _orderStore.GetByIdAsync(id);
+            var order = await _orderRepository.GetWithDetailsAsync(id);
             if (order == null)
-            {
                 throw new BusinessException($"Заказ с ID {id} не найден");
-            }
 
-            if (order.State != Order.States.New)
-            {
-                throw new BusinessException("Можно удалять только новые заказы");
-            }
+            if (order.State == Order.States.Completed)
+                throw new BusinessException("Нельзя удалить завершенный заказ");
 
-            await _orderStore.DeleteAsync(id);
+            await _orderRepository.DeleteAsync(order);
         }
 
-        public async Task<IEnumerable<OrderDto>> GetOrdersByClientIdAsync(int clientId)
+        public async Task<IEnumerable<OrderDto>> GetOrdersByUserIdAsync(string userId)
         {
-            var orders = await _orderStore.GetByClientIdAsync(clientId);
+            var orders = await _orderRepository.GetByUserIdAsync(userId);
+            return _mapper.Map<IEnumerable<OrderDto>>(orders);
+        }
+
+        public async Task<IEnumerable<OrderDto>> GetOrdersByStockIdAsync(int stockId)
+        {
+            var orders = await _orderRepository.GetByStockIdAsync(stockId);
+            return _mapper.Map<IEnumerable<OrderDto>>(orders);
+        }
+
+        public async Task<IEnumerable<OrderDto>> GetOrdersByStateAsync(Order.States state)
+        {
+            var orders = await _orderRepository.GetByStateAsync(state);
+            return _mapper.Map<IEnumerable<OrderDto>>(orders);
+        }
+
+        public async Task<IEnumerable<OrderDto>> GetOrdersByDateRangeAsync(DateTime startDate, DateTime endDate)
+        {
+            var orders = await _orderRepository.GetByDateRangeAsync(startDate, endDate);
             return _mapper.Map<IEnumerable<OrderDto>>(orders);
         }
 
         public async Task<OrderDto> ExecuteOrderAsync(int id)
         {
-            var order = await _orderStore.GetByIdAsync(id);
+            var order = await _orderRepository.GetWithDetailsAsync(id);
             if (order == null)
-            {
                 throw new BusinessException($"Заказ с ID {id} не найден");
-            }
 
             if (order.State != Order.States.New)
-            {
-                throw new BusinessException("Можно выполнять только новые заказы");
-            }
-
-            if (!order.StockId.HasValue)
-            {
-                throw new BusinessException("Не указан склад");
-            }
-
-            var stock = await _stockStore.GetByIdAsync(order.StockId.Value);
-            if (stock == null)
-            {
-                throw new BusinessException($"Склад с ID {order.StockId} не найден");
-            }
-
-            // Проверяем наличие товаров на складе
-            foreach (var product in order.Products)
-            {
-                var stockProduct = await _stockProductsStore.GetByStockAndProductIdAsync(
-                    order.StockId.Value, product.ProductId);
-
-                if (stockProduct == null || stockProduct.Quantity < product.Quantity)
-                {
-                    throw new BusinessException($"Недостаточно товара {product.ProductId} на складе");
-                }
-            }
-
-            // Уменьшаем количество товаров на складе
-            foreach (var product in order.Products)
-            {
-                var stockProduct = await _stockProductsStore.GetByStockAndProductIdAsync(
-                    order.StockId.Value, product.ProductId);
-                stockProduct.Quantity -= product.Quantity;
-            }
+                throw new BusinessException("Можно выполнить только новый заказ");
 
             order.State = Order.States.InProcess;
             order.ChangeDate = DateTime.UtcNow;
 
-            await _orderStore.SaveAsync(order);
+            await _orderRepository.UpdateAsync(order);
             return _mapper.Map<OrderDto>(order);
         }
 
         public async Task<OrderDto> CompleteOrderAsync(int id)
         {
-            var order = await _orderStore.GetByIdAsync(id);
+            var order = await _orderRepository.GetWithDetailsAsync(id);
             if (order == null)
-            {
                 throw new BusinessException($"Заказ с ID {id} не найден");
-            }
 
             if (order.State != Order.States.InProcess)
-            {
-                throw new BusinessException("Можно завершать только заказы в процессе");
-            }
+                throw new BusinessException("Можно завершить только заказ в процессе");
 
             order.State = Order.States.Completed;
             order.ChangeDate = DateTime.UtcNow;
 
-            await _orderStore.SaveAsync(order);
+            await _orderRepository.UpdateAsync(order);
             return _mapper.Map<OrderDto>(order);
         }
     }

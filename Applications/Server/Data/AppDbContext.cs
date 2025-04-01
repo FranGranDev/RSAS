@@ -23,7 +23,7 @@ public class AppDbContext : IdentityDbContext<AppUser>
     //Orders
     public DbSet<Order> Orders { get; set; }
     public DbSet<OrderProduct> OrderProducts { get; set; }
-    public DbSet<Delivery> OrdersDelivery { get; set; }
+    public DbSet<Delivery> Deliveries { get; set; }
 
     //Sales
     public DbSet<Sale> Sales { get; set; }

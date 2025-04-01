@@ -1,155 +1,153 @@
 using Application.DTOs;
 using Application.Exceptions;
+using Application.Model.Orders;
 using Application.Model.Sales;
 using Application.Services.Repository;
 using AutoMapper;
+using Server.Services.Repository;
 
-namespace Application.Services.Sales
+namespace Server.Services.Sales
 {
     public class SaleService : ISaleService
     {
+        private readonly ISaleRepository _saleRepository;
+        private readonly IOrderRepository _orderRepository;
+        private readonly IStockRepository _stockRepository;
         private readonly IMapper _mapper;
-        private readonly ISalesStore _salesStore;
-        private readonly IStockProductsStore _stockProductsStore;
 
         public SaleService(
-            ISalesStore salesStore,
-            IStockProductsStore stockProductsStore,
+            ISaleRepository saleRepository,
+            IOrderRepository orderRepository,
+            IStockRepository stockRepository,
             IMapper mapper)
         {
-            _salesStore = salesStore;
-            _stockProductsStore = stockProductsStore;
+            _saleRepository = saleRepository;
+            _orderRepository = orderRepository;
+            _stockRepository = stockRepository;
             _mapper = mapper;
         }
 
         public async Task<IEnumerable<SaleDto>> GetAllSalesAsync()
         {
-            var sales = await _salesStore.GetAllAsync();
+            var sales = await _saleRepository.GetAllWithDetailsAsync();
             return _mapper.Map<IEnumerable<SaleDto>>(sales);
         }
 
         public async Task<SaleDto> GetSaleByIdAsync(int id)
         {
-            var sale = await _salesStore.GetByIdAsync(id);
+            var sale = await _saleRepository.GetWithDetailsAsync(id);
             if (sale == null)
-            {
                 throw new BusinessException($"Продажа с ID {id} не найдена");
-            }
 
             return _mapper.Map<SaleDto>(sale);
         }
 
         public async Task<SaleDto> CreateSaleAsync(CreateSaleDto createSaleDto)
         {
-            // Проверяем наличие товаров на складе
-            foreach (var product in createSaleDto.Products)
-            {
-                var stockProduct = await _stockProductsStore.GetByStockAndProductIdAsync(
-                    createSaleDto.StockId, product.ProductId);
+            // Проверяем существование заказа
+            var order = await _orderRepository.GetWithDetailsAsync(createSaleDto.OrderId);
+            if (order == null)
+                throw new BusinessException($"Заказ с ID {createSaleDto.OrderId} не найден");
 
-                if (stockProduct == null || stockProduct.Quantity < product.Quantity)
-                {
-                    throw new BusinessException($"Недостаточно товара {product.ProductId} на складе");
-                }
-            }
+            if (order.State != Order.States.InProcess)
+                throw new BusinessException("Можно создать продажу только для заказа в процессе");
+
+            // Проверяем существование склада
+            var stock = await _stockRepository.GetByIdAsync(createSaleDto.StockId);
+            if (stock == null)
+                throw new BusinessException($"Склад с ID {createSaleDto.StockId} не найден");
+
+            // Проверяем, не существует ли уже продажа для этого заказа
+            if (await _saleRepository.ExistsByOrderIdAsync(createSaleDto.OrderId))
+                throw new BusinessException($"Продажа для заказа с ID {createSaleDto.OrderId} уже существует");
 
             var sale = _mapper.Map<Sale>(createSaleDto);
             sale.SaleDate = DateTime.UtcNow;
+            sale.Status = SaleStatus.Processing;
 
-            // Уменьшаем количество товаров на складе
-            foreach (var product in sale.Products)
-            {
-                var stockProduct = await _stockProductsStore.GetByStockAndProductIdAsync(
-                    sale.StockId, product.ProductId);
-
-                stockProduct.Quantity -= product.Quantity;
-                await _stockProductsStore.SaveAsync(stockProduct);
-            }
-
-            await _salesStore.SaveAsync(sale);
+            await _saleRepository.AddAsync(sale);
             return _mapper.Map<SaleDto>(sale);
         }
 
         public async Task<SaleDto> UpdateSaleAsync(int id, UpdateSaleDto updateSaleDto)
         {
-            var sale = await _salesStore.GetByIdAsync(id);
+            var sale = await _saleRepository.GetWithDetailsAsync(id);
             if (sale == null)
-            {
                 throw new BusinessException($"Продажа с ID {id} не найдена");
-            }
 
-            // Возвращаем товары на склад
-            foreach (var product in sale.Products)
-            {
-                var stockProduct = await _stockProductsStore.GetByStockAndProductIdAsync(
-                    sale.StockId, product.ProductId);
+            if (sale.Status == SaleStatus.Completed)
+                throw new BusinessException("Нельзя изменить завершенную продажу");
 
-                stockProduct.Quantity += product.Quantity;
-                await _stockProductsStore.SaveAsync(stockProduct);
-            }
-
-            // Проверяем наличие товаров для обновленной продажи
-            foreach (var product in updateSaleDto.Products)
-            {
-                var stockProduct = await _stockProductsStore.GetByStockAndProductIdAsync(
-                    updateSaleDto.StockId, product.ProductId);
-
-                if (stockProduct == null || stockProduct.Quantity < product.Quantity)
-                {
-                    throw new BusinessException($"Недостаточно товара {product.ProductId} на складе");
-                }
-            }
+            if (sale.Status == SaleStatus.Cancelled)
+                throw new BusinessException("Нельзя изменить отмененную продажу");
 
             _mapper.Map(updateSaleDto, sale);
-            sale.SaleDate = DateTime.UtcNow;
-
-            // Уменьшаем количество товаров на складе для обновленной продажи
-            foreach (var product in sale.Products)
-            {
-                var stockProduct = await _stockProductsStore.GetByStockAndProductIdAsync(
-                    sale.StockId, product.ProductId);
-
-                stockProduct.Quantity -= product.Quantity;
-                await _stockProductsStore.SaveAsync(stockProduct);
-            }
-
-            await _salesStore.SaveAsync(sale);
+            await _saleRepository.UpdateAsync(sale);
             return _mapper.Map<SaleDto>(sale);
         }
 
         public async Task DeleteSaleAsync(int id)
         {
-            var sale = await _salesStore.GetByIdAsync(id);
+            var sale = await _saleRepository.GetWithDetailsAsync(id);
             if (sale == null)
-            {
                 throw new BusinessException($"Продажа с ID {id} не найдена");
-            }
 
-            // Возвращаем товары на склад
-            foreach (var product in sale.Products)
-            {
-                var stockProduct = await _stockProductsStore.GetByStockAndProductIdAsync(
-                    sale.StockId, product.ProductId);
+            if (sale.Status == SaleStatus.Completed)
+                throw new BusinessException("Нельзя удалить завершенную продажу");
 
-                stockProduct.Quantity += product.Quantity;
-                await _stockProductsStore.SaveAsync(stockProduct);
-            }
-
-            await _salesStore.DeleteAsync(id);
+            await _saleRepository.DeleteAsync(sale);
         }
 
-        public async Task<IEnumerable<SaleDto>> GetSalesByDateRangeAsync(DateTime startDate, DateTime endDate)
+        public async Task<IEnumerable<SaleDto>> GetSalesByOrderIdAsync(int orderId)
         {
-            var sales = await _salesStore.GetAllAsync();
-            var filteredSales = sales.Where(s => s.SaleDate >= startDate && s.SaleDate <= endDate);
-            return _mapper.Map<IEnumerable<SaleDto>>(filteredSales);
+            var sales = await _saleRepository.GetByOrderIdAsync(orderId);
+            return _mapper.Map<IEnumerable<SaleDto>>(sales);
         }
 
         public async Task<IEnumerable<SaleDto>> GetSalesByStockIdAsync(int stockId)
         {
-            var sales = await _salesStore.GetAllAsync();
-            var filteredSales = sales.Where(s => s.StockId == stockId);
-            return _mapper.Map<IEnumerable<SaleDto>>(filteredSales);
+            var sales = await _saleRepository.GetByStockIdAsync(stockId);
+            return _mapper.Map<IEnumerable<SaleDto>>(sales);
+        }
+
+        public async Task<IEnumerable<SaleDto>> GetSalesByStatusAsync(SaleStatus status)
+        {
+            var sales = await _saleRepository.GetByStatusAsync(status);
+            return _mapper.Map<IEnumerable<SaleDto>>(sales);
+        }
+
+        public async Task<IEnumerable<SaleDto>> GetSalesByDateRangeAsync(DateTime startDate, DateTime endDate)
+        {
+            var sales = await _saleRepository.GetByDateRangeAsync(startDate, endDate);
+            return _mapper.Map<IEnumerable<SaleDto>>(sales);
+        }
+
+        public async Task<SaleDto> CompleteSaleAsync(int id)
+        {
+            var sale = await _saleRepository.GetWithDetailsAsync(id);
+            if (sale == null)
+                throw new BusinessException($"Продажа с ID {id} не найдена");
+
+            if (sale.Status != SaleStatus.Processing)
+                throw new BusinessException("Можно завершить только продажу в обработке");
+
+            sale.Status = SaleStatus.Completed;
+            await _saleRepository.UpdateAsync(sale);
+            return _mapper.Map<SaleDto>(sale);
+        }
+
+        public async Task<SaleDto> CancelSaleAsync(int id)
+        {
+            var sale = await _saleRepository.GetWithDetailsAsync(id);
+            if (sale == null)
+                throw new BusinessException($"Продажа с ID {id} не найдена");
+
+            if (sale.Status != SaleStatus.Processing)
+                throw new BusinessException("Можно отменить только продажу в обработке");
+
+            sale.Status = SaleStatus.Cancelled;
+            await _saleRepository.UpdateAsync(sale);
+            return _mapper.Map<SaleDto>(sale);
         }
     }
 }

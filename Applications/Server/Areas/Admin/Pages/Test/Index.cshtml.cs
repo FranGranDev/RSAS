@@ -314,7 +314,7 @@ namespace Application.Areas.Admin.Pages.Test
             dbContext.Orders.RemoveRange(dbContext.Orders);
             dbContext.Sales.RemoveRange(dbContext.Sales);
             dbContext.OrderProducts.RemoveRange(dbContext.OrderProducts);
-            dbContext.OrdersDelivery.RemoveRange(dbContext.OrdersDelivery);
+            dbContext.Deliveries.RemoveRange(dbContext.Deliveries);
 
             await dbContext.SaveChangesAsync();
 
@@ -405,7 +405,7 @@ namespace Application.Areas.Admin.Pages.Test
             {
                 order.Delivery = delivery;
                 delivery.Order = order;
-                dbContext.OrdersDelivery.Add(delivery);
+                dbContext.Deliveries.Add(delivery);
             }
 
             order.Products = new List<OrderProduct>();

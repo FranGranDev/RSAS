@@ -17,6 +17,9 @@ namespace Application.DTOs
 
     public class CreateDeliveryDto
     {
+        [Required(ErrorMessage = "ID заказа обязателен")]
+        public int OrderId { get; set; }
+
         [Required(ErrorMessage = "Дата доставки обязательна")]
         public DateTime DeliveryDate { get; set; }
 

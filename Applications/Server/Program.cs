@@ -10,11 +10,14 @@ using Application.Services.Clients;
 using Application.Services.Employees;
 using Application.Services.Products;
 using Application.Services.Repository;
-using Application.Services.Sales;
 using Application.Services.Stocks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Server.Services.Deliveries;
+using Server.Services.Orders;
+using Server.Services.Repository;
+using Server.Services.Sales;
 
 namespace Application
 {
@@ -76,22 +79,24 @@ namespace Application
             // AutoMapper
             builder.Services.AddAutoMapper(typeof(Program).Assembly);
 
+            // Repositories
+            builder.Services.AddScoped<IStockRepository, StockRepository>();
+            builder.Services.AddScoped<IProductRepository, ProductRepository>();
+            builder.Services.AddScoped<IOrderRepository, OrderRepository>();
+            builder.Services.AddScoped<ISaleRepository, SaleRepository>();
+            builder.Services.AddScoped<IClientRepository, ClientRepository>();
+            builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>();
+            builder.Services.AddScoped<IDeliveryRepository, DeliveryRepository>();
+
             // Services
             builder.Services.AddScoped<IJwtService, JwtService>();
-            builder.Services.AddScoped<IStockStore, EFStockStore>();
-            builder.Services.AddScoped<IProductsStore, EFProductsStore>();
-            builder.Services.AddScoped<IStockProductsStore, EFStockProductsStore>();
-            builder.Services.AddScoped<IOrderStore, EFOrderStore>();
-            builder.Services.AddScoped<ISalesStore, EFSalesStore>();
-            builder.Services.AddTransient<DataManager>();
-            builder.Services.AddScoped<IClientsStore, EFClientStore>();
-            builder.Services.AddScoped<IEmployeeStore, EFEmployeeStore>();
-            builder.Services.AddScoped<IOrderService, OrderService>();
+            builder.Services.AddScoped<IStockService, StockService>();
             builder.Services.AddScoped<IProductService, ProductService>();
+            builder.Services.AddScoped<IOrderService, OrderService>();
+            builder.Services.AddScoped<ISaleService, SaleService>();
             builder.Services.AddScoped<IClientService, ClientService>();
             builder.Services.AddScoped<IEmployeeService, EmployeeService>();
-            builder.Services.AddScoped<ISaleService, SaleService>();
-            builder.Services.AddScoped<IStockService, StockService>();
+            builder.Services.AddScoped<IDeliveryService, DeliveryService>();
 
             // API
             builder.Services.AddControllers();
@@ -165,9 +170,9 @@ namespace Application
                 var services = scope.ServiceProvider;
                 var userManager = services.GetService<UserManager<AppUser>>();
                 var roleManager = services.GetService<RoleManager<IdentityRole>>();
-                var employeeStore = services.GetService<IEmployeeStore>();
+                var employeeRepository = services.GetService<IEmployeeRepository>();
                 await AppDbConfigure.SeedRoles(roleManager);
-                await AppDbConfigure.SeedUsers(userManager, employeeStore);
+                await AppDbConfigure.SeedUsers(userManager, employeeRepository);
             }
 
             // Configure the HTTP request pipeline

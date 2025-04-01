@@ -1,17 +1,20 @@
-using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Identity;
+using System.Globalization;
+using System.Reflection;
+using System.Text;
 using Application.Areas.Identity.Data;
 using Application.Data;
+using Application.Filters;
+using Application.Middleware;
 using Application.Services;
-using Application.Data.Repository;
-using System.Globalization;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using Microsoft.OpenApi.Models;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Application.Services.Clients;
+using Application.Services.Employees;
+using Application.Services.Products;
+using Application.Services.Repository;
+using Application.Services.Sales;
+using Application.Services.Stocks;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using System.Text;
 
 namespace Application
 {
@@ -43,23 +46,24 @@ namespace Application
 
             // JWT Authentication
             builder.Services.AddAuthentication(options =>
-            {
-                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-            })
-            .AddJwtBearer(options =>
-            {
-                options.TokenValidationParameters = new TokenValidationParameters
                 {
-                    ValidateIssuer = true,
-                    ValidateAudience = true,
-                    ValidateLifetime = true,
-                    ValidateIssuerSigningKey = true,
-                    ValidIssuer = builder.Configuration["Jwt:Issuer"],
-                    ValidAudience = builder.Configuration["Jwt:Audience"],
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
-                };
-            });
+                    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                })
+                .AddJwtBearer(options =>
+                {
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuer = true,
+                        ValidateAudience = true,
+                        ValidateLifetime = true,
+                        ValidateIssuerSigningKey = true,
+                        ValidIssuer = builder.Configuration["Jwt:Issuer"],
+                        ValidAudience = builder.Configuration["Jwt:Audience"],
+                        IssuerSigningKey =
+                            new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
+                    };
+                });
 
             // Authorization Policies
             builder.Services.AddAuthorization(options =>
@@ -68,6 +72,9 @@ namespace Application
                 options.AddPolicy("RequireManagerRole", policy => policy.RequireRole("Admin", "Manager"));
                 options.AddPolicy("RequireUserRole", policy => policy.RequireRole("Admin", "Manager", "User"));
             });
+
+            // AutoMapper
+            builder.Services.AddAutoMapper(typeof(Program).Assembly);
 
             // Services
             builder.Services.AddScoped<IJwtService, JwtService>();
@@ -79,16 +86,41 @@ namespace Application
             builder.Services.AddTransient<DataManager>();
             builder.Services.AddScoped<IClientsStore, EFClientStore>();
             builder.Services.AddScoped<IEmployeeStore, EFEmployeeStore>();
+            builder.Services.AddScoped<IOrderService, OrderService>();
+            builder.Services.AddScoped<IProductService, ProductService>();
+            builder.Services.AddScoped<IClientService, ClientService>();
+            builder.Services.AddScoped<IEmployeeService, EmployeeService>();
+            builder.Services.AddScoped<ISaleService, SaleService>();
+            builder.Services.AddScoped<IStockService, StockService>();
 
             // API
             builder.Services.AddControllers();
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "RSAS API", Version = "v1" });
+                c.SwaggerDoc("v1", new OpenApiInfo
+                {
+                    Title = "RSAS API",
+                    Version = "v1",
+                    Description = "API для системы управления заказами и складом",
+                    Contact = new OpenApiContact
+                    {
+                        Name = "RSAS Team",
+                        Email = "support@rsas.com"
+                    }
+                });
+
+                // Добавляем XML-комментарии
+                var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+                var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+                if (File.Exists(xmlPath))
+                {
+                    c.IncludeXmlComments(xmlPath);
+                }
+
                 c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
                 {
-                    Description = "JWT Authorization header using the Bearer scheme",
+                    Description = "JWT Authorization header using the Bearer scheme. Example: \"Bearer {token}\"",
                     Name = "Authorization",
                     In = ParameterLocation.Header,
                     Type = SecuritySchemeType.ApiKey,
@@ -108,6 +140,9 @@ namespace Application
                         Array.Empty<string>()
                     }
                 });
+
+                // Добавляем аннотации для авторизации
+                c.OperationFilter<SwaggerAuthorizeOperationFilter>();
             });
 
             // CORS
@@ -117,15 +152,15 @@ namespace Application
                     builder =>
                     {
                         builder.WithOrigins("http://localhost:5001") // Frontend URL
-                               .AllowAnyMethod()
-                               .AllowAnyHeader();
+                            .AllowAnyMethod()
+                            .AllowAnyHeader();
                     });
             });
 
             var app = builder.Build();
 
             // Seed Data
-            using(var scope = app.Services.CreateScope())
+            using (var scope = app.Services.CreateScope())
             {
                 var services = scope.ServiceProvider;
                 var userManager = services.GetService<UserManager<AppUser>>();
@@ -144,6 +179,9 @@ namespace Application
 
             app.UseHttpsRedirection();
             app.UseCors("AllowFrontend");
+
+            // Добавляем middleware для обработки ошибок
+            app.UseMiddleware<ErrorHandlingMiddleware>();
 
             // Culture settings
             app.Use(async (context, next) =>

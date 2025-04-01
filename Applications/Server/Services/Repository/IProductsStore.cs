@@ -1,9 +1,9 @@
-using Application.Model.Products;
+using Application.Model.Stocks;
 
-namespace Application.Data.Repository
+namespace Application.Services.Repository
 {
     public interface IProductsStore : IStore<Product>
     {
         // Здесь можно добавить специфичные для продуктов методы, если потребуется
     }
-} 
+}

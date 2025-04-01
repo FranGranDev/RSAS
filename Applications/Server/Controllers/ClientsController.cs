@@ -1,29 +1,39 @@
+using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using Application.Data.Repository;
 using Application.DTOs;
 using Application.Areas.Identity.Data;
+using Application.Exceptions;
+using Application.Services;
+using Application.Services.Clients;
 
 namespace Application.Controllers
 {
+    /// <summary>
+    /// Контроллер для управления клиентами
+    /// </summary>
     [Route("api/[controller]")]
     [ApiController]
     [Authorize]
     public class ClientsController : ControllerBase
     {
-        private readonly IClientsStore _clientsStore;
+        private readonly IClientService _clientService;
 
-        public ClientsController(IClientsStore clientsStore)
+        public ClientsController(IClientService clientService)
         {
-            _clientsStore = clientsStore;
+            _clientService = clientService;
         }
 
-        // GET: api/Clients
+        /// <summary>
+        /// Получить список всех клиентов
+        /// </summary>
+        /// <returns>Список клиентов</returns>
         [HttpGet]
         [Authorize(Policy = "RequireManagerRole")]
         public async Task<ActionResult<IEnumerable<ClientDto>>> GetClients()
         {
-            var clients = await _clientsStore.GetAllAsync();
+            var clients = await _clientService.GetAllClientsAsync();
             return Ok(clients.Select(c => new ClientDto
             {
                 Id = c.Id,
@@ -34,92 +44,93 @@ namespace Application.Controllers
             }));
         }
 
-        // GET: api/Clients/5
+        /// <summary>
+        /// Получить клиента по ID
+        /// </summary>
+        /// <param name="id">ID клиента</param>
+        /// <returns>Информация о клиенте</returns>
+        /// <response code="404">Клиент не найден</response>
         [HttpGet("{id}")]
         [Authorize(Policy = "RequireManagerRole")]
         public async Task<ActionResult<ClientDto>> GetClient(int id)
         {
-            var client = await _clientsStore.GetByIdAsync(id);
-
-            if (client == null)
+            try
             {
-                return NotFound();
+                var client = await _clientService.GetClientByIdAsync(id);
+                return Ok(client);
             }
-
-            return new ClientDto
+            catch (NotFoundException ex)
             {
-                Id = client.Id,
-                FirstName = client.FirstName,
-                LastName = client.LastName,
-                Email = client.Email,
-                Phone = client.Phone
-            };
+                throw new BusinessException($"Клиент с ID {id} не найден", ex);
+            }
         }
 
-        // POST: api/Clients
+        /// <summary>
+        /// Создать нового клиента
+        /// </summary>
+        /// <param name="createClientDto">Данные для создания клиента</param>
+        /// <returns>Созданный клиент</returns>
+        /// <response code="400">Некорректные входные данные</response>
         [HttpPost]
         [Authorize(Policy = "RequireAdminRole")]
         public async Task<ActionResult<ClientDto>> CreateClient(CreateClientDto createClientDto)
         {
-            var client = new Client
+            if (!ModelState.IsValid)
             {
-                FirstName = createClientDto.FirstName,
-                LastName = createClientDto.LastName,
-                Email = createClientDto.Email,
-                Phone = createClientDto.Phone
-            };
-
-            await _clientsStore.Save(client);
-
-            return CreatedAtAction(
-                nameof(GetClient),
-                new { id = client.Id },
-                new ClientDto
-                {
-                    Id = client.Id,
-                    FirstName = client.FirstName,
-                    LastName = client.LastName,
-                    Email = client.Email,
-                    Phone = client.Phone
-                });
-        }
-
-        // PUT: api/Clients/5
-        [HttpPut("{id}")]
-        [Authorize(Policy = "RequireAdminRole")]
-        public async Task<IActionResult> UpdateClient(int id, UpdateClientDto updateClientDto)
-        {
-            var client = await _clientsStore.GetByIdAsync(id);
-
-            if (client == null)
-            {
-                return NotFound();
+                throw new ValidationException("Некорректные данные клиента", ModelState);
             }
 
-            client.FirstName = updateClientDto.FirstName;
-            client.LastName = updateClientDto.LastName;
-            client.Email = updateClientDto.Email;
-            client.Phone = updateClientDto.Phone;
-
-            await _clientsStore.Save(client);
-
-            return NoContent();
+            var client = await _clientService.CreateClientAsync(createClientDto);
+            return CreatedAtAction(nameof(GetClient), new { id = client.Id }, client);
         }
 
-        // DELETE: api/Clients/5
+        /// <summary>
+        /// Обновить существующего клиента
+        /// </summary>
+        /// <param name="id">ID клиента</param>
+        /// <param name="updateClientDto">Данные для обновления клиента</param>
+        /// <returns>Обновленный клиент</returns>
+        /// <response code="400">Некорректные входные данные</response>
+        /// <response code="404">Клиент не найден</response>
+        [HttpPut("{id}")]
+        [Authorize(Policy = "RequireAdminRole")]
+        public async Task<ActionResult<ClientDto>> UpdateClient(int id, UpdateClientDto updateClientDto)
+        {
+            if (!ModelState.IsValid)
+            {
+                throw new ValidationException("Некорректные данные клиента", ModelState);
+            }
+
+            try
+            {
+                var client = await _clientService.UpdateClientAsync(id, updateClientDto);
+                return Ok(client);
+            }
+            catch (NotFoundException ex)
+            {
+                throw new BusinessException($"Клиент с ID {id} не найден", ex);
+            }
+        }
+
+        /// <summary>
+        /// Удалить клиента
+        /// </summary>
+        /// <param name="id">ID клиента</param>
+        /// <returns>Результат операции</returns>
+        /// <response code="404">Клиент не найден</response>
         [HttpDelete("{id}")]
         [Authorize(Policy = "RequireAdminRole")]
         public async Task<IActionResult> DeleteClient(int id)
         {
-            var client = await _clientsStore.GetByIdAsync(id);
-            if (client == null)
+            try
             {
-                return NotFound();
+                await _clientService.DeleteClientAsync(id);
+                return NoContent();
             }
-
-            await _clientsStore.Delete(id);
-
-            return NoContent();
+            catch (NotFoundException ex)
+            {
+                throw new BusinessException($"Клиент с ID {id} не найден", ex);
+            }
         }
     }
 } 

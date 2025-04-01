@@ -1,12 +1,8 @@
-using Application.Model;
 using Application.Services;
 using Application.ViewModel.Data;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using System.ComponentModel;
-using System.ComponentModel.DataAnnotations;
-using System.Data;
 
 namespace Application.Areas.Admin.Pages.Stores
 {
@@ -14,11 +10,12 @@ namespace Application.Areas.Admin.Pages.Stores
     [BindProperties]
     public class IndexModel : PageModel
     {
+        private readonly DataManager dataManager;
+
         public IndexModel(DataManager dataManager)
         {
             this.dataManager = dataManager;
         }
-        private readonly DataManager dataManager;
 
 
         public IEnumerable<QuantityStockViewModel> Stocks { get; set; }
@@ -35,7 +32,6 @@ namespace Application.Areas.Admin.Pages.Stores
 
             StocksCount = Stocks.Count();
             ProductsCount = Stocks.Select(x => x.Quantity).Sum();
-         }
-
+        }
     }
 }

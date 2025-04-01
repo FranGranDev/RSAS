@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -8,10 +9,15 @@ using Application.DTOs;
 using Application.Model.Orders;
 using Application.Services;
 using Application.Model.Stocks;
+using Application.Exceptions;
+using Application.Services.Repository;
 
 namespace Application.Controllers
 {
-    [Authorize]
+    /// <summary>
+    /// Контроллер для управления заказами
+    /// </summary>
+    [Authorize(Policy = "RequireManagerRole")]
     [ApiController]
     [Route("api/[controller]")]
     public class OrdersController : ControllerBase
@@ -19,21 +25,140 @@ namespace Application.Controllers
         private readonly IOrderStore _orderStore;
         private readonly IStockStore _stockStore;
         private readonly IStockProductsStore _stockProductsStore;
+        private readonly IOrderService _orderService;
 
         public OrdersController(
             IOrderStore orderStore,
             IStockStore stockStore,
-            IStockProductsStore stockProductsStore)
+            IStockProductsStore stockProductsStore,
+            IOrderService orderService)
         {
             _orderStore = orderStore;
             _stockStore = stockStore;
             _stockProductsStore = stockProductsStore;
+            _orderService = orderService;
         }
 
+        /// <summary>
+        /// Получить список всех заказов
+        /// </summary>
+        /// <returns>Список заказов</returns>
         [HttpGet]
-        [Authorize(Policy = "RequireManagerRole")]
-        public ActionResult<IEnumerable<OrderDto>> GetOrders()
+        public async Task<ActionResult<IEnumerable<OrderDto>>> GetOrders()
         {
+            var orders = await _orderService.GetAllOrdersAsync();
+            return Ok(orders);
+        }
+
+        /// <summary>
+        /// Получить заказ по ID
+        /// </summary>
+        /// <param name="id">ID заказа</param>
+        /// <returns>Информация о заказе</returns>
+        /// <response code="404">Заказ не найден</response>
+        [HttpGet("{id}")]
+        public async Task<ActionResult<OrderDto>> GetOrder(int id)
+        {
+            try
+            {
+                var order = await _orderService.GetOrderByIdAsync(id);
+                return Ok(order);
+            }
+            catch (NotFoundException ex)
+            {
+                throw new BusinessException($"Заказ с ID {id} не найден", ex);
+            }
+        }
+
+        /// <summary>
+        /// Создать новый заказ
+        /// </summary>
+        /// <param name="createOrderDto">Данные для создания заказа</param>
+        /// <returns>Созданный заказ</returns>
+        /// <response code="400">Некорректные входные данные</response>
+        [HttpPost]
+        public async Task<ActionResult<OrderDto>> CreateOrder(CreateOrderDto createOrderDto)
+        {
+            if (!ModelState.IsValid)
+            {
+                throw new ValidationException("Некорректные данные заказа", ModelState);
+            }
+
+            try
+            {
+                var order = await _orderService.CreateOrderAsync(createOrderDto);
+                return CreatedAtAction(nameof(GetOrder), new { id = order.Id }, order);
+            }
+            catch (NotFoundException ex)
+            {
+                throw new BusinessException("Клиент или товар не найден", ex);
+            }
+        }
+
+        /// <summary>
+        /// Обновить существующий заказ
+        /// </summary>
+        /// <param name="id">ID заказа</param>
+        /// <param name="updateOrderDto">Данные для обновления заказа</param>
+        /// <returns>Обновленный заказ</returns>
+        /// <response code="400">Некорректные входные данные</response>
+        /// <response code="404">Заказ не найден</response>
+        [HttpPut("{id}")]
+        public async Task<ActionResult<OrderDto>> UpdateOrder(int id, UpdateOrderDto updateOrderDto)
+        {
+            if (!ModelState.IsValid)
+            {
+                throw new ValidationException("Некорректные данные заказа", ModelState);
+            }
+
+            try
+            {
+                var order = await _orderService.UpdateOrderAsync(id, updateOrderDto);
+                return Ok(order);
+            }
+            catch (NotFoundException ex)
+            {
+                throw new BusinessException($"Заказ с ID {id} не найден", ex);
+            }
+        }
+
+        /// <summary>
+        /// Удалить заказ
+        /// </summary>
+        /// <param name="id">ID заказа</param>
+        /// <returns>Результат операции</returns>
+        /// <response code="404">Заказ не найден</response>
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteOrder(int id)
+        {
+            try
+            {
+                await _orderService.DeleteOrderAsync(id);
+                return NoContent();
+            }
+            catch (NotFoundException ex)
+            {
+                throw new BusinessException($"Заказ с ID {id} не найден", ex);
+            }
+        }
+
+        /// <summary>
+        /// Получить заказы клиента
+        /// </summary>
+        /// <param name="clientId">ID клиента</param>
+        /// <returns>Список заказов клиента</returns>
+        /// <response code="404">Клиент не найден</response>
+        [HttpGet("client/{clientId}")]
+        public async Task<ActionResult<IEnumerable<OrderDto>>> GetClientOrders(int clientId)
+        {
+            try
+            {
+                var orders = await _orderService.GetOrdersByClientIdAsync(clientId);
+                return Ok(orders);
+            }
+            catch (NotFoundException ex)
+            {
+                throw new BusinessException($"Клиент с ID {clientId} не найден", ex);
             var orders = _orderStore.All
                 .Select(o => new OrderDto
                 {
@@ -81,7 +206,7 @@ namespace Application.Controllers
         {
             var order = _orderStore.Get(id);
             if (order == null)
-                return NotFound();
+                throw new OrderNotFoundException(id);
 
             var orderDto = new OrderDto
             {
@@ -126,11 +251,16 @@ namespace Application.Controllers
         [Authorize(Policy = "RequireManagerRole")]
         public ActionResult<OrderDto> CreateOrder(CreateOrderDto createOrderDto)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
             if (createOrderDto.StockId.HasValue)
             {
                 var stock = _stockStore.Get(createOrderDto.StockId.Value);
                 if (stock == null)
-                    return NotFound("Склад не найден");
+                    throw new StockNotFoundException(createOrderDto.StockId.Value);
             }
 
             var order = new Order
@@ -168,18 +298,23 @@ namespace Application.Controllers
         [Authorize(Policy = "RequireManagerRole")]
         public IActionResult UpdateOrder(int id, UpdateOrderDto updateOrderDto)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
             var order = _orderStore.Get(id);
             if (order == null)
-                return NotFound();
+                throw new OrderNotFoundException(id);
 
             if (order.State == Order.States.Cancelled)
-                return BadRequest("Нельзя изменить отмененный заказ");
+                throw new InvalidOrderStateException("Нельзя изменить отмененный заказ");
 
             if (updateOrderDto.StockId.HasValue)
             {
                 var stock = _stockStore.Get(updateOrderDto.StockId.Value);
                 if (stock == null)
-                    return NotFound("Склад не найден");
+                    throw new StockNotFoundException(updateOrderDto.StockId.Value);
             }
 
             order.StockId = updateOrderDto.StockId;
@@ -222,10 +357,10 @@ namespace Application.Controllers
         {
             var order = _orderStore.Get(id);
             if (order == null)
-                return NotFound();
+                throw new OrderNotFoundException(id);
 
             if (order.State == Order.States.Completed)
-                return BadRequest("Нельзя удалить завершенный заказ");
+                throw new InvalidOrderStateException("Нельзя удалить завершенный заказ");
 
             _orderStore.Delete(id);
             return NoContent();

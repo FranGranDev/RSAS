@@ -9,34 +9,36 @@ namespace Application.Areas.Identity.Pages.Account.About
     [Authorize]
     public class IndexModel : PageModel
     {
+        private readonly RoleManager<IdentityRole> roleManager;
+        private readonly UserManager<AppUser> userManager;
+
         public IndexModel(RoleManager<IdentityRole> roleManager, UserManager<AppUser> userManager)
         {
             this.roleManager = roleManager;
             this.userManager = userManager;
         }
 
-        private readonly RoleManager<IdentityRole> roleManager;
-        private readonly UserManager<AppUser> userManager;
-
-
 
         public async Task<IActionResult> OnGetAsync()
         {
             var user = await userManager.GetUserAsync(User);
 
-            if(await userManager.IsInRoleAsync(user, "Client"))
+            if (await userManager.IsInRoleAsync(user, "Client"))
             {
                 return RedirectToPage("Client");
             }
-            else if(await userManager.IsInRoleAsync(user, "Company"))
+
+            if (await userManager.IsInRoleAsync(user, "Company"))
             {
                 return RedirectToPage("Company");
             }
-            else if(await userManager.IsInRoleAsync(user, "Admin"))
+
+            if (await userManager.IsInRoleAsync(user, "Admin"))
             {
                 return RedirectToPage("Employee");
             }
-            else if (await userManager.IsInRoleAsync(user, "Manager"))
+
+            if (await userManager.IsInRoleAsync(user, "Manager"))
             {
                 return RedirectToPage("Employee");
             }

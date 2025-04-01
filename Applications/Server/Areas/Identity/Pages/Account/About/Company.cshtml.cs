@@ -1,11 +1,9 @@
 using Application.Areas.Identity.Data;
-using Application.Services;
 using Application.ViewModel.Users;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using System.Data;
 
 namespace Application.Areas.Identity.Pages.Account.About
 {
@@ -13,14 +11,15 @@ namespace Application.Areas.Identity.Pages.Account.About
     [Authorize(Roles = "Company")]
     public class CompanyModel : PageModel
     {
+        private readonly ICompanyStore companyStore;
+
+        private readonly UserManager<AppUser> userManager;
+
         public CompanyModel(UserManager<AppUser> userManager, ICompanyStore companyStore)
         {
             this.userManager = userManager;
             this.companyStore = companyStore;
         }
-
-        private readonly UserManager<AppUser> userManager;
-        private readonly ICompanyStore companyStore;
 
 
         public CompanyViewModel Company { get; set; }
@@ -45,9 +44,9 @@ namespace Application.Areas.Identity.Pages.Account.About
                 BankBic = company.BankBic,
                 BankAccount = company.BankAccount,
                 Email = company.Email,
-                Phone = company.Phone,
+                Phone = company.Phone
             };
-            Password = new();
+            Password = new ChangePasswordViewModel();
 
             return Page();
         }
@@ -61,12 +60,13 @@ namespace Application.Areas.Identity.Pages.Account.About
             {
                 return NotFound();
             }
+
             if (!TryValidateModel(Company))
             {
                 return Page();
             }
 
-            Company company = new Company
+            var company = new Company
             {
                 Name = Company.Name,
                 Inn = Company.Inn,
@@ -75,12 +75,13 @@ namespace Application.Areas.Identity.Pages.Account.About
                 BankBic = Company.BankBic,
                 BankAccount = Company.BankAccount,
                 Email = Company.Email,
-                Phone = Company.Phone,
+                Phone = Company.Phone
             };
             companyStore.Save(user, company);
 
             return Page();
         }
+
         public async Task<IActionResult> OnPostPassword()
         {
             ModelState.Clear();
@@ -90,6 +91,7 @@ namespace Application.Areas.Identity.Pages.Account.About
             {
                 return NotFound();
             }
+
             if (!TryValidateModel(Password))
             {
                 return Page();

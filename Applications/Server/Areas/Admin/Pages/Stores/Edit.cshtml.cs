@@ -4,30 +4,25 @@ using Application.ViewModel.Data;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.Build.Framework;
-using Microsoft.EntityFrameworkCore;
-using System.ComponentModel;
-using System.Data;
 
 namespace Application.Areas.Admin.Pages.Stores
 {
     [Authorize(Roles = "Admin")]
     public class EditModel : PageModel
     {
-        public EditModel(DataManager dataManager)
-        {
-            this.dataManager = dataManager; 
-        }
-
         private readonly DataManager dataManager;
 
+        public EditModel(DataManager dataManager)
+        {
+            this.dataManager = dataManager;
+        }
 
-        [BindProperty]
-        public StockViewModel Stock { get; set; }
+
+        [BindProperty] public StockViewModel Stock { get; set; }
 
         public async Task OnGetAsync(int id)
         {
-            Stock currant = dataManager.Stocks.Get(id);
+            var currant = dataManager.Stocks.Get(id);
 
             Stock = new StockViewModel(currant);
         }
@@ -35,44 +30,47 @@ namespace Application.Areas.Admin.Pages.Stores
         public async Task<IActionResult> OnPostUpdate()
         {
             if (!ModelState.IsValid)
+            {
                 return RedirectToPage(new { id = Stock.Id });
+            }
 
-            Stock updated = new Stock()
+            var updated = new Stock
             {
                 Id = Stock.Id,
                 Name = Stock.Name,
                 Location = Stock.Location,
-                SaleType = Stock.SaleType,
+                SaleType = Stock.SaleType
             };
 
             dataManager.Stocks.Save(updated);
 
-            TempData["success"] = "Склад успешно изменен";
+            TempData["success"] = "РЎРєР»Р°Рґ СѓСЃРїРµС€РЅРѕ РёР·РјРµРЅРµРЅ";
 
             return RedirectToPage("StockInfo", new { id = Stock.Id });
         }
+
         public async Task<IActionResult> OnPostDelete()
         {
-            Stock stock = dataManager.Stocks.Get(Stock.Id);
+            var stock = dataManager.Stocks.Get(Stock.Id);
 
-            int quantity = 0;
-            if(stock.StockProducts != null)
+            var quantity = 0;
+            if (stock.StockProducts != null)
             {
                 quantity = (from productStock in stock.StockProducts
-                 where productStock.StockId == stock.Id
-                 select productStock.Quantity).Sum();
+                    where productStock.StockId == stock.Id
+                    select productStock.Quantity).Sum();
             }
 
-            if(quantity > 0)
+            if (quantity > 0)
             {
-                TempData["error"] = "Невозможно удалить склад. На складе есть товары.";
+                TempData["error"] = "РќРµРІРѕР·РјРѕР¶РЅРѕ СѓРґР°Р»РёС‚СЊ СЃРєР»Р°Рґ. РќР° СЃРєР»Р°РґРµ РµСЃС‚СЊ С‚РѕРІР°СЂС‹.";
 
                 return RedirectToPage(new { id = Stock.Id });
             }
 
             dataManager.Stocks.Delete(stock.Id);
 
-            TempData["success"] = "Склад успешно удален";
+            TempData["success"] = "РЎРєР»Р°Рґ СѓСЃРїРµС€РЅРѕ СѓРґР°Р»РµРЅ";
 
             return RedirectToPage("Index");
         }

@@ -1,5 +1,6 @@
 ﻿@page
-@using Services
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@using Application.Services
 @model Application.Areas.Admin.Pages.Products.IndexModel
 @{
     ViewData["Title"] = "Товары";
@@ -28,22 +29,32 @@
             </a>
         </div>
     </div>
-    <hr />
+    <hr/>
     <div class="overflow-auto" style="height: 60vh">
         <table class="table table-bordered shadow">
             <thead class="thead-dark text-center align-middle">
-                <tr>
-                    <th style="width: 15%;"><a asp-route-sortOrder="@Model.GetSortOrder("Name")" class="btn btn-link">Название</a></th>
-                    <th style="width: 25%;"><a asp-route-sortOrder="@Model.GetSortOrder("Description")" class="btn btn-link">Описание</a></th>
-                    <th style="width: 10%;"><a asp-route-sortOrder="@Model.GetSortOrder("WholesalePrice")" class="btn btn-link">Оптовая<br />Цена @CurrencySettings.Symbol</a></th>
-                    <th style="width: 10%;"><a asp-route-sortOrder="@Model.GetSortOrder("RetailPrice")" class="btn btn-link">Розничная<br />Цена @CurrencySettings.Symbol</a></th>
-                    <th style="width: 10%;"><a asp-route-sortOrder="@Model.GetSortOrder("Quantity")" class="btn btn-link">Общее<br />Количество</a></th>
-                </tr>
+            <tr>
+                <th style="width: 15%;">
+                    <a asp-route-sortOrder="@Model.GetSortOrder("Name")" class="btn btn-link">Название</a>
+                </th>
+                <th style="width: 25%;">
+                    <a asp-route-sortOrder="@Model.GetSortOrder("Description")" class="btn btn-link">Описание</a>
+                </th>
+                <th style="width: 10%;">
+                    <a asp-route-sortOrder="@Model.GetSortOrder("WholesalePrice")" class="btn btn-link">Оптовая<br/>Цена @CurrencySettings.Symbol</a>
+                </th>
+                <th style="width: 10%;">
+                    <a asp-route-sortOrder="@Model.GetSortOrder("RetailPrice")" class="btn btn-link">Розничная<br/>Цена @CurrencySettings.Symbol</a>
+                </th>
+                <th style="width: 10%;">
+                    <a asp-route-sortOrder="@Model.GetSortOrder("Quantity")" class="btn btn-link">Общее<br/>Количество</a>
+                </th>
+            </tr>
             </thead>
             <tbody>
-                <form method="post">
-                    @foreach (var product in Model.Products)
-                    {
+            <form method="post">
+                @foreach (var product in Model.Products)
+                {
                     <tr>
                         <td>@product.Name</td>
                         <td>@product.Description</td>
@@ -61,12 +72,10 @@
                             </button>
                         </td>
                     </tr>
-                    }
-                </form>
+                }
+            </form>
             </tbody>
         </table>
     </div>
 
 </div>
-
-

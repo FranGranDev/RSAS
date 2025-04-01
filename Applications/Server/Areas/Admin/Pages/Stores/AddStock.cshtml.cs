@@ -4,53 +4,49 @@ using Application.ViewModel.Data;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.VisualBasic;
-using System.Data;
 
 namespace Application.Areas.Admin.Pages.Stores
 {
     [Authorize(Roles = "Admin")]
     public class AddStockModel : PageModel
     {
+        private readonly DataManager dataManager;
+
         public AddStockModel(DataManager dataManager)
         {
             this.dataManager = dataManager;
         }
 
 
-        private readonly DataManager dataManager;
-
-
-        [BindProperty]
-        public StockViewModel Stock { get; set; }
+        [BindProperty] public StockViewModel Stock { get; set; }
 
         public void OnGet()
         {
-            Stock = new();
+            Stock = new StockViewModel();
         }
 
         public async Task<IActionResult> OnPost()
         {
-            if(dataManager.Stocks.All.Count(x => x.Name == Stock.Name) > 0)
+            if (dataManager.Stocks.All.Count(x => x.Name == Stock.Name) > 0)
             {
                 ModelState.AddModelError("dublicate", "Stock with such name already exists.");
             }
 
-            if(!ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
                 return Page();
             }
 
-            Stock stock = new Stock
+            var stock = new Stock
             {
                 Name = Stock.Name,
                 Location = Stock.Location,
-                SaleType = Stock.SaleType,
+                SaleType = Stock.SaleType
             };
 
             dataManager.Stocks.Save(stock);
 
-            TempData["success"] = "Склад успешно добавлен";
+            TempData["success"] = "РЎРєР»Р°Рґ СѓСЃРїРµС€РЅРѕ РґРѕР±Р°РІР»РµРЅ";
 
             return RedirectToPage("Index");
         }

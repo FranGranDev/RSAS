@@ -1,131 +1,123 @@
+using System.ComponentModel.DataAnnotations;
 using Application.Data.Repository;
 using Application.DTOs;
+using Application.Exceptions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Application.Services;
+using Application.Services.Products;
 
 namespace Application.Controllers
 {
+    /// <summary>
+    /// Контроллер для управления товарами
+    /// </summary>
     [ApiController]
     [Route("api/[controller]")]
-    [Authorize(Policy = "RequireManagerRole")]
+    [Authorize(Policy = "RequireAdminRole")]
     public class ProductsController : ControllerBase
     {
-        private readonly IProductsStore _productsStore;
+        private readonly IProductService _productService;
 
-        public ProductsController(IProductsStore productsStore)
+        public ProductsController(IProductService productService)
         {
-            _productsStore = productsStore;
+            _productService = productService;
         }
 
-        // GET: api/Products
+        /// <summary>
+        /// Получить список всех товаров
+        /// </summary>
+        /// <returns>Список товаров</returns>
         [HttpGet]
         public async Task<ActionResult<IEnumerable<ProductDto>>> GetProducts()
         {
-            var products = await _productsStore.GetAllAsync();
-            return Ok(products.Select(p => new ProductDto
-            {
-                Id = p.Id,
-                Name = p.Name,
-                Description = p.Description,
-                Price = p.Price,
-                StockProducts = p.StockProducts?.Select(sp => new StockProductDto
-                {
-                    Id = sp.Id,
-                    StockId = sp.StockId,
-                    ProductId = sp.ProductId,
-                    Quantity = sp.Quantity,
-                    Price = sp.Product?.Price ?? 0
-                }).ToList()
-            }));
+            var products = await _productService.GetAllProductsAsync();
+            return Ok(products);
         }
 
-        // GET: api/Products/5
+        /// <summary>
+        /// Получить товар по ID
+        /// </summary>
+        /// <param name="id">ID товара</param>
+        /// <returns>Информация о товаре</returns>
+        /// <response code="404">Товар не найден</response>
         [HttpGet("{id}")]
         public async Task<ActionResult<ProductDto>> GetProduct(int id)
         {
-            var product = await _productsStore.GetByIdAsync(id);
-            if (product == null)
+            try
             {
-                return NotFound();
+                var product = await _productService.GetProductByIdAsync(id);
+                return Ok(product);
             }
-
-            return Ok(new ProductDto
+            catch (NotFoundException ex)
             {
-                Id = product.Id,
-                Name = product.Name,
-                Description = product.Description,
-                Price = product.Price,
-                StockProducts = product.StockProducts?.Select(sp => new StockProductDto
-                {
-                    Id = sp.Id,
-                    StockId = sp.StockId,
-                    ProductId = sp.ProductId,
-                    Quantity = sp.Quantity,
-                    Price = sp.Product?.Price ?? 0
-                }).ToList()
-            });
+                throw new BusinessException($"Товар с ID {id} не найден", ex);
+            }
         }
 
-        // POST: api/Products
+        /// <summary>
+        /// Создать новый товар
+        /// </summary>
+        /// <param name="createProductDto">Данные для создания товара</param>
+        /// <returns>Созданный товар</returns>
+        /// <response code="400">Некорректные входные данные</response>
         [HttpPost]
-        [Authorize(Policy = "RequireAdminRole")]
         public async Task<ActionResult<ProductDto>> CreateProduct(CreateProductDto createProductDto)
         {
-            var product = new Product
+            if (!ModelState.IsValid)
             {
-                Name = createProductDto.Name,
-                Description = createProductDto.Description,
-                Price = createProductDto.Price
-            };
-
-            await _productsStore.Save(product);
-
-            return CreatedAtAction(
-                nameof(GetProduct),
-                new { id = product.Id },
-                new ProductDto
-                {
-                    Id = product.Id,
-                    Name = product.Name,
-                    Description = product.Description,
-                    Price = product.Price
-                });
-        }
-
-        // PUT: api/Products/5
-        [HttpPut("{id}")]
-        [Authorize(Policy = "RequireAdminRole")]
-        public async Task<IActionResult> UpdateProduct(int id, UpdateProductDto updateProductDto)
-        {
-            var product = await _productsStore.GetByIdAsync(id);
-            if (product == null)
-            {
-                return NotFound();
+                throw new ValidationException("Некорректные данные товара", ModelState);
             }
 
-            product.Name = updateProductDto.Name;
-            product.Description = updateProductDto.Description;
-            product.Price = updateProductDto.Price;
-
-            await _productsStore.Save(product);
-
-            return NoContent();
+            var product = await _productService.CreateProductAsync(createProductDto);
+            return CreatedAtAction(nameof(GetProduct), new { id = product.Id }, product);
         }
 
-        // DELETE: api/Products/5
+        /// <summary>
+        /// Обновить существующий товар
+        /// </summary>
+        /// <param name="id">ID товара</param>
+        /// <param name="updateProductDto">Данные для обновления товара</param>
+        /// <returns>Обновленный товар</returns>
+        /// <response code="400">Некорректные входные данные</response>
+        /// <response code="404">Товар не найден</response>
+        [HttpPut("{id}")]
+        public async Task<ActionResult<ProductDto>> UpdateProduct(int id, UpdateProductDto updateProductDto)
+        {
+            if (!ModelState.IsValid)
+            {
+                throw new ValidationException("Некорректные данные товара", ModelState);
+            }
+
+            try
+            {
+                var product = await _productService.UpdateProductAsync(id, updateProductDto);
+                return Ok(product);
+            }
+            catch (NotFoundException ex)
+            {
+                throw new BusinessException($"Товар с ID {id} не найден", ex);
+            }
+        }
+
+        /// <summary>
+        /// Удалить товар
+        /// </summary>
+        /// <param name="id">ID товара</param>
+        /// <returns>Результат операции</returns>
+        /// <response code="404">Товар не найден</response>
         [HttpDelete("{id}")]
-        [Authorize(Policy = "RequireAdminRole")]
         public async Task<IActionResult> DeleteProduct(int id)
         {
-            var product = await _productsStore.GetByIdAsync(id);
-            if (product == null)
+            try
             {
-                return NotFound();
+                await _productService.DeleteProductAsync(id);
+                return NoContent();
             }
-
-            await _productsStore.Delete(id);
-
-            return NoContent();
+            catch (NotFoundException ex)
+            {
+                throw new BusinessException($"Товар с ID {id} не найден", ex);
+            }
         }
     }
 } 

@@ -1,29 +1,39 @@
+using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using Application.Data.Repository;
 using Application.DTOs;
 using Application.Areas.Identity.Data;
+using Application.Exceptions;
+using Application.Services;
+using Application.Services.Employees;
 
 namespace Application.Controllers
 {
+    /// <summary>
+    /// Контроллер для управления сотрудниками
+    /// </summary>
     [Route("api/[controller]")]
     [ApiController]
     [Authorize]
     public class EmployeesController : ControllerBase
     {
-        private readonly IEmployeeStore _employeeStore;
+        private readonly IEmployeeService _employeeService;
 
-        public EmployeesController(IEmployeeStore employeeStore)
+        public EmployeesController(IEmployeeService employeeService)
         {
-            _employeeStore = employeeStore;
+            _employeeService = employeeService;
         }
 
-        // GET: api/Employees
+        /// <summary>
+        /// Получить список всех сотрудников
+        /// </summary>
+        /// <returns>Список сотрудников</returns>
         [HttpGet]
         [Authorize(Policy = "RequireManagerRole")]
         public async Task<ActionResult<IEnumerable<EmployeeDto>>> GetEmployees()
         {
-            var employees = await _employeeStore.GetAllAsync();
+            var employees = await _employeeService.GetAllEmployeesAsync();
             return Ok(employees.Select(e => new EmployeeDto
             {
                 Id = e.Id,
@@ -35,96 +45,93 @@ namespace Application.Controllers
             }));
         }
 
-        // GET: api/Employees/5
+        /// <summary>
+        /// Получить сотрудника по ID
+        /// </summary>
+        /// <param name="id">ID сотрудника</param>
+        /// <returns>Информация о сотруднике</returns>
+        /// <response code="404">Сотрудник не найден</response>
         [HttpGet("{id}")]
         [Authorize(Policy = "RequireManagerRole")]
         public async Task<ActionResult<EmployeeDto>> GetEmployee(int id)
         {
-            var employee = await _employeeStore.GetByIdAsync(id);
-
-            if (employee == null)
+            try
             {
-                return NotFound();
+                var employee = await _employeeService.GetEmployeeByIdAsync(id);
+                return Ok(employee);
             }
-
-            return new EmployeeDto
+            catch (NotFoundException ex)
             {
-                Id = employee.Id,
-                FirstName = employee.FirstName,
-                LastName = employee.LastName,
-                Role = employee.Role,
-                Email = employee.Email,
-                Phone = employee.Phone
-            };
+                throw new BusinessException($"Сотрудник с ID {id} не найден", ex);
+            }
         }
 
-        // POST: api/Employees
+        /// <summary>
+        /// Создать нового сотрудника
+        /// </summary>
+        /// <param name="createEmployeeDto">Данные для создания сотрудника</param>
+        /// <returns>Созданный сотрудник</returns>
+        /// <response code="400">Некорректные входные данные</response>
         [HttpPost]
         [Authorize(Policy = "RequireAdminRole")]
         public async Task<ActionResult<EmployeeDto>> CreateEmployee(CreateEmployeeDto createEmployeeDto)
         {
-            var employee = new Employee
+            if (!ModelState.IsValid)
             {
-                FirstName = createEmployeeDto.FirstName,
-                LastName = createEmployeeDto.LastName,
-                Role = createEmployeeDto.Role,
-                Email = createEmployeeDto.Email,
-                Phone = createEmployeeDto.Phone
-            };
-
-            await _employeeStore.Save(employee);
-
-            return CreatedAtAction(
-                nameof(GetEmployee),
-                new { id = employee.Id },
-                new EmployeeDto
-                {
-                    Id = employee.Id,
-                    FirstName = employee.FirstName,
-                    LastName = employee.LastName,
-                    Role = employee.Role,
-                    Email = employee.Email,
-                    Phone = employee.Phone
-                });
-        }
-
-        // PUT: api/Employees/5
-        [HttpPut("{id}")]
-        [Authorize(Policy = "RequireAdminRole")]
-        public async Task<IActionResult> UpdateEmployee(int id, UpdateEmployeeDto updateEmployeeDto)
-        {
-            var employee = await _employeeStore.GetByIdAsync(id);
-
-            if (employee == null)
-            {
-                return NotFound();
+                throw new ValidationException("Некорректные данные сотрудника", ModelState);
             }
 
-            employee.FirstName = updateEmployeeDto.FirstName;
-            employee.LastName = updateEmployeeDto.LastName;
-            employee.Role = updateEmployeeDto.Role;
-            employee.Email = updateEmployeeDto.Email;
-            employee.Phone = updateEmployeeDto.Phone;
-
-            await _employeeStore.Save(employee);
-
-            return NoContent();
+            var employee = await _employeeService.CreateEmployeeAsync(createEmployeeDto);
+            return CreatedAtAction(nameof(GetEmployee), new { id = employee.Id }, employee);
         }
 
-        // DELETE: api/Employees/5
+        /// <summary>
+        /// Обновить существующего сотрудника
+        /// </summary>
+        /// <param name="id">ID сотрудника</param>
+        /// <param name="updateEmployeeDto">Данные для обновления сотрудника</param>
+        /// <returns>Обновленный сотрудник</returns>
+        /// <response code="400">Некорректные входные данные</response>
+        /// <response code="404">Сотрудник не найден</response>
+        [HttpPut("{id}")]
+        [Authorize(Policy = "RequireAdminRole")]
+        public async Task<ActionResult<EmployeeDto>> UpdateEmployee(int id, UpdateEmployeeDto updateEmployeeDto)
+        {
+            if (!ModelState.IsValid)
+            {
+                throw new ValidationException("Некорректные данные сотрудника", ModelState);
+            }
+
+            try
+            {
+                var employee = await _employeeService.UpdateEmployeeAsync(id, updateEmployeeDto);
+                return Ok(employee);
+            }
+            catch (NotFoundException ex)
+            {
+                throw new BusinessException($"Сотрудник с ID {id} не найден", ex);
+            }
+        }
+
+        /// <summary>
+        /// Удалить сотрудника
+        /// </summary>
+        /// <param name="id">ID сотрудника</param>
+        /// <returns>Результат операции</returns>
+        /// <response code="404">Сотрудник не найден</response>
         [HttpDelete("{id}")]
         [Authorize(Policy = "RequireAdminRole")]
         public async Task<IActionResult> DeleteEmployee(int id)
         {
-            var employee = await _employeeStore.GetByIdAsync(id);
-            if (employee == null)
+            try
             {
-                return NotFound();
+                await _employeeService.DeleteEmployeeAsync(id);
+                return NoContent();
             }
-
-            await _employeeStore.Delete(id);
-
-            return NoContent();
+            catch (NotFoundException ex)
+            {
+                throw new BusinessException($"Сотрудник с ID {id} не найден", ex);
+            }
         }
     }
 } 

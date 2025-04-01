@@ -1,29 +1,37 @@
-﻿@using Application.Model.Orders;
-@using Application.Services;
-@using Application.ViewModel.Sales
-@model IEnumerable<SaleProductViewModel>
+﻿@using Application.Services
+@model IEnumerable<Application.ViewModel.Sales.SaleProductViewModel>
 
 
 <table class="table table-bordered shadow">
     <thead class="thead-dark text-center align-middle">
-        <tr>
-            <th><button class="sort-btn btn btn-link" data-sort="name">Название</button></th>
-            <th><button class="sort-btn btn btn-link" data-sort="description">Описание</button></th>
-            <th><button class="sort-btn btn btn-link" data-sort="price">Цена товара</button></th>
-            <th><button class="sort-btn btn btn-link" data-sort="quantity">Продано единиц</button></th>
-            <th><button class="sort-btn btn btn-link" data-sort="income">Выручка</button></th>
-        </tr>
+    <tr>
+        <th>
+            <button class="sort-btn btn btn-link" data-sort="name">Название</button>
+        </th>
+        <th>
+            <button class="sort-btn btn btn-link" data-sort="description">Описание</button>
+        </th>
+        <th>
+            <button class="sort-btn btn btn-link" data-sort="price">Цена товара</button>
+        </th>
+        <th>
+            <button class="sort-btn btn btn-link" data-sort="quantity">Продано единиц</button>
+        </th>
+        <th>
+            <button class="sort-btn btn btn-link" data-sort="income">Выручка</button>
+        </th>
+    </tr>
     </thead>
     <tbody>
-        @foreach (var product in Model)
-        {
-            <tr>
-                <td>@product.Name</td>
-                <td>@product.Description</td>
-                <td>@product.Price @CurrencySettings.Symbol</td>
-                <td>@product.Quantity</td>
-                <td>@product.Income @CurrencySettings.Symbol</td>
-            </tr>
-        }
+    @foreach (var product in Model)
+    {
+        <tr>
+            <td>@product.Name</td>
+            <td>@product.Description</td>
+            <td>@product.Price @CurrencySettings.Symbol</td>
+            <td>@product.Quantity</td>
+            <td>@product.Income @CurrencySettings.Symbol</td>
+        </tr>
+    }
     </tbody>
 </table>

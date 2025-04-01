@@ -1,4 +1,5 @@
 ﻿@page
+@using Microsoft.AspNetCore.Mvc.TagHelpers
 @model Application.Areas.Admin.Pages.Employees.CreateModel
 
 @{
@@ -12,26 +13,26 @@
         <div class="card-body border-0">
             <form method="post" id="General">
                 <div class="form-floating mt-2">
-                    <input asp-for="Client.Email" class="form-control" aria-required="true" />
+                    <input asp-for="Client.Email" class="form-control" aria-required="true"/>
                     <label asp-for="Client.Email"></label>
                 </div>
                 <div class="form-floating mt-2">
-                    <input asp-for="Client.FirstName" class="form-control" aria-required="true" />
+                    <input asp-for="Client.FirstName" class="form-control" aria-required="true"/>
                     <label asp-for="Client.FirstName"></label>
                     <span asp-validation-for="Client.FirstName" class="text-danger"></span>
                 </div>
                 <div class="form-floating mt-2">
-                    <input asp-for="Client.LastName" class="form-control" aria-required="true" />
+                    <input asp-for="Client.LastName" class="form-control" aria-required="true"/>
                     <label asp-for="Client.LastName"></label>
                     <span asp-validation-for="Client.LastName" class="text-danger"></span>
                 </div>
                 <div class="form-floating mt-2">
-                    <input asp-for="Client.Phone" class="form-control" aria-required="true" />
+                    <input asp-for="Client.Phone" class="form-control" aria-required="true"/>
                     <label asp-for="Client.Phone"></label>
                     <span asp-validation-for="Client.Phone" class="text-danger"></span>
                 </div>
                 <div class="form-floating mt-2">
-                    <input asp-for="Client.Role" class="form-control" aria-required="true" />
+                    <input asp-for="Client.Role" class="form-control" aria-required="true"/>
                     <label asp-for="Client.Role"></label>
                     <span asp-validation-for="Client.Role" class="text-danger"></span>
                 </div>
@@ -40,15 +41,15 @@
                         <option disabled selected>Выбрать должность</option>
                     </select>
                     <label asp-for="Role"></label>
-                    <span asp-validation-for="Role" class="text-danger" />
+                    <span asp-validation-for="Role" class="text-danger"/>
                 </div>
                 <hr/>
                 <div class="form-floating mt-2">
-                    <input asp-for="TempPassword" class="form-control" aria-required="true" />
+                    <input asp-for="TempPassword" class="form-control" aria-required="true"/>
                     <label asp-for="TempPassword"></label>
                     <span asp-validation-for="TempPassword" class="text-danger"></span>
                 </div>
-                <hr />
+                <hr/>
                 <div class="row mt-2">
                     <div class="col-md-6 text-start">
                         <button type="submit" class="btn btn-primary col-8">Создать</button>

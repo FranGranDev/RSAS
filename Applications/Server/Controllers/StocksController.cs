@@ -1,5 +1,7 @@
 using Application.Data.Repository;
 using Application.DTOs;
+using Application.Model.Stocks;
+using Application.Services.Repository;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 

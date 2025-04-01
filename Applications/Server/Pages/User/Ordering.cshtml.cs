@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
 using System.ComponentModel.DataAnnotations;
+using Application.Services.Repository;
 
 namespace Application.Pages.User
 {

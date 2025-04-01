@@ -4,13 +4,11 @@ using Application.Model.Orders;
 using Application.Model.Sales;
 using Application.Model.Stocks;
 using Application.Services;
-using Application.ViewModel.Catalog;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
-using System;
 using static Application.Model.Orders.Order;
 
 namespace Application.Areas.Admin.Pages.Test
@@ -18,52 +16,131 @@ namespace Application.Areas.Admin.Pages.Test
     [Authorize(Roles = "Admin")]
     public class IndexModel : PageModel
     {
-        public IndexModel(DataManager dataManager, AppDbContext dbContext, UserManager<AppUser> userManager)
-        {
-            this.dbContext = dbContext;
-            this.dataManager = dataManager;
-            this.userManager = userManager;
-        }
+        private readonly DataManager dataManager;
+        private readonly AppDbContext dbContext;
 
         private readonly UserManager<AppUser> userManager;
-        private readonly AppDbContext dbContext;
-        private readonly DataManager dataManager;
 
-
-        private List<string> randomNames = new List<string>()
+        private List<Delivery> randomDelivery = new()
         {
-            "Анна Иванова",
-            "Дмитрий Петров",
-            "Елена Сидорова",
-            "Иван Кузнецов",
-            "Мария Новикова",
-            "Алексей Федоров",
-            "Наталья Морозова",
-            "Олег Васильев",
-            "Татьяна Попова",
-            "Сергей Александров",
-            "Виктория Козлова",
-            "Андрей Лебедев",
-            "Ольга Соколова",
-            "Павел Михайлов",
-            "Анастасия Егорова",
-            "Константин Белов",
-            "Юлия Кудрявцева",
-            "Максим Андреев",
-            "Екатерина Макарова",
-            "Илья Щербаков",
-            "Маргарита Фомина",
-            "Денис Ларин",
-            "Ирина Тихонова",
-            "Артем Исаев",
-            "Нина Логинова",
-            "Александр Беляев",
-            "Марина Гущина",
-            "Владислав Комаров",
-            "Оксана Гордеева",
-            "Роман Борисов"
+            new()
+            {
+                City = "РњРёРЅСЃРє",
+                Street = "СѓР». Р§РµСЂРІСЏРєРѕРІР°",
+                House = "53",
+                Flat = "31",
+                PostalCode = "220012"
+            },
+            new()
+            {
+                City = "Р“СЂРѕРґРЅРѕ",
+                Street = "СѓР». РЎРѕРІРµС‚СЃРєР°СЏ",
+                House = "24",
+                Flat = "12",
+                PostalCode = "230000"
+            },
+            new()
+            {
+                City = "Р‘СЂРµСЃС‚",
+                Street = "РїСЂ-С‚ РњРѕСЃРєРѕРІСЃРєРёР№",
+                House = "34",
+                Flat = "3",
+                PostalCode = "224020"
+            },
+            new()
+            {
+                City = "Р“РѕРјРµР»СЊ",
+                Street = "СѓР». Р›РµРЅРёРЅР°",
+                House = "67",
+                Flat = "6",
+                PostalCode = "246000"
+            },
+            new()
+            {
+                City = "РњРѕРіРёР»РµРІ",
+                Street = "СѓР». РњРёСЂР°",
+                House = "41",
+                Flat = "45",
+                PostalCode = "212030"
+            },
+            new()
+            {
+                City = "Р’РёС‚РµР±СЃРє",
+                Street = "СѓР». РџРѕР±РµРґС‹",
+                House = "12",
+                Flat = "10",
+                PostalCode = "210000"
+            },
+            new()
+            {
+                City = "Р‘РѕР±СЂСѓР№СЃРє",
+                Street = "СѓР». РљРёСЂРѕРІР°",
+                House = "7",
+                Flat = "22",
+                PostalCode = "213800"
+            },
+            new()
+            {
+                City = "РњРѕР·С‹СЂСЊ",
+                Street = "СѓР». Р›РµРЅРёРЅСЃРєР°СЏ",
+                House = "19",
+                Flat = "2",
+                PostalCode = "247760"
+            },
+            new()
+            {
+                City = "РћСЂС€Р°",
+                Street = "СѓР». РљСЂР°СЃРЅРѕР°СЂРјРµР№СЃРєР°СЏ",
+                House = "31",
+                Flat = "15",
+                PostalCode = "211391"
+            },
+            new()
+            {
+                City = "РџРёРЅСЃРє",
+                Street = "СѓР». РЎРІРµСЂРґР»РѕРІР°",
+                House = "16",
+                Flat = "9",
+                PostalCode = "225710"
+            }
         };
-        private List<string> randomPhones = new List<string>()
+
+
+        private List<string> randomNames = new()
+        {
+            "РђРЅРЅР° РРІР°РЅРѕРІР°",
+            "Р”РјРёС‚СЂРёР№ РџРµС‚СЂРѕРІ",
+            "Р•Р»РµРЅР° РЎРёРґРѕСЂРѕРІР°",
+            "РРІР°РЅ РљСѓР·РЅРµС†РѕРІ",
+            "РњР°СЂРёСЏ РќРѕРІРёРєРѕРІР°",
+            "РђР»РµРєСЃРµР№ Р¤РµРґРѕСЂРѕРІ",
+            "РќР°С‚Р°Р»СЊСЏ РњРѕСЂРѕР·РѕРІР°",
+            "РћР»РµРі Р’Р°СЃРёР»СЊРµРІ",
+            "РўР°С‚СЊСЏРЅР° РџРѕРїРѕРІР°",
+            "РЎРµСЂРіРµР№ РђР»РµРєСЃР°РЅРґСЂРѕРІ",
+            "Р’РёРєС‚РѕСЂРёСЏ РљРѕР·Р»РѕРІР°",
+            "РђРЅРґСЂРµР№ Р›РµР±РµРґРµРІ",
+            "РћР»СЊРіР° РЎРѕРєРѕР»РѕРІР°",
+            "РџР°РІРµР» РњРёС…Р°Р№Р»РѕРІ",
+            "РђРЅР°СЃС‚Р°СЃРёСЏ Р•РіРѕСЂРѕРІР°",
+            "РљРѕРЅСЃС‚Р°РЅС‚РёРЅ Р‘РµР»РѕРІ",
+            "Р®Р»РёСЏ РљСѓРґСЂСЏРІС†РµРІР°",
+            "РњР°РєСЃРёРј РђРЅРґСЂРµРµРІ",
+            "Р•РєР°С‚РµСЂРёРЅР° РњР°РєР°СЂРѕРІР°",
+            "РР»СЊСЏ Р©РµСЂР±Р°РєРѕРІ",
+            "РњР°СЂРіР°СЂРёС‚Р° Р¤РѕРјРёРЅР°",
+            "Р”РµРЅРёСЃ Р›Р°СЂРёРЅ",
+            "РСЂРёРЅР° РўРёС…РѕРЅРѕРІР°",
+            "РђСЂС‚РµРј РСЃР°РµРІ",
+            "РќРёРЅР° Р›РѕРіРёРЅРѕРІР°",
+            "РђР»РµРєСЃР°РЅРґСЂ Р‘РµР»СЏРµРІ",
+            "РњР°СЂРёРЅР° Р“СѓС‰РёРЅР°",
+            "Р’Р»Р°РґРёСЃР»Р°РІ РљРѕРјР°СЂРѕРІ",
+            "РћРєСЃР°РЅР° Р“РѕСЂРґРµРµРІР°",
+            "Р РѕРјР°РЅ Р‘РѕСЂРёСЃРѕРІ"
+        };
+
+        private List<string> randomPhones = new()
         {
             "+375171111111",
             "+375292222222",
@@ -94,192 +171,122 @@ namespace Application.Areas.Admin.Pages.Test
             "+375447777777",
             "+375298888888",
             "+375219999999",
-            "+375250000000",
+            "+375250000000"
         };
-        private List<Delivery> randomDelivery = new List<Delivery>()
+
+        public IndexModel(DataManager dataManager, AppDbContext dbContext, UserManager<AppUser> userManager)
         {
-            new Delivery()
-            {
-                City = "Минск",
-                Street = "ул. Червякова",
-                House = "53",
-                Flat = "31",
-                PostalCode = "220012",
-            },
-            new Delivery()
-            {
-                City = "Гродно",
-                Street = "ул. Советская",
-                House = "24",
-                Flat = "12",
-                PostalCode = "230000",
-            },
-            new Delivery()
-            {
-                City = "Брест",
-                Street = "пр-т Московский",
-                House = "34",
-                Flat = "3",
-                PostalCode = "224020",
-            },
-            new Delivery()
-            {
-                City = "Гомель",
-                Street = "ул. Ленина",
-                House = "67",
-                Flat = "6",
-                PostalCode = "246000",
-            },
-            new Delivery()
-            {
-                City = "Могилев",
-                Street = "ул. Мира",
-                House = "41",
-                Flat = "45",
-                PostalCode = "212030",
-            },
-            new Delivery()
-            {
-                City = "Витебск",
-                Street = "ул. Победы",
-                House = "12",
-                Flat = "10",
-                PostalCode = "210000",
-            },
-            new Delivery()
-            {
-                City = "Бобруйск",
-                Street = "ул. Кирова",
-                House = "7",
-                Flat = "22",
-                PostalCode = "213800",
-            },
-            new Delivery()
-            {
-                City = "Мозырь",
-                Street = "ул. Ленинская",
-                House = "19",
-                Flat = "2",
-                PostalCode = "247760",
-            },
-            new Delivery()
-            {
-                City = "Орша",
-                Street = "ул. Красноармейская",
-                House = "31",
-                Flat = "15",
-                PostalCode = "211391",
-            },
-            new Delivery()
-            {
-                City = "Пинск",
-                Street = "ул. Свердлова",
-                House = "16",
-                Flat = "9",
-                PostalCode = "225710",
-            },
-        };
+            this.dbContext = dbContext;
+            this.dataManager = dataManager;
+            this.userManager = userManager;
+        }
 
 
         public IActionResult OnPostStocks()
         {
             if (dataManager.Stocks.All.Count() > 0)
-                return Page();
-
-            List<Stock> stocks = new List<Stock>()
             {
-                new Stock
+                return Page();
+            }
+
+            var stocks = new List<Stock>
+            {
+                new()
                 {
-                    Name = "Розничный №1",
-                    Location = "ул. Червякова 89",
-                    SaleType = Stock.Types.Retail,
+                    Name = "Р РѕР·РЅРёС‡РЅС‹Р№ в„–1",
+                    Location = "СѓР». Р§РµСЂРІСЏРєРѕРІР° 89",
+                    SaleType = Stock.Types.Retail
                 },
-                new Stock
+                new()
                 {
-                    Name = "Оптовый №1",
-                    Location = "пр. Независимости 127",
-                    SaleType = Stock.Types.Wholesale,
+                    Name = "РћРїС‚РѕРІС‹Р№ в„–1",
+                    Location = "РїСЂ. РќРµР·Р°РІРёСЃРёРјРѕСЃС‚Рё 127",
+                    SaleType = Stock.Types.Wholesale
                 }
             };
 
-            foreach(Stock stock in stocks)
+            foreach (var stock in stocks)
             {
                 dataManager.Stocks.Save(stock);
             }
 
             return Page();
         }
+
         public IActionResult OnPostProducts()
         {
             if (dataManager.Products.All.Count() > 0)
-                return Page();
-
-            List<Product> products = new List<Product>()
             {
-                new Product()
+                return Page();
+            }
+
+            var products = new List<Product>
+            {
+                new()
                 {
-                    Name = "Сыр 1кг",
+                    Name = "РЎС‹СЂ 1РєРі",
                     Description = "25%",
                     WholesalePrice = 5,
-                    RetailPrice = 8,
+                    RetailPrice = 8
                 },
-                new Product()
+                new()
                 {
-                    Name = "Молоко 1л",
+                    Name = "РњРѕР»РѕРєРѕ 1Р»",
                     Description = "5%",
                     WholesalePrice = 2,
-                    RetailPrice = 1,
+                    RetailPrice = 1
                 },
-                new Product()
+                new()
                 {
-                    Name = "Сливки 250мл",
+                    Name = "РЎР»РёРІРєРё 250РјР»",
                     Description = "45%",
                     WholesalePrice = 2,
-                    RetailPrice = 4,
+                    RetailPrice = 4
                 },
-                new Product()
+                new()
                 {
-                    Name = "Хлеб",
-                    Description = "ржаной",
+                    Name = "РҐР»РµР±",
+                    Description = "СЂР¶Р°РЅРѕР№",
                     WholesalePrice = 2.56m,
-                    RetailPrice = 1.1m,
+                    RetailPrice = 1.1m
                 },
-                new Product()
+                new()
                 {
-                    Name = "Колбаса 1кг",
-                    Description = "Натуральная",
+                    Name = "РљРѕР»Р±Р°СЃР° 1РєРі",
+                    Description = "РќР°С‚СѓСЂР°Р»СЊРЅР°СЏ",
                     WholesalePrice = 5,
-                    RetailPrice = 10,
+                    RetailPrice = 10
                 },
-                new Product()
+                new()
                 {
-                    Name = "Квас 1л",
-                    Description = "Темный",
+                    Name = "РљРІР°СЃ 1Р»",
+                    Description = "РўРµРјРЅС‹Р№",
                     WholesalePrice = 1.24m,
-                    RetailPrice = 3,
-                },
+                    RetailPrice = 3
+                }
             };
 
-            foreach(Product product in products)
+            foreach (var product in products)
             {
                 dataManager.Products.Save(product);
             }
 
             return Page();
         }
+
         public IActionResult OnPostAddProductsToStocks()
         {
             IEnumerable<Stock> stocks = dbContext.Stocks;
             IEnumerable<Product> products = dbContext.Products;
 
-            foreach(Stock stock in stocks)
+            foreach (var stock in stocks)
             {
-
-                foreach(Product product in products)
+                foreach (var product in products)
                 {
-                    int quantity = new Random(DateTime.Now.Millisecond).Next(0, 100);
+                    var quantity = new Random(DateTime.Now.Millisecond).Next(0, 100);
 
-                    stock.StockProducts.Add(new StockProducts { StockId = stock.Id, ProductId = product.Id, Quantity = quantity });
+                    stock.StockProducts.Add(new StockProducts
+                        { StockId = stock.Id, ProductId = product.Id, Quantity = quantity });
                 }
             }
 
@@ -287,19 +294,21 @@ namespace Application.Areas.Admin.Pages.Test
 
             return Page();
         }
+
         public async Task<IActionResult> OnPostSalesAsync()
         {
             using (var transaction = dbContext.Database.BeginTransaction())
             {
                 await CreateOrders(SaleTypes.Retail, 25);
                 await CreateOrders(SaleTypes.Wholesale, 25);
-                
+
                 transaction.Commit();
             }
-            
+
 
             return Page();
         }
+
         public async Task<IActionResult> OnPostClear()
         {
             dbContext.Orders.RemoveRange(dbContext.Orders);
@@ -315,30 +324,34 @@ namespace Application.Areas.Admin.Pages.Test
 
         private async Task CreateOrders(SaleTypes saleTypes, int count)
         {
-            for (int i = 0; i < count; i++)
+            for (var i = 0; i < count; i++)
             {
                 AppUser user;
-                switch(saleTypes)
+                switch (saleTypes)
                 {
                     case SaleTypes.Wholesale:
-                        user = dbContext.Users.Where(x => x.Company != null).OrderBy(x => EF.Functions.Random()).Take(1).First();
+                        user = dbContext.Users.Where(x => x.Company != null).OrderBy(x => EF.Functions.Random()).Take(1)
+                            .First();
                         break;
                     default:
-                        user = dbContext.Users.Where(x => x.Client != null).OrderBy(x => EF.Functions.Random()).Take(1).First();
+                        user = dbContext.Users.Where(x => x.Client != null).OrderBy(x => EF.Functions.Random()).Take(1)
+                            .First();
                         break;
                 }
 
-                Random random = new Random(DateTime.Now.Millisecond);
+                var random = new Random(DateTime.Now.Millisecond);
 
-                DateTime startDate = new DateTime(2022, 1, 1);
-                DateTime endDate = new DateTime(2023, 5, 3);
-                TimeSpan range = endDate - startDate;
-                DateTime orderDate = startDate.AddDays(random.Next(range.Days)).AddHours(random.Next(24)).AddMinutes(random.Next(60));
-                DateTime deliveryDate = orderDate.AddDays(random.Next(30)).AddHours(random.Next(24)).AddMinutes(random.Next(60));
+                var startDate = new DateTime(2022, 1, 1);
+                var endDate = new DateTime(2023, 5, 3);
+                var range = endDate - startDate;
+                var orderDate = startDate.AddDays(random.Next(range.Days)).AddHours(random.Next(24))
+                    .AddMinutes(random.Next(60));
+                var deliveryDate = orderDate.AddDays(random.Next(30)).AddHours(random.Next(24))
+                    .AddMinutes(random.Next(60));
 
-                Stock stock = dbContext.Stocks.OrderBy(x => EF.Functions.Random()).Take(1).First();
+                var stock = dbContext.Stocks.OrderBy(x => EF.Functions.Random()).Take(1).First();
 
-                Order order = new Order()
+                var order = new Order
                 {
                     UserId = user.Id,
                     StockId = stock.Id,
@@ -349,23 +362,23 @@ namespace Application.Areas.Admin.Pages.Test
                     ClientName = randomNames[random.Next(0, randomNames.Count)],
                     ContactPhone = randomPhones[random.Next(0, randomPhones.Count)],
 
-                    PaymentType = saleTypes == SaleTypes.Wholesale ? PaymentTypes.Bank : PaymentTypes.Cash,
+                    PaymentType = saleTypes == SaleTypes.Wholesale ? PaymentTypes.Bank : PaymentTypes.Cash
                 };
 
-                Delivery delivery = randomDelivery[random.Next(0, randomDelivery.Count)];
+                var delivery = randomDelivery[random.Next(0, randomDelivery.Count)];
                 delivery.DeliveryDate = deliveryDate;
 
-                int productCount = random.Next(1, dbContext.Products.Count());
+                var productCount = random.Next(1, dbContext.Products.Count());
                 var products = dbContext.Products.OrderBy(x => EF.Functions.Random()).Take(productCount);
 
-                IEnumerable<OrderProduct> items = products.Select(x => new OrderProduct()
+                IEnumerable<OrderProduct> items = products.Select(x => new OrderProduct
                 {
                     ProductId = x.Id,
                     Quantity = saleTypes == SaleTypes.Retail ? random.Next(1, 10) : random.Next(10, 200),
 
                     ProductName = x.Name,
                     ProductDescription = x.Description,
-                    ProductPrice = saleTypes == SaleTypes.Retail ? x.RetailPrice : x.WholesalePrice,
+                    ProductPrice = saleTypes == SaleTypes.Retail ? x.RetailPrice : x.WholesalePrice
                 });
 
                 order = CreateOrder(order, items, delivery);
@@ -373,19 +386,19 @@ namespace Application.Areas.Admin.Pages.Test
                 dbContext.Orders.Add(order);
                 await dbContext.SaveChangesAsync();
 
-                Sale sale = new Sale()
+                var sale = new Sale
                 {
                     OrderId = order.Id,
                     StockId = order.StockId ?? 0,
                     SaleDate = deliveryDate,
-                    SaleType = saleTypes,
+                    SaleType = saleTypes
                 };
 
                 dbContext.Sales.Add(sale);
                 await dbContext.SaveChangesAsync();
             }
-
         }
+
         private Order CreateOrder(Order order, IEnumerable<OrderProduct> items, Delivery delivery)
         {
             if (delivery != null)
@@ -398,7 +411,7 @@ namespace Application.Areas.Admin.Pages.Test
             order.Products = new List<OrderProduct>();
 
 
-            foreach (OrderProduct item in items)
+            foreach (var item in items)
             {
                 order.Products.Add(item);
                 dbContext.OrderProducts.Add(item);

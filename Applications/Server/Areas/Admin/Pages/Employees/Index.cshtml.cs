@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
-using System.Data;
 
 namespace Application.Areas.Admin.Pages.Employees
 {
@@ -13,13 +12,12 @@ namespace Application.Areas.Admin.Pages.Employees
     [BindProperties]
     public class IndexModel : PageModel
     {
+        private readonly UserManager<AppUser> userManager;
+
         public IndexModel(UserManager<AppUser> userManager)
         {
             this.userManager = userManager;
         }
-
-        private readonly UserManager<AppUser> userManager;
-
 
 
         public List<EmployeeViewModel> Employees { get; set; }
@@ -30,14 +28,14 @@ namespace Application.Areas.Admin.Pages.Employees
             Employees = await userManager
                 .Users
                 .Where(x => x.Employee != null)
-                .Select(x => new EmployeeViewModel()
+                .Select(x => new EmployeeViewModel
                 {
                     Id = x.Id,
                     FirstName = x.Employee.FirstName,
                     LastName = x.Employee.LastName,
                     Phone = x.Employee.Phone,
                     Email = x.Email,
-                    Role = x.Employee.Role,
+                    Role = x.Employee.Role
                 })
                 .ToListAsync();
             var self = await userManager.GetUserAsync(User);
@@ -49,25 +47,26 @@ namespace Application.Areas.Admin.Pages.Employees
         public async Task<IActionResult> OnPostDelete(string id)
         {
             var user = await userManager.FindByIdAsync(id);
-            if(user == null)
+            if (user == null)
             {
                 return RedirectToPage();
+            }
 
-            }
-            if(user.UserName == "Admin@gmail.com")
+            if (user.UserName == "Admin@gmail.com")
             {
-                TempData["error"] = "Невозможно удалить этого пользователя";
+                TempData["error"] = "РќРµРІРѕР·РјРѕР¶РЅРѕ СѓРґР°Р»РёС‚СЊ СЌС‚РѕРіРѕ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ";
                 return RedirectToPage();
             }
-            if(user == await userManager.GetUserAsync(User))
+
+            if (user == await userManager.GetUserAsync(User))
             {
-                TempData["error"] = "Вы не можете удалить себя";
+                TempData["error"] = "Р’С‹ РЅРµ РјРѕР¶РµС‚Рµ СѓРґР°Р»РёС‚СЊ СЃРµР±СЏ";
                 return RedirectToPage();
             }
 
             await userManager.DeleteAsync(user);
 
-            TempData["success"] = "Пользователь успешно удален";
+            TempData["success"] = "РџРѕР»СЊР·РѕРІР°С‚РµР»СЊ СѓСЃРїРµС€РЅРѕ СѓРґР°Р»РµРЅ";
 
             return RedirectToPage();
         }

@@ -1,12 +1,8 @@
-using Application.Model.Stocks;
 using Application.Services;
 using Application.ViewModel.Data;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.Data.SqlClient;
-using Microsoft.EntityFrameworkCore;
-using System.Data;
 
 namespace Application.Areas.Admin.Pages.Stores
 {
@@ -14,11 +10,12 @@ namespace Application.Areas.Admin.Pages.Stores
     [BindProperties(SupportsGet = true)]
     public class StockInfoModel : PageModel
     {
+        private readonly DataManager dataManager;
+
         public StockInfoModel(DataManager dataManager)
         {
             this.dataManager = dataManager;
         }
-        private readonly DataManager dataManager;
 
 
         public string SearchString { get; set; }
@@ -30,7 +27,7 @@ namespace Application.Areas.Admin.Pages.Stores
 
         public void OnGet(int id)
         {
-            Stock stock = dataManager.Stocks.Get(id);
+            var stock = dataManager.Stocks.Get(id);
             Stock = new QuantityStockViewModel(stock);
             Products = stock.StockProducts
                 .Select(x => new QuantityProductViewModel
@@ -40,9 +37,8 @@ namespace Application.Areas.Admin.Pages.Stores
                     Description = x.Product.Description,
                     RetailPrice = x.Product.RetailPrice,
                     WholesalePrice = x.Product.WholesalePrice,
-                    Quantity = x.Quantity,
+                    Quantity = x.Quantity
                 });
-
 
 
             SearchString = HttpContext.Session.GetString("search") ?? "";
@@ -93,6 +89,7 @@ namespace Application.Areas.Admin.Pages.Stores
 
             return RedirectToPage(new { id = Stock.Id });
         }
+
         public IActionResult OnPostSearch()
         {
             if (!string.IsNullOrEmpty(SearchString))
@@ -106,16 +103,15 @@ namespace Application.Areas.Admin.Pages.Stores
 
             return RedirectToPage(new { id = Stock.Id });
         }
+
         public string GetSortOrder(string column)
         {
             if (SortOrder == $"{column}_desc")
             {
                 return column;
             }
-            else
-            {
-                return $"{column}_desc";
-            }
+
+            return $"{column}_desc";
         }
     }
 }

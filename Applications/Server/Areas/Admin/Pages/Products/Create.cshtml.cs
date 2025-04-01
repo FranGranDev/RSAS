@@ -1,49 +1,48 @@
+using Application.Model.Stocks;
 using Application.Services;
+using Application.ViewModel.Data;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Application.ViewModel.Data;
-using Application.Model.Stocks;
-using Microsoft.AspNetCore.Authorization;
-using System.Data;
 
 namespace Application.Areas.Admin.Pages.Products
 {
     [Authorize(Roles = "Admin")]
     public class CreateModel : PageModel
     {
+        private readonly DataManager dataManager;
+
         public CreateModel(DataManager dataManager)
         {
             this.dataManager = dataManager;
         }
 
-        private readonly DataManager dataManager;
 
-
-        [BindProperty]
-        public ProductViewModel Product { get; set; }
+        [BindProperty] public ProductViewModel Product { get; set; }
 
         public void OnGet()
         {
             Product = new ProductViewModel();
         }
+
         public IActionResult OnPost()
         {
-            if(!ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
                 return Page();
             }
 
-            Product product = new Product
+            var product = new Product
             {
                 Name = Product.Name,
                 Description = Product.Description,
                 WholesalePrice = Product.WholesalePrice,
-                RetailPrice = Product.RetailPrice,
+                RetailPrice = Product.RetailPrice
             };
 
             dataManager.Products.Save(product);
 
-            TempData["success"] = "Товар успешно создан";
+            TempData["success"] = "РўРѕРІР°СЂ СѓСЃРїРµС€РЅРѕ СЃРѕР·РґР°РЅ";
 
             return RedirectToPage("Index");
         }

@@ -1,8 +1,11 @@
-﻿namespace Application.Services
+﻿using Application.Services.Repository;
+
+namespace Application.Services
 {
     public class DataManager
     {
-        public DataManager(IStockProductsStore stockProducts, IStockStore stocks, IProductsStore products, IOrderStore orders, ISalesStore sales)
+        public DataManager(IStockProductsStore stockProducts, IStockStore stocks, IProductsStore products,
+            IOrderStore orders, ISalesStore sales)
         {
             StockProducts = stockProducts;
             Stocks = stocks;

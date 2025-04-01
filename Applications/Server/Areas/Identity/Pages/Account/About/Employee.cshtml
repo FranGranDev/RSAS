@@ -1,4 +1,5 @@
 ﻿@page
+@using Microsoft.AspNetCore.Mvc.TagHelpers
 @model Application.Areas.Identity.Pages.Account.About.EmployeeModel
 @{
 }
@@ -14,25 +15,25 @@
             <form asp-page-handler="General" method="post" id="General">
                 <h2>Общее</h2>
                 <div class="form-floating mt-2">
-                    <input asp-for="Client.Email" class="form-control" aria-required="true" readonly />
+                    <input asp-for="Client.Email" class="form-control" aria-required="true" readonly/>
                     <label asp-for="Client.Email"></label>
                 </div>
                 <div class="form-floating mt-2">
-                    <input asp-for="Client.Role" class="form-control" aria-required="true" readonly />
+                    <input asp-for="Client.Role" class="form-control" aria-required="true" readonly/>
                     <label asp-for="Client.Role"></label>
                 </div>
                 <div class="form-floating mt-2">
-                    <input asp-for="Client.FirstName" class="form-control" aria-required="true" />
+                    <input asp-for="Client.FirstName" class="form-control" aria-required="true"/>
                     <label asp-for="Client.FirstName"></label>
                     <span asp-validation-for="Client.FirstName" class="text-danger"></span>
                 </div>
                 <div class="form-floating mt-2">
-                    <input asp-for="Client.LastName" class="form-control" aria-required="true" />
+                    <input asp-for="Client.LastName" class="form-control" aria-required="true"/>
                     <label asp-for="Client.LastName"></label>
                     <span asp-validation-for="Client.LastName" class="text-danger"></span>
                 </div>
                 <div class="form-floating mt-2">
-                    <input asp-for="Client.Phone" class="form-control" aria-required="true" />
+                    <input asp-for="Client.Phone" class="form-control" aria-required="true"/>
                     <label asp-for="Client.Phone"></label>
                     <span asp-validation-for="Client.Phone" class="text-danger"></span>
                 </div>
@@ -40,21 +41,21 @@
                     <button type="submit" class="btn btn-primary">Применить</button>
                 </div>
             </form>
-            <hr />
+            <hr/>
             <form asp-page-handler="Password" method="post" id="Password">
                 <h2>Пароль</h2>
                 <div class="form-floating mt-2">
-                    <input asp-for="Password.OldPassword" class="form-control" aria-required="true" />
+                    <input asp-for="Password.OldPassword" class="form-control" aria-required="true"/>
                     <label asp-for="Password.OldPassword"></label>
                     <span asp-validation-for="Password.OldPassword" class="text-danger"></span>
                 </div>
                 <div class="form-floating mt-2">
-                    <input asp-for="Password.Password" class="form-control" aria-required="true" />
+                    <input asp-for="Password.Password" class="form-control" aria-required="true"/>
                     <label asp-for="Password.Password"></label>
                     <span asp-validation-for="Password.Password" class="text-danger"></span>
                 </div>
                 <div class="form-floating mt-2">
-                    <input asp-for="Password.ConfirmPassword" class="form-control" aria-required="true" />
+                    <input asp-for="Password.ConfirmPassword" class="form-control" aria-required="true"/>
                     <label asp-for="Password.ConfirmPassword"></label>
                     <span asp-validation-for="Password.ConfirmPassword" class="text-danger"></span>
                 </div>
@@ -62,14 +63,12 @@
                     <button type="submit" class="btn btn-primary">Поменять пароль</button>
                 </div>
             </form>
-            <hr />
+            <hr/>
         </div>
     </div>
 </div>
 
 
-
-
 @section Scripts {
-    <partial name="_ValidationScriptsPartial" />
+    <partial name="_ValidationScriptsPartial"/>
 }

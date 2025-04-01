@@ -1,35 +1,28 @@
-using Application.Model.Stocks;
 using Application.Services;
 using Application.ViewModel.Data;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.EntityFrameworkCore;
-using System.Data;
-using System.Linq;
 
 namespace Application.Areas.Admin.Pages.Products
 {
     [Authorize(Roles = "Admin")]
     public class IndexModel : PageModel
     {
+        private readonly DataManager dataManager;
+
         public IndexModel(DataManager dataManager)
         {
             this.dataManager = dataManager;
         }
 
-        private readonly DataManager dataManager;
-
 
         public IEnumerable<QuantityProductViewModel> Products { get; set; }
 
 
-        [BindProperty(SupportsGet = true)]
-        public string SearchString { get; set; }
+        [BindProperty(SupportsGet = true)] public string SearchString { get; set; }
 
-        [BindProperty(SupportsGet = true)]
-        public string SortOrder { get; set; }
+        [BindProperty(SupportsGet = true)] public string SortOrder { get; set; }
 
 
         public void OnGet(string sortOrder)
@@ -45,7 +38,7 @@ namespace Application.Areas.Admin.Pages.Products
             }
 
 
-            if(!string.IsNullOrEmpty(sortOrder))
+            if (!string.IsNullOrEmpty(sortOrder))
             {
                 SortOrder = sortOrder;
             }
@@ -84,9 +77,10 @@ namespace Application.Areas.Admin.Pages.Products
                     break;
             }
         }
+
         public IActionResult OnPostSearch()
         {
-            if(!string.IsNullOrEmpty(SearchString))
+            if (!string.IsNullOrEmpty(SearchString))
             {
                 HttpContext.Session.SetString("search", SearchString);
             }
@@ -99,21 +93,22 @@ namespace Application.Areas.Admin.Pages.Products
         }
 
         public IActionResult OnPostEdit(int id)
-        {            
-            return RedirectToPage("Edit", new {id = id, returnUrl = Request.Path.ToString()});
+        {
+            return RedirectToPage("Edit", new { id, returnUrl = Request.Path.ToString() });
         }
+
         public IActionResult OnPostDelete(int id)
         {
-            Product product = dataManager.Products.Get(id);
+            var product = dataManager.Products.Get(id);
 
-            if(product.StockProducts.Select(x => x.Quantity).Sum() == 0)
+            if (product.StockProducts.Select(x => x.Quantity).Sum() == 0)
             {
                 dataManager.Products.Delete(product);
-                TempData["success"] = "Товар успешно удален";
+                TempData["success"] = "РўРѕРІР°СЂ СѓСЃРїРµС€РЅРѕ СѓРґР°Р»РµРЅ";
             }
             else
             {
-                TempData["error"] = "Невозможно удалить товар. Товар есть на складе";
+                TempData["error"] = "РќРµРІРѕР·РјРѕР¶РЅРѕ СѓРґР°Р»РёС‚СЊ С‚РѕРІР°СЂ. РўРѕРІР°СЂ РµСЃС‚СЊ РЅР° СЃРєР»Р°РґРµ";
             }
 
             return RedirectToPage(new { sortOrder = SortOrder });
@@ -125,10 +120,8 @@ namespace Application.Areas.Admin.Pages.Products
             {
                 return column;
             }
-            else
-            {
-                return $"{column}_desc";
-            }
+
+            return $"{column}_desc";
         }
     }
 }

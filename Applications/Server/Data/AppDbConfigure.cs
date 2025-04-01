@@ -1,5 +1,6 @@
 ﻿using Application.Areas.Identity.Data;
 using Application.Services;
+using Application.Services.Repository;
 using Microsoft.AspNetCore.Identity;
 
 namespace Application.Data

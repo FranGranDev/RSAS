@@ -35,7 +35,7 @@ $("#searchForm").submit(function (e) {
     $.ajax({
         type: "POST",
         url: "Catalog?handler=Search",
-        data: { searchString: value },
+        data: {searchString: value},
         success: function (result) {
             $("#catalog").html(result);
         },
@@ -113,7 +113,7 @@ $(document).on('click', '.add-cart, .remove-cart', function () {
     $.ajax({
         type: "POST",
         url: "Catalog?handler=Add",
-        data: { productId: productId, quantity: addValue },
+        data: {productId: productId, quantity: addValue},
         dataType: 'json',
         success: function (result) {
             $input.val(result.quantity).trigger('change')

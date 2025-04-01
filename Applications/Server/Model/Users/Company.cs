@@ -1,12 +1,10 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Application.Areas.Identity.Data
 {
     public class Company
     {
-        [Key]
-        public string UserId { get; set; }
+        [Key] public string UserId { get; set; }
 
 
         public string Name { get; set; }

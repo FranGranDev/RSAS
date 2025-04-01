@@ -1,41 +1,32 @@
-using Application.Model;
 using Application.Model.Stocks;
 using Application.Services;
 using Application.ViewModel.Data;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
-using System.ComponentModel;
-using System.ComponentModel.DataAnnotations;
-using System.Data;
 
 namespace Application.Areas.Admin.Pages.Stores
 {
     [Authorize(Roles = "Admin")]
     public class AddProductModel : PageModel
     {
+        private readonly DataManager dataManager;
+
         public AddProductModel(DataManager dataManager)
         {
             this.dataManager = dataManager;
         }
-        private readonly DataManager dataManager;
 
 
-        [BindProperty(SupportsGet = true)]
-        public StockViewModel Stock { get; set; }
+        [BindProperty(SupportsGet = true)] public StockViewModel Stock { get; set; }
 
-        [BindProperty(SupportsGet = true)]
-        public QuantityProductViewModel Product { get; set; }
+        [BindProperty(SupportsGet = true)] public QuantityProductViewModel Product { get; set; }
 
 
-        [BindProperty(SupportsGet = true)]
-        public string SearchString { get; set; }
+        [BindProperty(SupportsGet = true)] public string SearchString { get; set; }
 
-        [BindProperty(SupportsGet = true)]
-        public string SortOrder { get; set; }
+        [BindProperty(SupportsGet = true)] public string SortOrder { get; set; }
 
 
         public IEnumerable<QuantityProductViewModel> Products { get; set; }
@@ -43,7 +34,7 @@ namespace Application.Areas.Admin.Pages.Stores
 
         public async Task<IActionResult> OnGet(int id, int productId)
         {
-            Stock stock = dataManager.Stocks.Get(id);
+            var stock = dataManager.Stocks.Get(id);
             Stock = new StockViewModel(dataManager.Stocks.Get(id));
             Products = await dataManager.Products.All
                 .Select(x => new QuantityProductViewModel(x)
@@ -51,7 +42,7 @@ namespace Application.Areas.Admin.Pages.Stores
                     Quantity = x.StockProducts
                         .Where(x => x.StockId == stock.Id)
                         .Select(x => x.Quantity)
-                        .Sum(),
+                        .Sum()
                 }).ToListAsync();
 
             if (productId == default)
@@ -59,11 +50,11 @@ namespace Application.Areas.Admin.Pages.Stores
                 Product = new QuantityProductViewModel
                 {
                     Id = 0,
-                    Name = "Товар не выбран",
+                    Name = "РўРѕРІР°СЂ РЅРµ РІС‹Р±СЂР°РЅ",
                     Description = "-",
                     RetailPrice = 0,
                     WholesalePrice = 0,
-                    Quantity = 0,
+                    Quantity = 0
                 };
             }
             else
@@ -72,7 +63,7 @@ namespace Application.Areas.Admin.Pages.Stores
                 {
                     Quantity = stock.StockProducts.Where(x => x.ProductId == productId)
                         .Select(x => x.Quantity)
-                        .Sum(),
+                        .Sum()
                 };
             }
 
@@ -120,12 +111,14 @@ namespace Application.Areas.Admin.Pages.Stores
 
             return Page();
         }
+
         public IActionResult OnPostSort(string sortOrder)
         {
             HttpContext.Session.SetString("sort", sortOrder);
 
-            return RedirectToPage(new { id = Stock.Id, productId = Product.Id});
+            return RedirectToPage(new { id = Stock.Id, productId = Product.Id });
         }
+
         public IActionResult OnPostSearch()
         {
             if (!string.IsNullOrEmpty(SearchString))
@@ -139,20 +132,23 @@ namespace Application.Areas.Admin.Pages.Stores
 
             return RedirectToPage(new { id = Stock.Id, productId = Product.Id });
         }
+
         public IActionResult OnPostSelect(int productId)
         {
-            return RedirectToPage(new { id = Stock.Id, productId = productId });
+            return RedirectToPage(new { id = Stock.Id, productId });
         }
+
         public IActionResult OnPostAdd()
         {
-            if(Product.Id == default)
+            if (Product.Id == default)
             {
-                TempData["error"] = "Товар не выбран";
+                TempData["error"] = "РўРѕРІР°СЂ РЅРµ РІС‹Р±СЂР°РЅ";
                 return RedirectToPage(new { id = Stock.Id, productId = 0 });
             }
-            else if(Product.Quantity < 0)
+
+            if (Product.Quantity < 0)
             {
-                TempData["error"] = "Количество товара не может быть отрицательным значением";
+                TempData["error"] = "РљРѕР»РёС‡РµСЃС‚РІРѕ С‚РѕРІР°СЂР° РЅРµ РјРѕР¶РµС‚ Р±С‹С‚СЊ РѕС‚СЂРёС†Р°С‚РµР»СЊРЅС‹Рј Р·РЅР°С‡РµРЅРёРµРј";
                 return RedirectToPage(new { id = Stock.Id, productId = 0 });
             }
 
@@ -160,10 +156,10 @@ namespace Application.Areas.Admin.Pages.Stores
             {
                 StockId = Stock.Id,
                 ProductId = Product.Id,
-                Quantity = Product.Quantity,
+                Quantity = Product.Quantity
             });
 
-            TempData["success"] = $"Количество выбранного товара изменено на {Product.Quantity}";
+            TempData["success"] = $"РљРѕР»РёС‡РµСЃС‚РІРѕ РІС‹Р±СЂР°РЅРЅРѕРіРѕ С‚РѕРІР°СЂР° РёР·РјРµРЅРµРЅРѕ РЅР° {Product.Quantity}";
 
             return RedirectToPage(new { id = Stock.Id, productId = Product.Id });
         }
@@ -175,10 +171,8 @@ namespace Application.Areas.Admin.Pages.Stores
             {
                 return column;
             }
-            else
-            {
-                return $"{column}_desc";
-            }
+
+            return $"{column}_desc";
         }
     }
 }

@@ -1,6 +1,6 @@
-﻿@using Application.Services
-@using Application.ViewModel.Sales
-@model SalesAnalyticsViewModel
+﻿@using Microsoft.AspNetCore.Mvc.TagHelpers
+@using Application.Services
+@model Application.ViewModel.Sales.SalesAnalyticsViewModel
 
 <div class="card">
     <div class="card-body border-0 shadow">
@@ -12,7 +12,7 @@
                     <label asp-for="Period" class="form-control">@Model.Period</label>
                 </div>
             </div>
-            <hr />
+            <hr/>
             <div class="row">
                 <div class="col-md-6">
                     <label asp-for="Revenue"></label>
@@ -23,7 +23,7 @@
                     <label asp-for="SalesCount" class="form-control">@Model.SalesCount</label>
                 </div>
             </div>
-            <hr />
+            <hr/>
             <div class="row">
                 <div class="col-md-6">
                     <label asp-for="ProductsCount"></label>
@@ -37,5 +37,3 @@
         </div>
     </div>
 </div>
-
-

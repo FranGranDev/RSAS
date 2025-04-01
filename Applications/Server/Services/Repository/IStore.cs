@@ -1,6 +1,4 @@
-using System.Linq.Expressions;
-
-namespace Application.Data.Repository
+namespace Application.Services.Repository
 {
     public interface IStore<T> where T : class
     {
@@ -12,8 +10,7 @@ namespace Application.Data.Repository
 
         Task<IEnumerable<T>> GetAllAsync();
         Task<T> GetByIdAsync(int id);
-        Task CreateAsync(T entity);
-        Task UpdateAsync(T entity);
+        Task<T> SaveAsync(T entity);
         Task DeleteAsync(int id);
     }
-} 
+}

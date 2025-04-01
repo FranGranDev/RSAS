@@ -1,24 +1,33 @@
+using System.Globalization;
 using Application.Areas.Identity.Data;
-using Application.Model.Orders;
-using Application.Model.Sales;
 using Application.Services;
 using Application.ViewModel.Sales;
-using Application.ViewModel.Users;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
-using System.Globalization;
 
 namespace Application.Areas.Admin.Pages.Analytics
 {
     [Authorize(Roles = "Admin")]
     public class IndexModel : PageModel
     {
-        public IndexModel(DataManager dataManager, UserManager<AppUser> userManager, ICompanyStore companyStore, IMemoryCache memoryCache)
+        public enum AnalyticsTypes
+        {
+            Sales,
+            Products
+        }
+
+        private readonly ICompanyStore companyStore;
+
+        private readonly DataManager dataManager;
+        private readonly IMemoryCache memoryCache;
+        private readonly UserManager<AppUser> userManager;
+
+        public IndexModel(DataManager dataManager, UserManager<AppUser> userManager, ICompanyStore companyStore,
+            IMemoryCache memoryCache)
         {
             this.memoryCache = memoryCache;
             this.dataManager = dataManager;
@@ -26,101 +35,56 @@ namespace Application.Areas.Admin.Pages.Analytics
             this.companyStore = companyStore;
         }
 
-        private readonly DataManager dataManager;
-        private readonly ICompanyStore companyStore;
-        private readonly UserManager<AppUser> userManager;
-        private readonly IMemoryCache memoryCache;
+        public List<SelectListItem> SalesTypesList =>
+            new()
+            {
+                new SelectListItem() { Value = "-1", Text = "Р’СЃРµ РїСЂРѕРґР°Р¶Рё", Selected = true },
+                new SelectListItem { Value = "0", Text = "РўРѕР»СЊРєРѕ Р РѕР·РЅРёС‡РЅС‹Рµ" },
+                new SelectListItem { Value = "1", Text = "РўРѕР»СЊРєРѕ РћРїС‚РѕРІС‹Рµ" }
+            };
 
-        public List<SelectListItem> SalesTypesList
-        {
-            get
+        public List<SelectListItem> AnalyticsTypesList =>
+            new()
             {
-                return new List<SelectListItem>()
-                {
-                    new SelectListItem() {Value = "-1", Text = "Все продажи", Selected = true, },
-                    new SelectListItem() {Value = "0", Text = "Только Розничные"},
-                    new SelectListItem() {Value = "1", Text = "Только Оптовые" },
-                };
-            }
-        }
-        public List<SelectListItem> AnalyticsTypesList
-        {
-            get
-            {
-                return new List<SelectListItem>()
-                {
-                    new SelectListItem() {Value = "0", Text = "По продажам", Selected = true, },
-                    new SelectListItem() {Value = "1", Text = "По товарам"},
-                };
-            }
-        }
+                new SelectListItem() { Value = "0", Text = "РџРѕ РїСЂРѕРґР°Р¶Р°Рј", Selected = true },
+                new SelectListItem { Value = "1", Text = "РџРѕ С‚РѕРІР°СЂР°Рј" }
+            };
 
 
         public string SortBy
         {
-            get
-            {
-                return HttpContext.Session.GetString("sales_sortBy") ?? "";
-            }
-            set
-            {
-                HttpContext.Session.SetString("sales_sortBy", value);
-            }
+            get => HttpContext.Session.GetString("sales_sortBy") ?? "";
+            set => HttpContext.Session.SetString("sales_sortBy", value);
         }
+
         public string SortOrder
         {
-            get
-            {
-                return HttpContext.Session.GetString("sales_sortOrder") ?? "";
-            }
-            set
-            {
-                HttpContext.Session.SetString("sales_sortOrder", value);
-            }
+            get => HttpContext.Session.GetString("sales_sortOrder") ?? "";
+            set => HttpContext.Session.SetString("sales_sortOrder", value);
         }
+
         public int SaleTypeFilter
         {
-            get
-            {
-                return HttpContext.Session.GetInt32("sales_filter") ?? -1;
-            }
-            set
-            {
-                HttpContext.Session.SetInt32("sales_filter", (int)value);
-            }
+            get => HttpContext.Session.GetInt32("sales_filter") ?? -1;
+            set => HttpContext.Session.SetInt32("sales_filter", value);
         }
+
         public int AnalyticsTypeFilter
         {
-            get
-            {
-                return HttpContext.Session.GetInt32("analytics_filter") ?? 0;
-            }
-            set
-            {
-                HttpContext.Session.SetInt32("analytics_filter", (int)value);
-            }
+            get => HttpContext.Session.GetInt32("analytics_filter") ?? 0;
+            set => HttpContext.Session.SetInt32("analytics_filter", value);
         }
+
         public string StartDate
         {
-            get
-            {
-                return HttpContext.Session.GetString("sales_start_date") ?? string.Empty;
-            }
-            set
-            {
-                HttpContext.Session.SetString("sales_start_date", value);
-            }
+            get => HttpContext.Session.GetString("sales_start_date") ?? string.Empty;
+            set => HttpContext.Session.SetString("sales_start_date", value);
         }
+
         public string EndDate
         {
-            get
-            {
-                return HttpContext.Session.GetString("sales_end_date") ?? string.Empty;
-            }
-            set
-            {
-                HttpContext.Session.SetString("sales_end_date", value);
-            }
+            get => HttpContext.Session.GetString("sales_end_date") ?? string.Empty;
+            set => HttpContext.Session.SetString("sales_end_date", value);
         }
 
 
@@ -129,7 +93,7 @@ namespace Application.Areas.Admin.Pages.Analytics
             get
             {
                 IEnumerable<SaleViewModel> sales;
-                if(memoryCache.TryGetValue("sales", out sales))
+                if (memoryCache.TryGetValue("sales", out sales))
                 {
                     return sales;
                 }
@@ -137,6 +101,7 @@ namespace Application.Areas.Admin.Pages.Analytics
                 return new List<SaleViewModel>();
             }
         }
+
         public async Task LoadSales()
         {
             var sales = await dataManager.Sales.All
@@ -160,22 +125,23 @@ namespace Application.Areas.Admin.Pages.Analytics
             sales = GetFilteredByDate(sales);
             sales = GetFilteredByType(sales);
 
-            switch(AnalyticsTypeFilter)
+            switch (AnalyticsTypeFilter)
             {
                 default:
-                    {
-                        sales = GetSorted(sales);
-                        return Partial("_SalesPartial", sales);
-                    }
+                {
+                    sales = GetSorted(sales);
+                    return Partial("_SalesPartial", sales);
+                }
                 case 1:
-                    {
-                        var products = GetSaleProducts(sales);
-                        products = GetSortedProducts(products);
+                {
+                    var products = GetSaleProducts(sales);
+                    products = GetSortedProducts(products);
 
-                        return Partial("_ProductSalesPartial", products);
-                    }
+                    return Partial("_ProductSalesPartial", products);
+                }
             }
         }
+
         public IActionResult OnGetAnalytics()
         {
             var sales = Sales;
@@ -186,33 +152,32 @@ namespace Application.Areas.Admin.Pages.Analytics
 
 
             var products = sales.SelectMany(x => x.Products);
-            string period = "За все время";
+            var period = "Р—Р° РІСЃРµ РІСЂРµРјСЏ";
             if (!string.IsNullOrEmpty(StartDate) && !string.IsNullOrEmpty(EndDate))
             {
-                period = $"с {StartDate} по {EndDate}";
+                period = $"СЃ {StartDate} РїРѕ {EndDate}";
             }
 
             if (sales.Count() > 0)
             {
-                var analytics = new SalesAnalyticsViewModel()
+                var analytics = new SalesAnalyticsViewModel
                 {
                     Period = period,
                     Revenue = products.Sum(x => x.Quantity * x.ProductPrice),
                     ProductsCount = products.Sum(x => x.Quantity),
                     AvgRevenue = sales.Select(x => x.Products.Sum(x => x.Quantity * x.ProductPrice)).Average(),
-                    SalesCount = sales.Count(),
+                    SalesCount = sales.Count()
                 };
 
                 return Partial("_SalesAnalyticsPartial", analytics);
             }
-            else
-            {
-                return Partial("_EmptySalesAnalyticsPartial");
-            }
+
+            return Partial("_EmptySalesAnalyticsPartial");
         }
+
         public async Task<IActionResult> OnGetInfo(int id)
         {
-            SaleViewModel sale = Sales.First(x => x.Id == id);
+            var sale = Sales.First(x => x.Id == id);
 
             if (sale.SaleType == SaleTypes.Wholesale)
             {
@@ -223,14 +188,13 @@ namespace Application.Areas.Admin.Pages.Analytics
                 {
                     sale.CompanyInfo = new CompanyViewModel(company)
                     {
-                        Disabled = true,
+                        Disabled = true
                     };
                 }
             }
 
             return Partial("_SaleInfoPartial", sale);
         }
-
 
 
         public IActionResult OnPostSort(string sortBy, string sortOrder)
@@ -240,18 +204,21 @@ namespace Application.Areas.Admin.Pages.Analytics
 
             return OnGetSales();
         }
+
         public IActionResult OnPostSaleType(int value)
         {
             SaleTypeFilter = value;
 
             return OnGetSales();
         }
+
         public IActionResult OnPostAnalyticsType(int value)
         {
             AnalyticsTypeFilter = value;
 
             return OnGetSales();
         }
+
         public IActionResult OnPostSetDate(string? startDate, string? endDate)
         {
             if (startDate == null || endDate == null)
@@ -264,6 +231,7 @@ namespace Application.Areas.Admin.Pages.Analytics
 
             return OnGetSales();
         }
+
         public IActionResult OnPostClearDate()
         {
             StartDate = string.Empty;
@@ -275,8 +243,8 @@ namespace Application.Areas.Admin.Pages.Analytics
 
         private IEnumerable<SaleViewModel> GetSorted(IEnumerable<SaleViewModel> sales)
         {
-            string sortBy = SortBy;
-            string sortOrder = SortOrder;
+            var sortBy = SortBy;
+            var sortOrder = SortOrder;
 
             switch (sortBy)
             {
@@ -289,6 +257,7 @@ namespace Application.Areas.Admin.Pages.Analytics
                     {
                         sales = sales.OrderByDescending(p => p.SaleType);
                     }
+
                     break;
                 case "date":
                     if (sortOrder == "asc")
@@ -299,6 +268,7 @@ namespace Application.Areas.Admin.Pages.Analytics
                     {
                         sales = sales.OrderByDescending(p => p.SaleDate);
                     }
+
                     break;
                 case "price":
                     if (sortOrder == "asc")
@@ -309,6 +279,7 @@ namespace Application.Areas.Admin.Pages.Analytics
                     {
                         sales = sales.OrderByDescending(p => p.Amount);
                     }
+
                     break;
                 case "quantity":
                     if (sortOrder == "asc")
@@ -319,6 +290,7 @@ namespace Application.Areas.Admin.Pages.Analytics
                     {
                         sales = sales.OrderByDescending(p => p.Quantity);
                     }
+
                     break;
                 default:
                     sales = sales.OrderByDescending(p => p.OrderDate);
@@ -327,29 +299,34 @@ namespace Application.Areas.Admin.Pages.Analytics
 
             return sales;
         }
+
         private IEnumerable<SaleViewModel> GetFilteredByType(IEnumerable<SaleViewModel> sales)
         {
             int? filter = SaleTypeFilter;
 
             if (filter == null || filter == -1)
+            {
                 return sales;
+            }
 
             return sales.Where(x => (int)x.SaleType == filter);
         }
+
         private IEnumerable<SaleViewModel> GetFilteredByDate(IEnumerable<SaleViewModel> sales)
         {
-            string startDateStr = StartDate;
-            string endDateStr = EndDate;
+            var startDateStr = StartDate;
+            var endDateStr = EndDate;
 
-            if(string.IsNullOrEmpty(startDateStr) || string.IsNullOrEmpty(endDateStr))
+            if (string.IsNullOrEmpty(startDateStr) || string.IsNullOrEmpty(endDateStr))
             {
                 return sales;
             }
 
 
-
-            if (DateTime.TryParseExact(startDateStr, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime startDate) &&
-                DateTime.TryParseExact(endDateStr, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime endDate))
+            if (DateTime.TryParseExact(startDateStr, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None,
+                    out var startDate) &&
+                DateTime.TryParseExact(endDateStr, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None,
+                    out var endDate))
             {
                 return sales.Where(x => x.SaleDate >= startDate && x.SaleDate <= endDate);
             }
@@ -363,21 +340,22 @@ namespace Application.Areas.Admin.Pages.Analytics
             var products = sales
                 .SelectMany(sale => sale.Products)
                 .GroupBy(product => product.ProductId)
-                .Select(group => new SaleProductViewModel()
+                .Select(group => new SaleProductViewModel
                 {
                     Name = group.First().ProductName,
                     Description = group.First().ProductDescription,
                     Price = group.First().ProductPrice,
                     Quantity = group.Sum(x => x.Quantity),
-                    Income = group.Sum(x => x.Quantity * x.ProductPrice),
+                    Income = group.Sum(x => x.Quantity * x.ProductPrice)
                 });
 
             return products;
         }
+
         private IEnumerable<SaleProductViewModel> GetSortedProducts(IEnumerable<SaleProductViewModel> products)
         {
-            string sortBy = SortBy;
-            string sortOrder = SortOrder;
+            var sortBy = SortBy;
+            var sortOrder = SortOrder;
 
             switch (sortBy)
             {
@@ -390,6 +368,7 @@ namespace Application.Areas.Admin.Pages.Analytics
                     {
                         products = products.OrderByDescending(p => p.Name);
                     }
+
                     break;
                 case "description":
                     if (sortOrder == "asc")
@@ -400,6 +379,7 @@ namespace Application.Areas.Admin.Pages.Analytics
                     {
                         products = products.OrderByDescending(p => p.Description);
                     }
+
                     break;
                 case "price":
                     if (sortOrder == "asc")
@@ -410,6 +390,7 @@ namespace Application.Areas.Admin.Pages.Analytics
                     {
                         products = products.OrderByDescending(p => p.Price);
                     }
+
                     break;
                 case "quantity":
                     if (sortOrder == "asc")
@@ -420,6 +401,7 @@ namespace Application.Areas.Admin.Pages.Analytics
                     {
                         products = products.OrderByDescending(p => p.Quantity);
                     }
+
                     break;
                 case "income":
                     if (sortOrder == "asc")
@@ -430,6 +412,7 @@ namespace Application.Areas.Admin.Pages.Analytics
                     {
                         products = products.OrderByDescending(p => p.Income);
                     }
+
                     break;
                 default:
                     products = products.OrderByDescending(p => p.Income);
@@ -437,13 +420,6 @@ namespace Application.Areas.Admin.Pages.Analytics
             }
 
             return products;
-        }
-
-
-        public enum AnalyticsTypes
-        {
-            Sales,
-            Products,
         }
     }
 }

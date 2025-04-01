@@ -3,7 +3,6 @@ using System.Security.Claims;
 using System.Text;
 using Application.Areas.Identity.Data;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 
 namespace Application.Services
@@ -32,9 +31,9 @@ namespace Application.Services
             var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
             var token = new JwtSecurityToken(
-                issuer: _configuration["Jwt:Issuer"],
-                audience: _configuration["Jwt:Audience"],
-                claims: claims,
+                _configuration["Jwt:Issuer"],
+                _configuration["Jwt:Audience"],
+                claims,
                 expires: DateTime.Now.AddMinutes(Convert.ToDouble(_configuration["Jwt:DurationInMinutes"])),
                 signingCredentials: credentials
             );
@@ -47,9 +46,9 @@ namespace Application.Services
             var roles = await _userManager.GetRolesAsync(user);
             var claims = new List<Claim>
             {
-                new Claim(ClaimTypes.NameIdentifier, user.Id),
-                new Claim(ClaimTypes.Name, user.UserName),
-                new Claim(ClaimTypes.Email, user.Email)
+                new(ClaimTypes.NameIdentifier, user.Id),
+                new(ClaimTypes.Name, user.UserName),
+                new(ClaimTypes.Email, user.Email)
             };
 
             claims.AddRange(roles.Select(role => new Claim(ClaimTypes.Role, role)));
@@ -57,4 +56,4 @@ namespace Application.Services
             return claims;
         }
     }
-} 
+}

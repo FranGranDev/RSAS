@@ -9,6 +9,7 @@ using Application.Model.Sales;
 using Application.Services;
 using Application.Model.Orders;
 using Application.Model.Stocks;
+using Application.Services.Repository;
 
 namespace Application.Controllers
 {

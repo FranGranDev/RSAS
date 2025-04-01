@@ -1,30 +1,27 @@
-using Application.Services;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
-using Application.ViewModel.Data;
 using Application.Model.Stocks;
+using Application.Services;
+using Application.ViewModel.Data;
 using Microsoft.AspNetCore.Authorization;
-using System.Data;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace Application.Areas.Admin.Pages.Products
 {
     [Authorize(Roles = "Admin")]
     public class EditModel : PageModel
     {
+        private readonly DataManager dataManager;
+
         public EditModel(DataManager dataManager)
         {
             this.dataManager = dataManager;
         }
 
-        private readonly DataManager dataManager;
 
+        [BindProperty] public ProductViewModel Product { get; set; }
 
-        [BindProperty]
-        public ProductViewModel Product { get; set; }
-
-        [BindNever]
-        public string ReturnUrl { get; set; }
+        [BindNever] public string ReturnUrl { get; set; }
 
         public void OnGet(int id, string returnUrl)
         {
@@ -32,6 +29,7 @@ namespace Application.Areas.Admin.Pages.Products
 
             Product = new ProductViewModel(dataManager.Products.Get(id));
         }
+
         public IActionResult OnPostApply()
         {
             if (!ModelState.IsValid)
@@ -39,25 +37,28 @@ namespace Application.Areas.Admin.Pages.Products
                 return RedirectToPage(new { id = Product.Id, returnUrl = ReturnUrl });
             }
 
-            Product product = new Product
+            var product = new Product
             {
                 Id = Product.Id,
                 Name = Product.Name,
                 Description = Product.Description,
                 WholesalePrice = Product.WholesalePrice,
-                RetailPrice = Product.RetailPrice,
+                RetailPrice = Product.RetailPrice
             };
 
             dataManager.Products.Save(product);
 
-            TempData["success"] = "Товар успешно изменен";
+            TempData["success"] = "РўРѕРІР°СЂ СѓСЃРїРµС€РЅРѕ РёР·РјРµРЅРµРЅ";
 
             return OnPostBack();
         }
+
         public IActionResult OnPostBack()
         {
             if (string.IsNullOrEmpty(ReturnUrl))
+            {
                 return RedirectToPage("Index");
+            }
 
             return Redirect(ReturnUrl);
         }

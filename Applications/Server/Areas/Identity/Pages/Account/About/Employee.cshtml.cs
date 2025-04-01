@@ -1,5 +1,5 @@
 using Application.Areas.Identity.Data;
-using Application.Services;
+using Application.Services.Repository;
 using Application.ViewModel.Users;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -12,14 +12,15 @@ namespace Application.Areas.Identity.Pages.Account.About
     [Authorize(Roles = "Manager,Admin")]
     public class EmployeeModel : PageModel
     {
+        private readonly IEmployeeStore employeeStore;
+
+        private readonly UserManager<AppUser> userManager;
+
         public EmployeeModel(UserManager<AppUser> userManager, IEmployeeStore employeeStore)
         {
             this.userManager = userManager;
             this.employeeStore = employeeStore;
         }
-
-        private readonly UserManager<AppUser> userManager;
-        private readonly IEmployeeStore employeeStore;
 
 
         public EmployeeViewModel Client { get; set; }
@@ -33,17 +34,17 @@ namespace Application.Areas.Identity.Pages.Account.About
                 return NotFound();
             }
 
-            Employee client = employeeStore.Get(user);
+            var client = employeeStore.Get(user);
 
-            Client = new()
+            Client = new EmployeeViewModel
             {
                 FirstName = client.FirstName,
                 LastName = client.LastName,
                 Phone = client.Phone,
                 Email = user.Email,
-                Role = client.Role,
+                Role = client.Role
             };
-            Password = new();
+            Password = new ChangePasswordViewModel();
 
             return Page();
         }
@@ -57,22 +58,24 @@ namespace Application.Areas.Identity.Pages.Account.About
             {
                 return NotFound();
             }
+
             if (!TryValidateModel(Client))
             {
                 return Page();
             }
 
-            Employee client = new Employee
+            var client = new Employee
             {
                 FirstName = Client.FirstName,
                 LastName = Client.LastName,
                 Phone = Client.Phone,
-                Role = Client.Role,
+                Role = Client.Role
             };
             employeeStore.Save(user, client);
 
             return Page();
         }
+
         public async Task<IActionResult> OnPostPassword()
         {
             ModelState.Clear();
@@ -82,6 +85,7 @@ namespace Application.Areas.Identity.Pages.Account.About
             {
                 return NotFound();
             }
+
             if (!TryValidateModel(Password))
             {
                 return Page();

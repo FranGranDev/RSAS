@@ -1,6 +1,6 @@
 using Application.DTOs;
 
-namespace Application.Services.Employees
+namespace Application.Services
 {
     public interface IEmployeeService
     {

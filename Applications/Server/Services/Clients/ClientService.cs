@@ -1,10 +1,10 @@
-using Application.Areas.Identity.Data;
 using Application.DTOs;
 using Application.Exceptions;
-using Server.Services.Repository;
+using Application.Models;
 using AutoMapper;
+using Server.Services.Repository;
 
-namespace Application.Services.Clients
+namespace Application.Services
 {
     public class ClientService : IClientService
     {
@@ -66,7 +66,7 @@ namespace Application.Services.Clients
             }
 
             // Проверяем, не занят ли новый номер телефона другим клиентом
-            if (client.Phone != updateClientDto.Phone && 
+            if (client.Phone != updateClientDto.Phone &&
                 await _clientRepository.ExistsByPhoneAsync(updateClientDto.Phone))
             {
                 throw new BusinessException("Клиент с таким номером телефона уже существует");

@@ -1,5 +1,4 @@
-using Application.Areas.Identity.Data;
-using Application.Model.Stocks;
+using Application.Models;
 using Server.Services.Repository;
 
 namespace Application.Services.Repository
@@ -15,4 +14,4 @@ namespace Application.Services.Repository
         Task<Product> GetWithStockProductsAsync(int id);
         Task<IEnumerable<Product>> GetAllWithStockProductsAsync();
     }
-} 
+}

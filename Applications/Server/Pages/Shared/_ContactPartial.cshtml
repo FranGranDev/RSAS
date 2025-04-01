@@ -1,19 +1,18 @@
-﻿@using Application.ViewModel.Catalog
-@using Microsoft.AspNetCore.Mvc.TagHelpers
-@model ContactInfoViewModel
+﻿@using Microsoft.AspNetCore.Mvc.TagHelpers
+@model Application.ViewModel.Catalog.ContactInfoViewModel
 
 <div id="contact-partial" class="container-fluid">
     <div class="row">
         <div class="col-md-6">
             <div class="form-floating mt-2">
-                <input asp-for="FullName" class="form-control" aria-required="true" />
+                <input asp-for="FullName" class="form-control" aria-required="true"/>
                 <label asp-for="FullName"></label>
                 <span asp-validation-for="FullName" class="text-danger"></span>
             </div>
         </div>
         <div class="col-md-6">
             <div class="form-floating mt-2">
-                <input asp-for="Phone" class="form-control" aria-required="true" />
+                <input asp-for="Phone" class="form-control" aria-required="true"/>
                 <label asp-for="Phone"></label>
                 <span asp-validation-for="Phone" class="text-danger"></span>
             </div>
@@ -30,5 +29,3 @@
         });
     </script>
 }
-
-

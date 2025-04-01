@@ -8,11 +8,12 @@ namespace Application.ViewModel.Users
         [Required(ErrorMessage = "Необходимо заполнить поле {0}")]
         [Display(Name = "Эл.почта")]
         public string Email { get; set; }
+
         [Required(ErrorMessage = "Необходимо заполнить поле {0}")]
         [DataType(DataType.Password)]
         [Display(Name = "Пароль")]
         public string Password { get; set; }
-        [Display(Name = "Запомнить меня?")]
-        public bool RememberMe { get; set; }
+
+        [Display(Name = "Запомнить меня?")] public bool RememberMe { get; set; }
     }
 }

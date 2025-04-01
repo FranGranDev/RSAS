@@ -1,6 +1,6 @@
 ﻿@using Microsoft.AspNetCore.Mvc.TagHelpers
 <div>
-    <ul class="navbar-nav flex-grow-1">        
+    <ul class="navbar-nav flex-grow-1">
 
         <li if-role="Client" class="nav-item">
             <a class="nav-link text-dark" asp-page="/User/Catalog">Каталог</a>
@@ -11,7 +11,6 @@
         <li if-role="Client" class="nav-item">
             <a class="nav-link text-dark" asp-page="/Orders">Заказы</a>
         </li>
-
 
 
         <li if-role="Company" class="nav-item">
@@ -25,11 +24,9 @@
         </li>
 
 
-
         <li if-role="Manager" class="nav-item">
             <a class="nav-link text-dark" asp-area="Manager" asp-page="/Orders/Index">Управление заказами</a>
         </li>
-
 
 
         <li if-role="Admin" class="nav-item">
@@ -43,4 +40,3 @@
         </li>
     </ul>
 </div>
-

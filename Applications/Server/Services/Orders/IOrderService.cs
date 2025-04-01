@@ -1,7 +1,7 @@
 using Application.DTOs;
-using Application.Model.Orders;
+using Application.Models;
 
-namespace Server.Services.Orders
+namespace Application.Services
 {
     public interface IOrderService
     {

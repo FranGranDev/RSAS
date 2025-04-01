@@ -1,44 +1,53 @@
-﻿@using Services;
-@using Application.ViewModel.Catalog;
-@model IEnumerable<CatalogItemViewModel>
+﻿@using Application.Services
+@model IEnumerable<Application.ViewModel.Catalog.CatalogItemViewModel>
 
 <table class="table table-bordered">
     <thead class="thead-dark text-center align-middle">
-        <tr>
-            <th style="width: 20%;"><button class="sort-btn btn btn-link" data-sort="name">Название</button></th>
-            <th style="width: 30%;"><button class="sort-btn btn btn-link" data-sort="description">Описание</button></th>
-            <th style="width: 10%;"><button class="sort-btn btn btn-link" data-sort="description">Цена за единицу</button></th>
-            <th style="width: 10%;"><button class="sort-btn btn btn-link" data-sort="quantity">Итоговое<br />Количество</button></th>
-            <th style="width: 10%;"><button class="sort-btn btn btn-link" data-sort="retail-price">Итоговая Цена</button></th>
-        </tr>
+    <tr>
+        <th style="width: 20%;">
+            <button class="sort-btn btn btn-link" data-sort="name">Название</button>
+        </th>
+        <th style="width: 30%;">
+            <button class="sort-btn btn btn-link" data-sort="description">Описание</button>
+        </th>
+        <th style="width: 10%;">
+            <button class="sort-btn btn btn-link" data-sort="description">Цена за единицу</button>
+        </th>
+        <th style="width: 10%;">
+            <button class="sort-btn btn btn-link" data-sort="quantity">Итоговое<br/>Количество</button>
+        </th>
+        <th style="width: 10%;">
+            <button class="sort-btn btn btn-link" data-sort="retail-price">Итоговая Цена</button>
+        </th>
+    </tr>
     </thead>
     <tbody>
 
-        @{
-            int count = 0;
-            decimal price = 0;
-            foreach (var product in Model)
-            {
-                <tr>
-                    <td>@product.Name</td>
-                    <td>@product.Description</td>
-                    <td>@product.ProductPrice @CurrencySettings.Symbol</td>
-                    <td>@product.TakenCount</td>
-                    <td>@product.TotalPrice @CurrencySettings.Symbol</td>
-                </tr>
-
-                count += product.TakenCount;
-                price += product.TotalPrice;
-            }
-
-            <tr class="fw-bold fs-4" style="background-color: #F5DEB3">
-                <td>Итого</td>
-                <td></td>
-                <td></td>
-                <td>@count</td>
-                <td>@price @CurrencySettings.Symbol</td>
+    @{
+        var count = 0;
+        decimal price = 0;
+        foreach (var product in Model)
+        {
+            <tr>
+                <td>@product.Name</td>
+                <td>@product.Description</td>
+                <td>@product.ProductPrice @CurrencySettings.Symbol</td>
+                <td>@product.TakenCount</td>
+                <td>@product.TotalPrice @CurrencySettings.Symbol</td>
             </tr>
+
+            count += product.TakenCount;
+            price += product.TotalPrice;
         }
+
+        <tr class="fw-bold fs-4" style="background-color: #F5DEB3">
+            <td>Итого</td>
+            <td></td>
+            <td></td>
+            <td>@count</td>
+            <td>@price @CurrencySettings.Symbol</td>
+        </tr>
+    }
 
     </tbody>
 </table>

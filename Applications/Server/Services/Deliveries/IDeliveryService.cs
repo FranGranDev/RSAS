@@ -1,7 +1,6 @@
 using Application.DTOs;
-using Application.Model.Orders;
 
-namespace Server.Services.Deliveries
+namespace Application.Services
 {
     public interface IDeliveryService
     {
@@ -14,4 +13,4 @@ namespace Server.Services.Deliveries
         Task<IEnumerable<DeliveryDto>> GetDeliveriesByStatusAsync(string status);
         Task<IEnumerable<DeliveryDto>> GetDeliveriesByDateRangeAsync(DateTime startDate, DateTime endDate);
     }
-} 
+}

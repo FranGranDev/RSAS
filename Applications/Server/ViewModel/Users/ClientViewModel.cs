@@ -1,5 +1,4 @@
-﻿using Application.Areas.Identity.Data;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace Application.ViewModel.Users
 {
@@ -8,6 +7,7 @@ namespace Application.ViewModel.Users
         [Required(ErrorMessage = "Необходимо заполнить поле {0}")]
         [Display(Name = "Имя")]
         public string FirstName { get; set; }
+
         [Required(ErrorMessage = "Необходимо заполнить поле {0}")]
         [Display(Name = "Фамилия")]
         public string LastName { get; set; }

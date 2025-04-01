@@ -1,6 +1,6 @@
 ﻿@page
 @using Microsoft.AspNetCore.Mvc.TagHelpers
-@model Application.Pages.Companies.OrderingModel
+@model OrderingModel
 @{
     ViewData["Title"] = "Оформление заказа";
     ViewData["ClientValidationEnabled"] = false;
@@ -13,28 +13,28 @@
                 <div class="card-header">
                     <h1>@ViewData["Title"]</h1>
                 </div>
-                @if(Model.Products != null && Model.Products.Count() > 0)
+                @if (Model.Products != null && Model.Products.Count() > 0)
                 {
                     <form method="post" asp-page-handler="Order">
-                        
+
                         <div class="card-body">
                             <h3>Товары</h3>
                             <div class="overflow-auto" style="max-height: 50vh">
-                                <partial name="_OrderPartial" model="Model.Products" />
+                                <partial name="_OrderPartial" model="Model.Products"/>
                             </div>
                         </div>
-                        <hr />
+                        <hr/>
                         <div class="card-body">
                             <h3>Контактная информация</h3>
                             <div>
                                 <partial name="_ContactPartial" model="Model.Contact"/>
                             </div>
                         </div>
-                        <hr />
+                        <hr/>
                         <div class="card-body">
                             <h3>Информация о компании</h3>
                             <div>
-                                <partial name="_CompanyPartial" model="Model.Company" />
+                                <partial name="_CompanyPartial" model="Model.Company"/>
                             </div>
                             <div class="container-fluid">
                                 <div class="text-end mt-4">
@@ -46,15 +46,15 @@
                         <div class="card-body">
                             <h3>Доставка</h3>
                             <div>
-                                <partial name="_DeliveryPartial" model="Model.Delivery" />
+                                <partial name="_DeliveryPartial" model="Model.Delivery"/>
                             </div>
                         </div>
-                        <hr />
+                        <hr/>
                         <div class="card-body">
                             <h3>Реквезиты для оплаты</h3>
                             Реквезиты для оплаты будут доступны в меню "заказы"
                             <div class="mt-2">
-                                <partial name="_CompanyPartial" model="Model.AppCompany" />
+                                <partial name="_CompanyPartial" model="Model.AppCompany"/>
                             </div>
                         </div>
                         <div class="card-footer text-center">

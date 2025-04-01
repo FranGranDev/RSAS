@@ -49,4 +49,4 @@ namespace Application.DTOs
         [Phone(ErrorMessage = "Некорректный формат телефона")]
         public string Phone { get; set; }
     }
-} 
+}

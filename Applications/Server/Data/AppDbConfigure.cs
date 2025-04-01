@@ -1,7 +1,6 @@
-﻿using Application.Areas.Identity.Data;
-using Application.Services;
-using Application.Services.Repository;
+﻿using Application.Models;
 using Microsoft.AspNetCore.Identity;
+using Server.Services.Repository;
 
 namespace Application.Data
 {
@@ -11,12 +10,12 @@ namespace Application.Data
         {
             string[] roles = { "Client", "Company", "Admin", "Manager" };
 
-            foreach (string roleName in roles)
+            foreach (var roleName in roles)
             {
                 if (!await roleManager.RoleExistsAsync(roleName))
                 {
-                    IdentityRole role = new IdentityRole { Name = roleName };
-                    IdentityResult result = await roleManager.CreateAsync(role);
+                    var role = new IdentityRole { Name = roleName };
+                    var result = await roleManager.CreateAsync(role);
                     if (!result.Succeeded)
                     {
                         throw new Exception($"Failed to create role '{roleName}'.");
@@ -24,7 +23,8 @@ namespace Application.Data
                 }
             }
         }
-        public static async Task SeedUsers(UserManager<AppUser> userManager, IEmployeeStore employeeStore)
+
+        public static async Task SeedUsers(UserManager<AppUser> userManager, IEmployeeRepository employeeRepository)
         {
             if (userManager.FindByNameAsync("Admin@gmail.com").Result == null)
             {
@@ -38,17 +38,18 @@ namespace Application.Data
                     FirstName = "Admin",
                     LastName = "Admin",
                     Phone = "-",
-                    Role = "Администратор системы",
+                    Role = "Администратор системы"
                 };
 
-                IdentityResult result = userManager.CreateAsync(user, "Admin123").Result;
+                var result = userManager.CreateAsync(user, "Admin123").Result;
 
                 if (result.Succeeded)
                 {
                     userManager.AddToRoleAsync(user, "Admin").Wait();
                     userManager.AddToRoleAsync(user, "Manager").Wait();
 
-                    employeeStore.Save(user, employee);
+                    employee.UserId = user.Id;
+                    await employeeRepository.AddAsync(employee);
                 }
             }
             else
@@ -57,17 +58,18 @@ namespace Application.Data
                 userManager.AddToRoleAsync(admin, "Admin").Wait();
                 userManager.AddToRoleAsync(admin, "Manager").Wait();
 
-                if(employeeStore.Get(admin) == null)
+                if (await employeeRepository.GetByIdAsync(admin.Id) == null)
                 {
                     Employee employee = new Employee
                     {
+                        UserId = admin.Id,
                         FirstName = "Admin",
                         LastName = "Admin",
                         Phone = "-",
-                        Role = "Администратор системы",
+                        Role = "Администратор системы"
                     };
 
-                    employeeStore.Save(admin, employee);
+                    await employeeRepository.AddAsync(employee);
                 }
             }
         }

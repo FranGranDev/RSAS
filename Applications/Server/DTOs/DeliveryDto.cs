@@ -1,4 +1,3 @@
-using System;
 using System.ComponentModel.DataAnnotations;
 
 namespace Application.DTOs
@@ -61,4 +60,4 @@ namespace Application.DTOs
         [RegularExpression(@"^\d{6}$", ErrorMessage = "Почтовый индекс должен содержать 6 цифр")]
         public string PostalCode { get; set; }
     }
-} 
+}

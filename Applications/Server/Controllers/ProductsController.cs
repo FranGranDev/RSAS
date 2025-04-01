@@ -1,16 +1,14 @@
 using System.ComponentModel.DataAnnotations;
-using Application.Data.Repository;
 using Application.DTOs;
 using Application.Exceptions;
+using Application.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Application.Services;
-using Application.Services.Products;
 
 namespace Application.Controllers
 {
     /// <summary>
-    /// Контроллер для управления товарами
+    ///     Контроллер для управления товарами
     /// </summary>
     [ApiController]
     [Route("api/[controller]")]
@@ -25,7 +23,7 @@ namespace Application.Controllers
         }
 
         /// <summary>
-        /// Получить список всех товаров
+        ///     Получить список всех товаров
         /// </summary>
         /// <returns>Список товаров</returns>
         [HttpGet]
@@ -36,7 +34,7 @@ namespace Application.Controllers
         }
 
         /// <summary>
-        /// Получить товар по ID
+        ///     Получить товар по ID
         /// </summary>
         /// <param name="id">ID товара</param>
         /// <returns>Информация о товаре</returns>
@@ -56,7 +54,7 @@ namespace Application.Controllers
         }
 
         /// <summary>
-        /// Создать новый товар
+        ///     Создать новый товар
         /// </summary>
         /// <param name="createProductDto">Данные для создания товара</param>
         /// <returns>Созданный товар</returns>
@@ -74,7 +72,7 @@ namespace Application.Controllers
         }
 
         /// <summary>
-        /// Обновить существующий товар
+        ///     Обновить существующий товар
         /// </summary>
         /// <param name="id">ID товара</param>
         /// <param name="updateProductDto">Данные для обновления товара</param>
@@ -101,7 +99,7 @@ namespace Application.Controllers
         }
 
         /// <summary>
-        /// Удалить товар
+        ///     Удалить товар
         /// </summary>
         /// <param name="id">ID товара</param>
         /// <returns>Результат операции</returns>
@@ -120,4 +118,4 @@ namespace Application.Controllers
             }
         }
     }
-} 
+}

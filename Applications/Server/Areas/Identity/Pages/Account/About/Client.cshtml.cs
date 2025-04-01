@@ -1,4 +1,5 @@
 using Application.Areas.Identity.Data;
+using Application.Models;
 using Application.Services.Repository;
 using Application.ViewModel.Users;
 using Microsoft.AspNetCore.Authorization;

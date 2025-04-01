@@ -1,5 +1,5 @@
 using Application.Data;
-using Application.Model.Orders;
+using Application.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace Server.Services.Repository
@@ -17,7 +17,7 @@ namespace Server.Services.Repository
                 .Include(o => o.Stock)
                 .Include(o => o.Delivery)
                 .Include(o => o.Products)
-                    .ThenInclude(p => p.Product)
+                .ThenInclude(p => p.Product)
                 .FirstOrDefaultAsync(o => o.Id == id);
         }
 
@@ -28,7 +28,7 @@ namespace Server.Services.Repository
                 .Include(o => o.Stock)
                 .Include(o => o.Delivery)
                 .Include(o => o.Products)
-                    .ThenInclude(p => p.Product)
+                .ThenInclude(p => p.Product)
                 .ToListAsync();
         }
 
@@ -39,7 +39,7 @@ namespace Server.Services.Repository
                 .Include(o => o.Stock)
                 .Include(o => o.Delivery)
                 .Include(o => o.Products)
-                    .ThenInclude(p => p.Product)
+                .ThenInclude(p => p.Product)
                 .Where(o => o.UserId == userId)
                 .ToListAsync();
         }
@@ -51,7 +51,7 @@ namespace Server.Services.Repository
                 .Include(o => o.Stock)
                 .Include(o => o.Delivery)
                 .Include(o => o.Products)
-                    .ThenInclude(p => p.Product)
+                .ThenInclude(p => p.Product)
                 .Where(o => o.StockId == stockId)
                 .ToListAsync();
         }
@@ -63,7 +63,7 @@ namespace Server.Services.Repository
                 .Include(o => o.Stock)
                 .Include(o => o.Delivery)
                 .Include(o => o.Products)
-                    .ThenInclude(p => p.Product)
+                .ThenInclude(p => p.Product)
                 .Where(o => o.State == state)
                 .ToListAsync();
         }
@@ -75,7 +75,7 @@ namespace Server.Services.Repository
                 .Include(o => o.Stock)
                 .Include(o => o.Delivery)
                 .Include(o => o.Products)
-                    .ThenInclude(p => p.Product)
+                .ThenInclude(p => p.Product)
                 .Where(o => o.OrderDate >= startDate && o.OrderDate <= endDate)
                 .ToListAsync();
         }
@@ -86,4 +86,4 @@ namespace Server.Services.Repository
                 .AnyAsync(o => o.UserId == userId);
         }
     }
-} 
+}

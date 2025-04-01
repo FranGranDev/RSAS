@@ -1,14 +1,27 @@
-﻿using Application.Model.Stocks;
-using Application.Areas.Identity.Data;
-using System.ComponentModel.DataAnnotations;
-using Microsoft.VisualBasic;
+﻿using System.ComponentModel.DataAnnotations;
 
-namespace Application.Model.Orders
+namespace Application.Models
 {
     public class Order
     {
-        [Key]
-        public int Id { get; set; }
+        public enum PaymentTypes
+        {
+            [Display(Name = "Наличными")] Cash,
+            [Display(Name = "Картой")] Card,
+            [Display(Name = "Банковский перевод")] Bank
+        }
+
+        public enum States
+        {
+            [Display(Name = "В обработке")] New,
+            [Display(Name = "В работе")] InProcess,
+            [Display(Name = "Отложено")] OnHold,
+            [Display(Name = "Отменено")] Cancelled,
+            [Display(Name = "Готово")] Completed
+        }
+
+        [Key] public int Id { get; set; }
+
         public string UserId { get; set; }
         public int? StockId { get; set; }
 
@@ -25,28 +38,5 @@ namespace Application.Model.Orders
         public virtual Delivery Delivery { get; set; }
         public virtual Stock Stock { get; set; }
         public virtual ICollection<OrderProduct> Products { get; set; }
-
-        public enum States
-        {
-            [Display(Name = "В обработке")]
-            New,
-            [Display(Name = "В работе")]
-            InProcess,
-            [Display(Name = "Отложено")]
-            OnHold,
-            [Display(Name = "Отменено")]
-            Cancelled,
-            [Display(Name = "Готово")]
-            Completed,
-        }
-        public enum PaymentTypes
-        {
-            [Display(Name = "Наличными")]
-            Cash,
-            [Display(Name = "Картой")]
-            Card,
-            [Display(Name = "Банковский перевод")]
-            Bank,
-        }
     }
 }

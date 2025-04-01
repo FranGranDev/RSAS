@@ -1,17 +1,14 @@
 using System.ComponentModel.DataAnnotations;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Authorization;
-using Application.Data.Repository;
 using Application.DTOs;
-using Application.Areas.Identity.Data;
 using Application.Exceptions;
 using Application.Services;
-using Application.Services.Employees;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Application.Controllers
 {
     /// <summary>
-    /// Контроллер для управления сотрудниками
+    ///     Контроллер для управления сотрудниками
     /// </summary>
     [Route("api/[controller]")]
     [ApiController]
@@ -26,7 +23,7 @@ namespace Application.Controllers
         }
 
         /// <summary>
-        /// Получить список всех сотрудников
+        ///     Получить список всех сотрудников
         /// </summary>
         /// <returns>Список сотрудников</returns>
         [HttpGet]
@@ -46,7 +43,7 @@ namespace Application.Controllers
         }
 
         /// <summary>
-        /// Получить сотрудника по ID
+        ///     Получить сотрудника по ID
         /// </summary>
         /// <param name="id">ID сотрудника</param>
         /// <returns>Информация о сотруднике</returns>
@@ -67,7 +64,7 @@ namespace Application.Controllers
         }
 
         /// <summary>
-        /// Создать нового сотрудника
+        ///     Создать нового сотрудника
         /// </summary>
         /// <param name="createEmployeeDto">Данные для создания сотрудника</param>
         /// <returns>Созданный сотрудник</returns>
@@ -86,7 +83,7 @@ namespace Application.Controllers
         }
 
         /// <summary>
-        /// Обновить существующего сотрудника
+        ///     Обновить существующего сотрудника
         /// </summary>
         /// <param name="id">ID сотрудника</param>
         /// <param name="updateEmployeeDto">Данные для обновления сотрудника</param>
@@ -114,7 +111,7 @@ namespace Application.Controllers
         }
 
         /// <summary>
-        /// Удалить сотрудника
+        ///     Удалить сотрудника
         /// </summary>
         /// <param name="id">ID сотрудника</param>
         /// <returns>Результат операции</returns>
@@ -134,4 +131,4 @@ namespace Application.Controllers
             }
         }
     }
-} 
+}

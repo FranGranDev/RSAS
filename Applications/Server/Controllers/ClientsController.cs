@@ -1,17 +1,14 @@
 using System.ComponentModel.DataAnnotations;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Authorization;
-using Application.Data.Repository;
 using Application.DTOs;
-using Application.Areas.Identity.Data;
 using Application.Exceptions;
 using Application.Services;
-using Application.Services.Clients;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Application.Controllers
 {
     /// <summary>
-    /// Контроллер для управления клиентами
+    ///     Контроллер для управления клиентами
     /// </summary>
     [Route("api/[controller]")]
     [ApiController]
@@ -26,7 +23,7 @@ namespace Application.Controllers
         }
 
         /// <summary>
-        /// Получить список всех клиентов
+        ///     Получить список всех клиентов
         /// </summary>
         /// <returns>Список клиентов</returns>
         [HttpGet]
@@ -45,7 +42,7 @@ namespace Application.Controllers
         }
 
         /// <summary>
-        /// Получить клиента по ID
+        ///     Получить клиента по ID
         /// </summary>
         /// <param name="id">ID клиента</param>
         /// <returns>Информация о клиенте</returns>
@@ -66,7 +63,7 @@ namespace Application.Controllers
         }
 
         /// <summary>
-        /// Создать нового клиента
+        ///     Создать нового клиента
         /// </summary>
         /// <param name="createClientDto">Данные для создания клиента</param>
         /// <returns>Созданный клиент</returns>
@@ -85,7 +82,7 @@ namespace Application.Controllers
         }
 
         /// <summary>
-        /// Обновить существующего клиента
+        ///     Обновить существующего клиента
         /// </summary>
         /// <param name="id">ID клиента</param>
         /// <param name="updateClientDto">Данные для обновления клиента</param>
@@ -113,7 +110,7 @@ namespace Application.Controllers
         }
 
         /// <summary>
-        /// Удалить клиента
+        ///     Удалить клиента
         /// </summary>
         /// <param name="id">ID клиента</param>
         /// <returns>Результат операции</returns>
@@ -133,4 +130,4 @@ namespace Application.Controllers
             }
         }
     }
-} 
+}

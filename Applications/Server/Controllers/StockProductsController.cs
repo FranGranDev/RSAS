@@ -1,6 +1,4 @@
-using Application.Data.Repository;
 using Application.DTOs;
-using Application.Services.Repository;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -124,4 +122,4 @@ namespace Application.Controllers
             return NoContent();
         }
     }
-} 
+}

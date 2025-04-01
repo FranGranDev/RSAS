@@ -3,6 +3,7 @@ using Application.Data;
 using Application.Model.Orders;
 using Application.Model.Sales;
 using Application.Model.Stocks;
+using Application.Models;
 using Application.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -362,7 +363,7 @@ namespace Application.Areas.Admin.Pages.Test
                     ClientName = randomNames[random.Next(0, randomNames.Count)],
                     ContactPhone = randomPhones[random.Next(0, randomPhones.Count)],
 
-                    PaymentType = saleTypes == SaleTypes.Wholesale ? PaymentTypes.Bank : PaymentTypes.Cash
+                    PaymentType = saleTypes == SaleTypes.Wholesale ? Order.PaymentTypes.Bank : Order.PaymentTypes.Cash
                 };
 
                 var delivery = randomDelivery[random.Next(0, randomDelivery.Count)];

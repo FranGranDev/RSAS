@@ -1,5 +1,3 @@
-using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace Application.DTOs
@@ -58,4 +56,4 @@ namespace Application.DTOs
         [StringLength(100, ErrorMessage = "Категория товара не должна превышать 100 символов")]
         public string Category { get; set; }
     }
-} 
+}

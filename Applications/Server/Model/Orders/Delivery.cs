@@ -1,7 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel;
-
-namespace Application.Model.Orders
+﻿namespace Application.Models
 {
     public class Delivery
     {

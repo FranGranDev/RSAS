@@ -1,10 +1,8 @@
 ﻿@page
-@model IndexModel
-@using Application.Areas.Identity.Data
-@using Application.Services;
-@using Application.Services.Repository
-@using Microsoft.AspNetCore.Identity;
+@using Microsoft.AspNetCore.Identity
 @using Microsoft.AspNetCore.Mvc.TagHelpers
+@using Application.Models
+@model IndexModel
 
 @inject SignInManager<AppUser> SignInManager
 @inject UserManager<AppUser> UserManager
@@ -15,9 +13,9 @@
 }
 
 <div class="text-center">
-    <br />
+    <br/>
     <h1 class="display-4">Добро пожаловать</h1>
-    <br />
+    <br/>
 
 
     <div class="mx-auto col-md-8 text-center">
@@ -28,7 +26,7 @@
             {
                 <div class="container">
                     <h3>Совершайте заказы из обширного каталога товаров</h3>
-                    <hr />
+                    <hr/>
                     <div class="row">
                         <div class="col-md-4">
                             <a class="btn btn-primary btn-lg col-12" asp-page="/User/Catalog">Каталог</a>
@@ -46,7 +44,7 @@
             {
                 <div class="container">
                     <h3>Совершайте оптовые заказы из обширного каталога товаров</h3>
-                    <hr />
+                    <hr/>
                     <div class="row">
                         <div class="col-md-4">
                             <a class="btn btn-primary btn-lg col-12" asp-page="/Companies/Catalog">Каталог</a>
@@ -66,7 +64,7 @@
 
                 <div class="container">
                     <h3>Вы вошли как @employee.Role</h3>
-                    <hr />
+                    <hr/>
                     <div class="row">
                         <div class="col-md-4">
                             <a class="btn btn-primary btn-lg col-12" asp-area="Admin" asp-page="/Stores/Index">Управление Складами</a>
@@ -75,7 +73,7 @@
                             <a class="btn btn-primary btn-lg col-12" asp-area="Admin" asp-page="/Products/Index">Управление Товарами</a>
                         </div>
                     </div>
-                    <br />
+                    <br/>
                     <div class="row">
                         <div class="col-md-6">
                             <a class="btn btn-primary btn-lg col-12" asp-area="Admin" asp-page="/Employees/Index">Сотрудники</a>
@@ -92,7 +90,7 @@
 
                 <div class="container">
                     <h3>Вы вошли как @employee.Role</h3>
-                    <hr />
+                    <hr/>
                     <div class="row">
                         <div class="col-md-12">
                             <a class="btn btn-primary btn-lg col-12" asp-area="Manager" asp-page="/Orders/Index">Управление заказами</a>
@@ -102,7 +100,7 @@
             }
 
 
-            <hr />
+            <hr/>
             <div class="row text-center">
                 <div class="col-md-8">
                     <a class="btn btn-primary btn-lg col-12" asp-area="Identity" asp-page="/Account/About/Index">Редактировать Аккаунт</a>
@@ -122,12 +120,12 @@
                     <a class="btn btn-primary btn-lg col-10" asp-area="Identity" asp-page="/Account/Login">Войти</a>
                 </div>
             </div>
-            <hr />
+            <hr/>
             <h4>Либо зарегестрируйтесь</h4>
             <div class="row">
                 <div class="col-md-12">
                     <a class="btn btn-primary btn-lg col-10" asp-area="Identity" asp-page="/Account/RegisterClient">Регистрация Клиента</a>
-                    <hr />
+                    <hr/>
                     <a class="btn btn-primary btn-lg col-10" asp-area="Identity" asp-page="/Account/RegisterCompany">Регистрация Компании</a>
                 </div>
             </div>

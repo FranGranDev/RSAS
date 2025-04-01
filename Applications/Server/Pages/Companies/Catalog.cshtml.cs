@@ -1,14 +1,8 @@
-using Application.Model.Stocks;
+using Application.Models;
 using Application.Services;
 using Application.ViewModel.Catalog;
-using Application.ViewModel.Data;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Caching.Memory;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace Application.Pages.Companies
 {
@@ -18,15 +12,14 @@ namespace Application.Pages.Companies
 
         public CatalogModel(DataManager dataManager, IMemoryCache memoryCache) : base(dataManager, memoryCache)
         {
-
         }
 
         public override IActionResult OnPostOrder()
         {
             var products = CachedProducts;
-            if(products.Select(x => x.TakenCount * x.ProductPrice).Sum() < minTotalPrice)
+            if (products.Select(x => x.TakenCount * x.ProductPrice).Sum() < minTotalPrice)
             {
-                ModelState.AddModelError("sum", $"Ìèíèìàëüíàÿ ñóììà çàêàçà {minTotalPrice}{CurrencySettings.Symbol}");
+                ModelState.AddModelError("sum", $"ÐœÐ¸Ð½Ð¸Ð¼Ð°Ð»ÑŒÐ½Ð°Ñ ÑÑƒÐ¼Ð¼Ð° Ð·Ð°ÐºÐ°Ð·Ð° {minTotalPrice}{CurrencySettings.Symbol}");
                 return Page();
             }
 

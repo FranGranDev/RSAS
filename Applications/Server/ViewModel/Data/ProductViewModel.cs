@@ -1,8 +1,8 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel;
-using Application.Model.Stocks;
-using Application.Services;
+﻿using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.Configuration;
+using Application.Models;
+using Application.Services;
 
 namespace Application.ViewModel.Data
 {
@@ -10,8 +10,8 @@ namespace Application.ViewModel.Data
     {
         public ProductViewModel()
         {
-
         }
+
         public ProductViewModel(Product product)
         {
             Id = product.Id;
@@ -26,24 +26,23 @@ namespace Application.ViewModel.Data
         public int Id { get; set; }
 
 
-        [DisplayName("Название")]
-        [Required]
-        public string Name { get; set; }
+        [DisplayName("Название")] [Required] public string Name { get; set; }
 
 
         [DisplayName($"Оптовая цена {CurrencySettings.Symbol}")]
         [DataType(DataType.Currency)]
-        [Required, Range(0, double.MaxValue)]
+        [Required]
+        [Range(0, double.MaxValue)]
         public decimal WholesalePrice { get; set; }
 
 
         [DisplayName($"Розничная цена {CurrencySettings.Symbol}")]
         [DataType(DataType.Currency)]
-        [Required, Range(0, double.MaxValue)]
+        [Required]
+        [Range(0, double.MaxValue)]
         public decimal RetailPrice { get; set; }
 
-        [DisplayName("Описание")]
-        public string Description { get; set; }
+        [DisplayName("Описание")] public string Description { get; set; }
 
         [DisplayName("Штрих-код")]
         [Required]
@@ -55,12 +54,13 @@ namespace Application.ViewModel.Data
         [StringLength(100)]
         public string Category { get; set; }
     }
-    public class QuantityProductViewModel: ProductViewModel
+
+    public class QuantityProductViewModel : ProductViewModel
     {
         public QuantityProductViewModel()
         {
-
         }
+
         public QuantityProductViewModel(Product product) : base(product)
         {
             Quantity = product.StockProducts

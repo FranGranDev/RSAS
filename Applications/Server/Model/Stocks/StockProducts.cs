@@ -1,17 +1,19 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Application.Model.Stocks
+namespace Application.Models
 {
     public class StockProducts
     {
         [ForeignKey(nameof(StockId))]
-        [InverseProperty(nameof(Model.Stocks.Stock.StockProducts))]
+        [InverseProperty(nameof(StockProducts))]
         public int StockId { get; set; }
+
         public virtual Stock Stock { get; set; }
 
         [ForeignKey(nameof(ProductId))]
-        [InverseProperty(nameof(Stocks.Product.StockProducts))]
+        [InverseProperty(nameof(StockProducts))]
         public int ProductId { get; set; }
+
         public virtual Product Product { get; set; }
 
         public int Quantity { get; set; }

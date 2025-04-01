@@ -1,6 +1,4 @@
-using System;
-using System.Collections.Generic;
-using Application.Model.Orders;
+using Application.Models;
 
 namespace Application.DTOs
 {
@@ -44,4 +42,4 @@ namespace Application.DTOs
         public IEnumerable<UpdateOrderProductDto> Products { get; set; }
         public UpdateDeliveryDto Delivery { get; set; }
     }
-} 
+}

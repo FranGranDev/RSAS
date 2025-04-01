@@ -1,4 +1,5 @@
 using Application.Model.Stocks;
+using Application.Models;
 using Application.Services;
 using Application.ViewModel.Data;
 using Microsoft.AspNetCore.Authorization;

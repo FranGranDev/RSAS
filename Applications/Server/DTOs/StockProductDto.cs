@@ -1,5 +1,3 @@
-using System;
-
 namespace Application.DTOs
 {
     public class StockProductDto
@@ -28,4 +26,4 @@ namespace Application.DTOs
         public int Quantity { get; set; }
         public decimal Price { get; set; }
     }
-} 
+}

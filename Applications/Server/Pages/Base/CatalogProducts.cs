@@ -1,5 +1,4 @@
-﻿using Application.Services;
-using Application.ViewModel.Catalog;
+﻿using Application.ViewModel.Catalog;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Caching.Memory;
 
@@ -7,16 +6,16 @@ namespace Application.Pages
 {
     public class CatalogProducts : PageModel
     {
+        private readonly IMemoryCache memoryCache;
+
         public CatalogProducts(IMemoryCache memoryCache)
         {
             this.memoryCache = memoryCache;
         }
 
-        private readonly IMemoryCache memoryCache;
-
 
         /// <summary>
-        /// Return a copy of self
+        ///     Return a copy of self
         /// </summary>
         public IEnumerable<CatalogItemViewModel> CachedProducts
         {
@@ -30,10 +29,7 @@ namespace Application.Pages
 
                 return null;
             }
-            set
-            {
-                memoryCache.Set($"{User.Identity.Name}_Products", value);
-            }
+            set => memoryCache.Set($"{User.Identity.Name}_Products", value);
         }
     }
 }

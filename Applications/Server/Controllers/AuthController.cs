@@ -1,6 +1,6 @@
 using System.Security.Claims;
-using Application.Areas.Identity.Data;
 using Application.DTOs;
+using Application.Models;
 using Application.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -12,9 +12,9 @@ namespace Application.Controllers
     [Route("api/[controller]")]
     public class AuthController : ControllerBase
     {
-        private readonly UserManager<AppUser> _userManager;
-        private readonly SignInManager<AppUser> _signInManager;
         private readonly IJwtService _jwtService;
+        private readonly SignInManager<AppUser> _signInManager;
+        private readonly UserManager<AppUser> _userManager;
 
         public AuthController(
             UserManager<AppUser> userManager,
@@ -129,4 +129,4 @@ namespace Application.Controllers
             });
         }
     }
-} 
+}

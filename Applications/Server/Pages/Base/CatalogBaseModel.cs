@@ -1,34 +1,29 @@
-﻿using Application.Model.Stocks;
-using Application.Services;
-using Application.ViewModel.Catalog;
-using Application.ViewModel.Data;
+﻿using Application.ViewModel.Catalog;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Caching.Memory;
-using System.Collections.Generic;
 
 namespace Application.Pages
 {
     [Authorize(Roles = "Client, Company, Admin")]
     public abstract class CatalogBaseModel : CatalogProducts
     {
+        protected readonly DataManager dataManager;
+
         public CatalogBaseModel(DataManager dataManager, IMemoryCache memoryCache) : base(memoryCache)
         {
             this.dataManager = dataManager;
         }
 
-        protected readonly DataManager dataManager;
-
-
 
         public abstract List<CatalogItemViewModel> CreateProducts();
+
         public void UpdateProducts()
         {
             var oldProducts = CachedProducts;
             var newProducts = CreateProducts();
 
-            foreach(var product in newProducts)
+            foreach (var product in newProducts)
             {
                 var oldProduct = oldProducts.FirstOrDefault(p => p.Id == product.Id);
                 if (oldProduct != null)
@@ -54,12 +49,14 @@ namespace Application.Pages
 
             return Page();
         }
+
         public abstract IActionResult OnPostOrder();
 
         public IActionResult OnGetProducts()
         {
             return Partial("_CatalogPartial", CachedProducts);
         }
+
         public IActionResult OnGetCartInfo()
         {
             var products = CachedProducts;
@@ -67,17 +64,19 @@ namespace Application.Pages
             CartInfoViewModel cart = new()
             {
                 Quantity = products.Select(x => x.TakenCount).Sum(),
-                TotalPrice = products.Select(x => x.ProductPrice * x.TakenCount).Sum(),
+                TotalPrice = products.Select(x => x.ProductPrice * x.TakenCount).Sum()
             };
 
             return Partial("_CartInfoPartial", cart);
         }
+
         public IActionResult OnPostClear()
         {
             CachedProducts = CreateProducts();
 
             return Partial("_CatalogPartial", CachedProducts);
         }
+
         public IActionResult OnPostSearch(string searchString)
         {
             var products = CachedProducts;
@@ -94,6 +93,7 @@ namespace Application.Pages
 
             return Partial("_CatalogPartial", products);
         }
+
         public IActionResult OnPostSort(string sortBy, string sortOrder)
         {
             var products = CachedProducts;
@@ -116,6 +116,7 @@ namespace Application.Pages
                     {
                         products = products.OrderByDescending(p => p.Name);
                     }
+
                     break;
                 case "price":
                     if (sortOrder == "asc")
@@ -126,6 +127,7 @@ namespace Application.Pages
                     {
                         products = products.OrderByDescending(p => p.ProductPrice);
                     }
+
                     break;
                 case "description":
                     if (sortOrder == "asc")
@@ -136,6 +138,7 @@ namespace Application.Pages
                     {
                         products = products.OrderByDescending(p => p.Description);
                     }
+
                     break;
                 case "quantity":
                     if (sortOrder == "asc")
@@ -146,6 +149,7 @@ namespace Application.Pages
                     {
                         products = products.OrderByDescending(p => p.Quantity);
                     }
+
                     break;
                 case "taken":
                     if (sortOrder == "asc")
@@ -156,6 +160,7 @@ namespace Application.Pages
                     {
                         products = products.OrderByDescending(p => p.TakenCount);
                     }
+
                     break;
                 default:
                     products = products.OrderBy(p => p.Name);
@@ -164,11 +169,12 @@ namespace Application.Pages
 
             return Partial("_CatalogPartial", products);
         }
+
         public IActionResult OnPostAdd(int productId, int quantity)
         {
             var products = CachedProducts;
 
-            CatalogItemViewModel product = products.FirstOrDefault(x => x.Id == productId);
+            var product = products.FirstOrDefault(x => x.Id == productId);
             if (product != null)
             {
                 product.TakenCount += quantity;
@@ -180,11 +186,12 @@ namespace Application.Pages
 
             return new JsonResult(new { quantity = product.TakenCount });
         }
+
         public IActionResult OnPostQuantity(int productId, int quantity)
         {
             var products = CachedProducts;
 
-            CatalogItemViewModel product = products.FirstOrDefault(x => x.Id == productId);
+            var product = products.FirstOrDefault(x => x.Id == productId);
             if (product != null)
             {
                 quantity = Math.Max(quantity, 0);

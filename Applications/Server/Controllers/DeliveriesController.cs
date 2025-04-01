@@ -1,13 +1,7 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using Application.DTOs;
+using Application.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Application.DTOs;
-using Application.Model.Orders;
-using Application.Services;
-using Application.Services.Repository;
 
 namespace Application.Controllers
 {
@@ -49,7 +43,9 @@ namespace Application.Controllers
         {
             var order = _orderStore.Get(id);
             if (order?.Delivery == null)
+            {
                 return NotFound();
+            }
 
             var deliveryDto = new DeliveryDto
             {
@@ -71,10 +67,14 @@ namespace Application.Controllers
         {
             var order = _orderStore.Get(createDeliveryDto.OrderId);
             if (order == null)
+            {
                 return NotFound("Заказ не найден");
+            }
 
             if (order.Delivery != null)
+            {
                 return BadRequest("Доставка для этого заказа уже существует");
+            }
 
             order.Delivery = new Delivery
             {
@@ -95,10 +95,14 @@ namespace Application.Controllers
         {
             var order = _orderStore.Get(id);
             if (order?.Delivery == null)
+            {
                 return NotFound();
+            }
 
             if (order.State == Order.States.Cancelled)
+            {
                 return BadRequest("Нельзя изменить доставку отмененного заказа");
+            }
 
             order.Delivery.DeliveryDate = updateDeliveryDto.DeliveryDate;
             order.Delivery.City = updateDeliveryDto.City;
@@ -116,14 +120,18 @@ namespace Application.Controllers
         {
             var order = _orderStore.Get(id);
             if (order?.Delivery == null)
+            {
                 return NotFound();
+            }
 
             if (order.State == Order.States.Completed)
+            {
                 return BadRequest("Нельзя удалить доставку завершенного заказа");
+            }
 
             order.Delivery = null;
             _orderStore.Save(order);
             return NoContent();
         }
     }
-} 
+}

@@ -4,9 +4,7 @@ namespace Application.ViewModel.Catalog
 {
     public class ContactInfoViewModel : InputViewModel
     {
-        [Required]
-        [Display(Name = "ФИО")]
-        public string FullName { get; set; }
+        [Required] [Display(Name = "ФИО")] public string FullName { get; set; }
 
         [Required]
         [Phone]

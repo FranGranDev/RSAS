@@ -1,5 +1,5 @@
 using Application.Data;
-using Application.Model.Orders;
+using Application.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace Server.Services.Repository
@@ -39,4 +39,4 @@ namespace Server.Services.Repository
                 .AnyAsync(d => d.OrderId == orderId);
         }
     }
-} 
+}

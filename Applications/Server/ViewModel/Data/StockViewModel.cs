@@ -1,7 +1,7 @@
-﻿using Application.Model.Stocks;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using Application.Models;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace Application.ViewModel.Data
 {
@@ -9,8 +9,8 @@ namespace Application.ViewModel.Data
     {
         public StockViewModel()
         {
-
         }
+
         public StockViewModel(Stock stock)
         {
             Id = stock.Id;
@@ -21,17 +21,11 @@ namespace Application.ViewModel.Data
 
         public int Id { get; set; }
 
-        [DisplayName("Название")]
-        [Required]
-        public string Name { get; set; }
+        [DisplayName("Название")] [Required] public string Name { get; set; }
 
-        [DisplayName("Адрес")]
-        [Required]
-        public string Location { get; set; }
+        [DisplayName("Адрес")] [Required] public string Location { get; set; }
 
-        [DisplayName("Тип склада")]
-        [Required]
-        public Stock.Types SaleType { get; set; }
+        [DisplayName("Тип склада")] [Required] public Stock.Types SaleType { get; set; }
 
         public IEnumerable<SelectListItem> GetEnumList()
         {
@@ -44,8 +38,8 @@ namespace Application.ViewModel.Data
                         .GetMember(e.ToString())[0]
                         .GetCustomAttributes(typeof(DisplayAttribute), false)
                         .FirstOrDefault() is DisplayAttribute attribute
-                            ? attribute.Name
-                            : e.ToString()
+                        ? attribute.Name
+                        : e.ToString()
                 });
         }
     }
@@ -54,8 +48,8 @@ namespace Application.ViewModel.Data
     {
         public QuantityStockViewModel()
         {
-
         }
+
         public QuantityStockViewModel(Stock stock) : base(stock)
         {
             if (stock.StockProducts == null)

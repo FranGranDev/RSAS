@@ -1,7 +1,4 @@
-﻿using Application.Model.Stocks;
-using System.ComponentModel.DataAnnotations;
-
-namespace Application.Model.Orders
+﻿namespace Application.Models
 {
     public class OrderProduct
     {
@@ -11,7 +8,7 @@ namespace Application.Model.Orders
         public int ProductId { get; set; }
         public virtual Product Product { get; set; }
 
-        
+
         public int Quantity { get; set; }
 
         //duplicate info, for analytics.

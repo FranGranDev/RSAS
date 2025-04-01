@@ -1,6 +1,6 @@
 ﻿@page
 @using Microsoft.AspNetCore.Mvc.TagHelpers
-@model Application.Pages.User.OrderingModel
+@model OrderingModel
 @{
     ViewData["Title"] = "Оформление заказа";
     ViewData["ClientValidationEnabled"] = false;
@@ -13,17 +13,17 @@
                 <div class="card-header">
                     <h1>@ViewData["Title"]</h1>
                 </div>
-                @if(Model.Products != null && Model.Products.Count() > 0)
+                @if (Model.Products != null && Model.Products.Count() > 0)
                 {
                     <form method="post" asp-page-handler="Order">
-                        
+
                         <div class="card-body">
                             <h3>Товары</h3>
                             <div class="overflow-auto" style="max-height: 50vh">
-                                <partial name="_OrderPartial" model="Model.Products" />
+                                <partial name="_OrderPartial" model="Model.Products"/>
                             </div>
                         </div>
-                        <hr />
+                        <hr/>
                         <div class="card-body">
                             <h3>Контактная информация</h3>
                             <div>
@@ -34,14 +34,14 @@
                         <div class="card-body">
                             <h3>Доставка</h3>
                             <div>
-                                <partial name="_DeliveryPartial" model="Model.Delivery" />
+                                <partial name="_DeliveryPartial" model="Model.Delivery"/>
                             </div>
                         </div>
-                        <hr />
+                        <hr/>
                         <div class="card-body">
                             <h3>Оплата</h3>
                             <div>
-                                <partial name="_PaymentPartial" model="Model.Payment" />
+                                <partial name="_PaymentPartial" model="Model.Payment"/>
                             </div>
                         </div>
 

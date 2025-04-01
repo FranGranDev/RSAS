@@ -1,9 +1,5 @@
-﻿using System.Linq;
-using System.Threading.Tasks;
-using Application.Areas.Identity.Data;
-using Microsoft.AspNetCore.Authorization;
+﻿using Application.Models;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 
@@ -13,18 +9,18 @@ namespace Application.MyTagHelpers
     public class ShowIfRoleTagHelper : TagHelper
     {
         private readonly IActionContextAccessor actionContext;
-        private readonly UserManager<AppUser> userManager;
         private readonly RoleManager<IdentityRole> roleManager;
+        private readonly UserManager<AppUser> userManager;
 
-        public ShowIfRoleTagHelper(IActionContextAccessor actionContext, UserManager<AppUser> userManager, RoleManager<IdentityRole> roleManager)
+        public ShowIfRoleTagHelper(IActionContextAccessor actionContext, UserManager<AppUser> userManager,
+            RoleManager<IdentityRole> roleManager)
         {
             this.actionContext = actionContext;
             this.userManager = userManager;
             this.roleManager = roleManager;
         }
 
-        [HtmlAttributeName("if-role")]
-        public string Role { get; set; }
+        [HtmlAttributeName("if-role")] public string Role { get; set; }
 
         public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
         {

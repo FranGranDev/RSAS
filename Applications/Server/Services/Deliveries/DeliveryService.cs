@@ -1,10 +1,10 @@
 using Application.DTOs;
 using Application.Exceptions;
-using Application.Model.Orders;
+using Application.Models;
 using AutoMapper;
 using Server.Services.Repository;
 
-namespace Server.Services.Deliveries
+namespace Application.Services
 {
     public class DeliveryService : IDeliveryService
     {
@@ -27,7 +27,9 @@ namespace Server.Services.Deliveries
         {
             var delivery = await _deliveryRepository.GetByIdAsync(id);
             if (delivery == null)
+            {
                 throw new BusinessException($"Доставка с ID {id} не найдена");
+            }
 
             return _mapper.Map<DeliveryDto>(delivery);
         }
@@ -36,7 +38,9 @@ namespace Server.Services.Deliveries
         {
             var delivery = await _deliveryRepository.GetByOrderIdAsync(orderId);
             if (delivery == null)
+            {
                 throw new BusinessException($"Доставка для заказа с ID {orderId} не найдена");
+            }
 
             return _mapper.Map<DeliveryDto>(delivery);
         }
@@ -44,7 +48,9 @@ namespace Server.Services.Deliveries
         public async Task<DeliveryDto> CreateDeliveryAsync(CreateDeliveryDto createDeliveryDto)
         {
             if (await _deliveryRepository.ExistsByOrderIdAsync(createDeliveryDto.OrderId))
+            {
                 throw new BusinessException($"Доставка для заказа с ID {createDeliveryDto.OrderId} уже существует");
+            }
 
             var delivery = _mapper.Map<Delivery>(createDeliveryDto);
             await _deliveryRepository.AddAsync(delivery);
@@ -56,10 +62,14 @@ namespace Server.Services.Deliveries
         {
             var delivery = await _deliveryRepository.GetByIdAsync(id);
             if (delivery == null)
+            {
                 throw new BusinessException($"Доставка с ID {id} не найдена");
+            }
 
             if (delivery.Order.State == Order.States.Cancelled)
+            {
                 throw new BusinessException("Нельзя изменить доставку отмененного заказа");
+            }
 
             _mapper.Map(updateDeliveryDto, delivery);
             await _deliveryRepository.UpdateAsync(delivery);
@@ -71,10 +81,14 @@ namespace Server.Services.Deliveries
         {
             var delivery = await _deliveryRepository.GetByIdAsync(id);
             if (delivery == null)
+            {
                 throw new BusinessException($"Доставка с ID {id} не найдена");
+            }
 
             if (delivery.Order.State == Order.States.Completed)
+            {
                 throw new BusinessException("Нельзя удалить доставку завершенного заказа");
+            }
 
             await _deliveryRepository.DeleteAsync(delivery);
         }
@@ -91,4 +105,4 @@ namespace Server.Services.Deliveries
             return _mapper.Map<IEnumerable<DeliveryDto>>(deliveries);
         }
     }
-} 
+}

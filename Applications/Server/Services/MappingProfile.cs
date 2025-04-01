@@ -1,8 +1,5 @@
-using Application.Areas.Identity.Data;
 using Application.DTOs;
-using Application.Model.Orders;
-using Application.Model.Sales;
-using Application.Model.Stocks;
+using Application.Models;
 using AutoMapper;
 
 namespace Application.Services

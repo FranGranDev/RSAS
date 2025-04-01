@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Application.Areas.Identity.Data
+namespace Application.Models
 {
     public class Company
     {

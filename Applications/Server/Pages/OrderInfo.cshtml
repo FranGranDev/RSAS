@@ -1,7 +1,6 @@
 ﻿@page
-@using Application.Extensions;
 @using Microsoft.AspNetCore.Mvc.TagHelpers
-@model Application.Pages.OrderInfoModel
+@model OrderInfoModel
 
 @{
     ViewData["Title"] = "Информация о заказе";
@@ -34,22 +33,22 @@
                 <div class="card-body">
                     <h3>Товары</h3>
                     <div class="overflow-auto" style="max-height: 50vh">
-                        <partial name="_OrderPartial" model="Model.Products" />
+                        <partial name="_OrderPartial" model="Model.Products"/>
                     </div>
                 </div>
-                <hr />
+                <hr/>
                 <div class="card-body">
                     <h3>Доставка</h3>
                     <div>
-                        <partial name="_DeliveryPartial" model="Model.Delivery" />
+                        <partial name="_DeliveryPartial" model="Model.Delivery"/>
                     </div>
                 </div>
-                @if(Model.Order.Type == Application.Model.Sales.SaleTypes.Wholesale)
+                @if (Model.Order.Type == Application.Model.Sales.SaleTypes.Wholesale)
                 {
                     <div class="card-body">
                         <h3>Реквезиты для оплаты</h3>
                         <div>
-                            <partial name="_CompanyPartial" model="Model.AppCompany" />
+                            <partial name="_CompanyPartial" model="Model.AppCompany"/>
                         </div>
                     </div>
                 }

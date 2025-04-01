@@ -1,21 +1,18 @@
 using System.Globalization;
 using System.Reflection;
 using System.Text;
-using Application.Areas.Identity.Data;
 using Application.Data;
 using Application.Filters;
 using Application.Middleware;
+using Application.Models;
 using Application.Services;
-using Application.Services.Clients;
-using Application.Services.Employees;
-using Application.Services.Products;
 using Application.Services.Repository;
 using Application.Services.Stocks;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using Server.Services.Deliveries;
-using Server.Services.Orders;
+using Microsoft.OpenApi.Models;
 using Server.Services.Repository;
 using Server.Services.Sales;
 

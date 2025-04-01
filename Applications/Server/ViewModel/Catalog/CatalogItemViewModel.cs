@@ -1,7 +1,5 @@
-﻿using Application.ViewModel.Data;
-using Application.Model;
-using Application.Model.Stocks;
-using Application.Model.Sales;
+﻿using Application.Models;
+using Application.ViewModel.Data;
 
 namespace Application.ViewModel.Catalog
 {
@@ -9,8 +7,9 @@ namespace Application.ViewModel.Catalog
     {
         public CatalogItemViewModel(SaleTypes saleType)
         {
-            PriceType = saleType;   
+            PriceType = saleType;
         }
+
         public CatalogItemViewModel(SaleTypes saleType, Product product) : base(product)
         {
             PriceType = saleType;
@@ -18,20 +17,20 @@ namespace Application.ViewModel.Catalog
 
 
         public int TakenCount { get; set; }
+
         public decimal ProductPrice
         {
             get
             {
-                if(PriceType == SaleTypes.Retail)
+                if (PriceType == SaleTypes.Retail)
                 {
                     return RetailPrice;
                 }
-                else
-                {
-                    return WholesalePrice;
-                }
+
+                return WholesalePrice;
             }
         }
+
         public decimal TotalPrice { get; set; }
         public SaleTypes PriceType { get; set; }
     }

@@ -1,4 +1,4 @@
-using Application.Model.Orders;
+using Application.Models;
 
 namespace Server.Services.Repository
 {
@@ -12,4 +12,4 @@ namespace Server.Services.Repository
         Task<IEnumerable<Order>> GetByDateRangeAsync(DateTime startDate, DateTime endDate);
         Task<bool> ExistsByUserIdAsync(string userId);
     }
-} 
+}

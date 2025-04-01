@@ -1,19 +1,20 @@
-using Application.Areas.Identity.Data;
-using Application.Model.Orders;
-using Application.Services;
+using Application.Models;
 using Application.ViewModel.Catalog;
 using Application.ViewModel.Orders;
-using Application.ViewModel.Users;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.Extensions.Caching.Memory;
 
 namespace Application.Pages
 {
     public class OrderInfoModel : PageModel
     {
+        private readonly IConfiguration configuration;
+        private readonly DataManager dataManager;
+
+        private readonly UserManager<AppUser> userManager;
+
         public OrderInfoModel(DataManager dataManager, UserManager<AppUser> userManager, IConfiguration configuration)
         {
             this.userManager = userManager;
@@ -21,24 +22,19 @@ namespace Application.Pages
             this.configuration = configuration;
         }
 
-        private readonly UserManager<AppUser> userManager;
-        private readonly DataManager dataManager;
-        private readonly IConfiguration configuration;
 
+        [BindProperty(SupportsGet = true)] public IEnumerable<CatalogItemViewModel> Products { get; set; }
 
-        [BindProperty(SupportsGet = true)]
-        public IEnumerable<CatalogItemViewModel> Products { get; set; }
-        [BindProperty(SupportsGet = true)]
-        public OrderViewModel Order { get; set; }
-        [BindProperty(SupportsGet = true)]
-        public DeliveryViewModel Delivery { get; set; }
-        [BindNever]
-        public CompanyViewModel AppCompany { get; set; }
+        [BindProperty(SupportsGet = true)] public OrderViewModel Order { get; set; }
+
+        [BindProperty(SupportsGet = true)] public DeliveryViewModel Delivery { get; set; }
+
+        [BindNever] public CompanyViewModel AppCompany { get; set; }
 
         public async Task<IActionResult> OnGet(int orderId)
         {
             Order order = dataManager.Orders.Get(orderId);
-            Order = new(order);
+            Order = new OrderViewModel(order);
 
             var user = await userManager.GetUserAsync(HttpContext.User);
             if (order.UserId != user.Id)
@@ -54,10 +50,10 @@ namespace Application.Pages
                     TakenCount = x.Quantity,
                     WholesalePrice = x.ProductPrice,
                     RetailPrice = x.ProductPrice,
-                    TotalPrice = x.ProductPrice * x.Quantity,
+                    TotalPrice = x.ProductPrice * x.Quantity
                 });
             Delivery delivery = order.Delivery;
-            Delivery = new DeliveryViewModel()
+            Delivery = new DeliveryViewModel
             {
                 DeliveryDate = delivery.DeliveryDate,
                 House = delivery.House,
@@ -65,12 +61,12 @@ namespace Application.Pages
                 Flat = delivery.Flat,
                 Street = delivery.Street,
                 PostalCode = delivery.PostalCode,
-                Disabled = true,
+                Disabled = true
             };
 
             AppCompany = new CompanyViewModel(configuration)
             {
-                Disabled = true,
+                Disabled = true
             };
 
             ModelState.Clear();

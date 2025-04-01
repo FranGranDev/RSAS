@@ -1,5 +1,5 @@
 using Application.Data;
-using Application.Model.Sales;
+using Application.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace Server.Services.Repository

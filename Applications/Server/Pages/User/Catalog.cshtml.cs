@@ -1,14 +1,7 @@
-using Application.Model.Stocks;
-using Application.Services;
+using Application.Models;
 using Application.ViewModel.Catalog;
-using Application.ViewModel.Data;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Caching.Memory;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace Application.Pages.User
 {
@@ -16,16 +9,15 @@ namespace Application.Pages.User
     {
         public CatalogModel(DataManager dataManager, IMemoryCache memoryCache) : base(dataManager, memoryCache)
         {
-
         }
 
 
         public override IActionResult OnPostOrder()
         {
             var products = CachedProducts;
-            if(products.Select(x => x.TakenCount).Sum() == 0)
+            if (products.Select(x => x.TakenCount).Sum() == 0)
             {
-                ModelState.AddModelError("sum", "Добавьте как минимум один товар в корзину");
+                ModelState.AddModelError("sum", "Р”РѕР±Р°РІСЊС‚Рµ РєР°Рє РјРёРЅРёРјСѓРј РѕРґРёРЅ С‚РѕРІР°СЂ РІ РєРѕСЂР·РёРЅСѓ");
                 return Page();
             }
 

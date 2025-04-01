@@ -1,6 +1,6 @@
 using Application.DTOs;
 
-namespace Application.Services.Clients
+namespace Application.Services
 {
     public interface IClientService
     {

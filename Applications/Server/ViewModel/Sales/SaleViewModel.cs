@@ -1,10 +1,8 @@
-﻿using Application.Model.Orders;
-using Application.Model.Sales;
+﻿using System.ComponentModel.DataAnnotations;
+using Application.Models;
 using Application.ViewModel.Catalog;
 using Application.ViewModel.Data;
 using Application.ViewModel.Orders;
-using Application.ViewModel.Users;
-using System.ComponentModel.DataAnnotations;
 
 namespace Application.ViewModel.Sales
 {
@@ -22,16 +20,16 @@ namespace Application.ViewModel.Sales
             SaleDate = sale.SaleDate;
             OrderDate = sale.Order.OrderDate;
 
-            ClientInfo = new ContactInfoViewModel()
+            ClientInfo = new ContactInfoViewModel
             {
                 FullName = OrderView.ClientName,
                 Phone = OrderView.ContactPhone,
-                Disabled = true,
+                Disabled = true
             };
             CompanyInfo = company;
 
             Delivery delivery = sale.Order.Delivery;
-            DeliveryView = new DeliveryViewModel()
+            DeliveryView = new DeliveryViewModel
             {
                 DeliveryDate = delivery.DeliveryDate,
                 House = delivery.House,
@@ -39,7 +37,7 @@ namespace Application.ViewModel.Sales
                 Flat = delivery.Flat,
                 Street = delivery.Street,
                 PostalCode = delivery.PostalCode,
-                Disabled = true,
+                Disabled = true
             };
 
             Products = sale.Order.Products;
@@ -58,19 +56,15 @@ namespace Application.ViewModel.Sales
         public CompanyViewModel CompanyInfo { get; set; }
 
 
-        [Display(Name = "Тип продажи")]
-        public SaleTypes SaleType { get; }
+        [Display(Name = "Тип продажи")] public SaleTypes SaleType { get; }
 
-        [Display(Name = "Дата заявки")]
-        public DateTime OrderDate { get; }
+        [Display(Name = "Дата заявки")] public DateTime OrderDate { get; }
 
-        [Display(Name = "Дата продажи")]
-        public DateTime SaleDate { get; }
+        [Display(Name = "Дата продажи")] public DateTime SaleDate { get; }
 
-        [Display(Name = "Выручка")]
-        public decimal Amount { get; }
-        [Display(Name = "Количество товаров")]
-        public int Quantity { get; }
+        [Display(Name = "Выручка")] public decimal Amount { get; }
+
+        [Display(Name = "Количество товаров")] public int Quantity { get; }
 
         public IEnumerable<OrderProduct> Products { get; }
     }

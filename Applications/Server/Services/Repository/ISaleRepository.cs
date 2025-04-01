@@ -1,4 +1,6 @@
-using Application.Model.Sales;
+
+
+using Application.Models;
 
 namespace Server.Services.Repository
 {

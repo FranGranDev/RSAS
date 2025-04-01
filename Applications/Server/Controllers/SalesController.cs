@@ -1,15 +1,7 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using Application.DTOs;
+using Application.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Application.DTOs;
-using Application.Model.Sales;
-using Application.Services;
-using Application.Model.Orders;
-using Application.Model.Stocks;
-using Application.Services.Repository;
 
 namespace Application.Controllers
 {
@@ -18,10 +10,10 @@ namespace Application.Controllers
     [Route("api/[controller]")]
     public class SalesController : ControllerBase
     {
-        private readonly ISalesStore _salesStore;
         private readonly IOrderStore _orderStore;
-        private readonly IStockStore _stockStore;
+        private readonly ISalesStore _salesStore;
         private readonly IStockProductsStore _stockProductsStore;
+        private readonly IStockStore _stockStore;
 
         public SalesController(
             ISalesStore salesStore,
@@ -63,7 +55,9 @@ namespace Application.Controllers
         {
             var sale = _salesStore.Get(id);
             if (sale == null)
+            {
                 return NotFound();
+            }
 
             var saleDto = new SaleDto
             {
@@ -88,23 +82,32 @@ namespace Application.Controllers
         {
             var order = _orderStore.Get(createSaleDto.OrderId);
             if (order == null)
+            {
                 return NotFound("Заказ не найден");
+            }
 
             if (order.State != Order.States.Completed)
+            {
                 return BadRequest("Заказ должен быть завершен");
+            }
 
             var stock = _stockStore.Get(createSaleDto.StockId);
             if (stock == null)
+            {
                 return NotFound("Склад не найден");
+            }
 
             // Проверяем наличие товаров на складе
             foreach (var orderProduct in order.Products)
             {
                 var stockProduct = _stockProductsStore.All
-                    .FirstOrDefault(sp => sp.StockId == createSaleDto.StockId && sp.ProductId == orderProduct.ProductId);
+                    .FirstOrDefault(sp =>
+                        sp.StockId == createSaleDto.StockId && sp.ProductId == orderProduct.ProductId);
 
                 if (stockProduct == null || stockProduct.Quantity < orderProduct.Quantity)
+                {
                     return BadRequest($"Недостаточно товара {orderProduct.Product.Name} на складе");
+                }
             }
 
             var sale = new Sale
@@ -140,10 +143,14 @@ namespace Application.Controllers
         {
             var sale = _salesStore.Get(id);
             if (sale == null)
+            {
                 return NotFound();
+            }
 
             if (sale.Status == SaleStatus.Cancelled)
+            {
                 return BadRequest("Нельзя изменить отмененную продажу");
+            }
 
             sale.OrderId = updateSaleDto.OrderId;
             sale.StockId = updateSaleDto.StockId;
@@ -158,7 +165,9 @@ namespace Application.Controllers
         {
             var sale = _salesStore.Get(id);
             if (sale == null)
+            {
                 return NotFound();
+            }
 
             if (sale.Status == SaleStatus.Completed)
             {
@@ -180,4 +189,4 @@ namespace Application.Controllers
             return NoContent();
         }
     }
-} 
+}

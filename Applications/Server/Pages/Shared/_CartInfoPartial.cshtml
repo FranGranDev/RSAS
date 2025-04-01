@@ -1,13 +1,13 @@
-﻿@using Application.Services;
+﻿@using Application.Services
 @model Application.ViewModel.Catalog.CartInfoViewModel
 
 <h2>Корзина</h2>
-<hr />
+<hr/>
 <div>
-    @if(Model.Quantity > 0)
+    @if (Model.Quantity > 0)
     {
         <h5>Количество: @Model.Quantity</h5>
-        <br />
+        <br/>
         <h5>Итого: @Model.TotalPrice @CurrencySettings.Symbol</h5>
     }
     else

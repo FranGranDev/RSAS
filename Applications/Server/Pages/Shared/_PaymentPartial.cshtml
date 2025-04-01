@@ -1,15 +1,14 @@
-﻿@using Application.ViewModel.Catalog;
-@using Microsoft.AspNetCore.Mvc.TagHelpers
-@using static Application.Model.Orders.Order;
-@model PaymentViewModel
+﻿@using Microsoft.AspNetCore.Mvc.TagHelpers
+@using Application.Models
+@model Application.ViewModel.Catalog.PaymentViewModel
 
 <div class="form-group">
     <div class="btn-group-toggle" data-toggle="buttons">
         <label class="btn btn-outline-primary">
-            <input type="radio" asp-for="PaymentType" value="@PaymentTypes.Cash" checked> Наличными
+            <input type="radio" asp-for="PaymentType" value="@Order.PaymentTypes.Cash" checked> Наличными
         </label>
         <label class="btn btn-outline-primary">
-            <input type="radio" asp-for="PaymentType" value="@PaymentTypes.Card"> Картой
+            <input type="radio" asp-for="PaymentType" value="@Order.PaymentTypes.Card"> Картой
         </label>
     </div>
 </div>

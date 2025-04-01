@@ -1,5 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc.ModelBinding;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace Application.ViewModel.Users
 {
@@ -8,6 +8,7 @@ namespace Application.ViewModel.Users
         [Required(ErrorMessage = "Необходимо заполнить поле {0}")]
         [Display(Name = "Имя")]
         public string FirstName { get; set; }
+
         [Required(ErrorMessage = "Необходимо заполнить поле {0}")]
         [Display(Name = "Фамилия")]
         public string LastName { get; set; }
@@ -26,7 +27,6 @@ namespace Application.ViewModel.Users
         [Display(Name = "Телефон")]
         public string Phone { get; set; }
 
-        [BindNever]
-        public string Id { get; set; }
+        [BindNever] public string Id { get; set; }
     }
 }

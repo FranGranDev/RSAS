@@ -1,17 +1,15 @@
-using Application.Areas.Identity.Data;
 using Application.DTOs;
 using Application.Exceptions;
-using Application.Model.Stocks;
+using Application.Models;
 using Application.Services.Repository;
-using Server.Services.Repository;
 using AutoMapper;
 
 namespace Application.Services.Stocks
 {
     public class StockService : IStockService
     {
-        private readonly IStockRepository _stockRepository;
         private readonly IMapper _mapper;
+        private readonly IStockRepository _stockRepository;
 
         public StockService(
             IStockRepository stockRepository,
@@ -73,7 +71,8 @@ namespace Application.Services.Stocks
             }
 
             // Проверяем, не существует ли уже склад по такому адресу
-            if (stock.Address != updateStockDto.Address && await _stockRepository.ExistsByAddressAsync(updateStockDto.Address))
+            if (stock.Address != updateStockDto.Address &&
+                await _stockRepository.ExistsByAddressAsync(updateStockDto.Address))
             {
                 throw new BusinessException("Склад по такому адресу уже существует");
             }

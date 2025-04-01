@@ -1,5 +1,6 @@
 ﻿@page
 @using Application.Extensions;
+@using Application.Models
 @using Microsoft.AspNetCore.Mvc.TagHelpers
 @using static Application.Model.Orders.Order;
 @model Application.Areas.Manager.Pages.OrderInfoModel
@@ -46,7 +47,7 @@
             <hr />
             <div class="card-body">
                 <h3>Доставка</h3>
-                @if (Model.OrderView.State != States.Cancelled)
+                @if (Model.OrderView.State != Order.States.Cancelled)
                 {
                     <form asp-page-handler="Delivery" method="post">
                         <div class="row">
@@ -74,7 +75,7 @@
                         <h3>Товары заявки</h3>
                     </div>
                     <div class="col-md-8">
-                        @if (Model.OrderView.State != States.Cancelled)
+                        @if (Model.OrderView.State != Order.States.Cancelled)
                         {
                             <label class="control-label"> Выбранный склад для реализации заявки</label>
                             <select id="stock-selector" asp-for="SelectedStock" asp-items="Model.StockList" class="form-control"

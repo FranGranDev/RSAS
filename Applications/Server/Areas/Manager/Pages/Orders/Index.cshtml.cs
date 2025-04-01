@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
+using Application.Models;
 using static Application.Model.Orders.Order;
 
 namespace Application.Areas.Manager
@@ -37,7 +38,7 @@ namespace Application.Areas.Manager
 
         public IActionResult OnGet()
         {
-            Filters = Enum.GetValues(typeof(States)).Cast<States>().Select(s => new SelectListItem
+            Filters = Enum.GetValues(typeof(Order.States)).Cast<Order.States>().Select(s => new SelectListItem
             {
                 Value = s.ToString(),
                 Text = EnumHelper.GetDisplayName(s),
@@ -163,10 +164,10 @@ namespace Application.Areas.Manager
                 return orders;
 
             List<string> filters = new(filtersString.Split(","));
-            List<States> states = new List<States>();
+            List<Order.States> states = new List<Order.States>();
             foreach (string filter in filters)
             {
-                states.Add((States)Enum.Parse(typeof(States), filter));
+                states.Add((Order.States)Enum.Parse(typeof(Order.States), filter));
             }
 
             return orders.Where(x => states.Contains(x.State));

@@ -1,17 +1,15 @@
-using Application.Areas.Identity.Data;
 using Application.DTOs;
 using Application.Exceptions;
-using Application.Model.Stocks;
+using Application.Models;
 using Application.Services.Repository;
-using Server.Services.Repository;
 using AutoMapper;
 
-namespace Application.Services.Products
+namespace Application.Services
 {
     public class ProductService : IProductService
     {
-        private readonly IProductRepository _productRepository;
         private readonly IMapper _mapper;
+        private readonly IProductRepository _productRepository;
 
         public ProductService(
             IProductRepository productRepository,
@@ -66,14 +64,14 @@ namespace Application.Services.Products
             }
 
             // Проверяем, не занято ли новое название другим товаром
-            if (product.Name != updateProductDto.Name && 
+            if (product.Name != updateProductDto.Name &&
                 await _productRepository.ExistsByNameAsync(updateProductDto.Name))
             {
                 throw new BusinessException("Товар с таким названием уже существует");
             }
 
             // Проверяем, не занят ли новый штрих-код другим товаром
-            if (product.Barcode != updateProductDto.Barcode && 
+            if (product.Barcode != updateProductDto.Barcode &&
                 await _productRepository.ExistsByBarcodeAsync(updateProductDto.Barcode))
             {
                 throw new BusinessException("Товар с таким штрих-кодом уже существует");

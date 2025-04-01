@@ -1,6 +1,5 @@
-using Application.Areas.Identity.Data;
 using Application.Data;
-using Application.Model.Stocks;
+using Application.Models;
 using Application.Services.Repository;
 using Microsoft.EntityFrameworkCore;
 
@@ -54,7 +53,7 @@ namespace Server.Services.Repository
         {
             return await _context.Products
                 .Include(p => p.StockProducts)
-                    .ThenInclude(sp => sp.Stock)
+                .ThenInclude(sp => sp.Stock)
                 .FirstOrDefaultAsync(p => p.Id == id);
         }
 
@@ -62,8 +61,8 @@ namespace Server.Services.Repository
         {
             return await _context.Products
                 .Include(p => p.StockProducts)
-                    .ThenInclude(sp => sp.Stock)
+                .ThenInclude(sp => sp.Stock)
                 .ToListAsync();
         }
     }
-} 
+}

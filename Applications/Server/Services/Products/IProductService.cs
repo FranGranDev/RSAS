@@ -1,6 +1,6 @@
 using Application.DTOs;
 
-namespace Application.Services.Products
+namespace Application.Services
 {
     public interface IProductService
     {

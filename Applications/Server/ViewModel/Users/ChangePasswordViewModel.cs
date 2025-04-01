@@ -10,7 +10,8 @@ namespace Application.ViewModel.Users
         public string OldPassword { get; set; }
 
         [Required(ErrorMessage = "Необходимо заполнить поле {0}")]
-        [StringLength(100, ErrorMessage = "{0} должен быть как минимум {2} и максимум {1} символов.", MinimumLength = 6)]
+        [StringLength(100, ErrorMessage = "{0} должен быть как минимум {2} и максимум {1} символов.",
+            MinimumLength = 6)]
         [DataType(DataType.Password)]
         [Display(Name = "Новый пароль")]
         public string Password { get; set; }

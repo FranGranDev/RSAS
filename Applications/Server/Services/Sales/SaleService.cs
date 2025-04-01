@@ -1,7 +1,6 @@
 using Application.DTOs;
 using Application.Exceptions;
-using Application.Model.Orders;
-using Application.Model.Sales;
+using Application.Models;
 using Application.Services.Repository;
 using AutoMapper;
 using Server.Services.Repository;

@@ -5,6 +5,7 @@ using Application.Extensions;
 using Application.Model.Orders;
 using Application.Model.Sales;
 using Application.Model.Stocks;
+using Application.Models;
 using Application.Services;
 using Application.ViewModel.Catalog;
 using Application.ViewModel.Data;
@@ -49,10 +50,10 @@ namespace Application.Areas.Manager.Pages
 
         public List<SelectListItem> StatesList { get; } = new List<SelectListItem>()
         {
-            new SelectListItem { Value = States.New.ToString(), Text = States.New.GetDisplayName() },
-            new SelectListItem { Value = States.InProcess.ToString(), Text = States.InProcess.GetDisplayName() },
-            new SelectListItem { Value = States.OnHold.ToString(), Text = States.OnHold.GetDisplayName() },
-            new SelectListItem { Value = States.Cancelled.ToString(), Text = States.Cancelled.GetDisplayName() },
+            new SelectListItem { Value = Order.States.New.ToString(), Text = Order.States.New.GetDisplayName() },
+            new SelectListItem { Value = Order.States.InProcess.ToString(), Text = Order.States.InProcess.GetDisplayName() },
+            new SelectListItem { Value = Order.States.OnHold.ToString(), Text = Order.States.OnHold.GetDisplayName() },
+            new SelectListItem { Value = Order.States.Cancelled.ToString(), Text = Order.States.Cancelled.GetDisplayName() },
         };
         public List<SelectListItem> StockList { get; set; }
 
@@ -203,7 +204,7 @@ namespace Application.Areas.Manager.Pages
             ModelState.Clear();
             if(!TryValidateModel(DeliveryDate))
             {
-                TempData["error"] = "Указано невозможное время доставки";
+                TempData["error"] = "РЈРєР°Р·Р°РЅРѕ РЅРµРІРѕР·РјРѕР¶РЅРѕРµ РІСЂРµРјСЏ РґРѕСЃС‚Р°РІРєРё";
                 return RedirectToPage(new { orderId = OrderId });
             }
 
@@ -212,7 +213,7 @@ namespace Application.Areas.Manager.Pages
 
             dataManager.Orders.Save(order);
 
-            TempData["success"] = "Время доставки успешно изменено";
+            TempData["success"] = "Р’СЂРµРјСЏ РґРѕСЃС‚Р°РІРєРё СѓСЃРїРµС€РЅРѕ РёР·РјРµРЅРµРЅРѕ";
 
             return RedirectToPage(new { orderId = OrderId });
         }
@@ -227,15 +228,15 @@ namespace Application.Areas.Manager.Pages
         {
             Order order = dataManager.Orders.Get(OrderId);
 
-            if(order.State == States.InProcess)
+            if(order.State == Order.States.InProcess)
             {
                 return RedirectToPage(new { orderId = OrderId });
             }
 
-            order.State = States.OnHold;
+            order.State = Order.States.OnHold;
             dataManager.Orders.Save(order);
 
-            TempData["success"] = "Заявка отложена";
+            TempData["success"] = "Р—Р°СЏРІРєР° РѕС‚Р»РѕР¶РµРЅР°";
 
             return RedirectToPage(new { orderId = OrderId });
         }
@@ -243,15 +244,15 @@ namespace Application.Areas.Manager.Pages
         {
             Order order = dataManager.Orders.Get(OrderId);
 
-            if (order.State == States.InProcess)
+            if (order.State == Order.States.InProcess)
             {
                 return RedirectToPage(new { orderId = OrderId });
             }
 
-            order.State = States.Cancelled;
+            order.State = Order.States.Cancelled;
             dataManager.Orders.Save(order);
 
-            TempData["success"] = "Заявка отменена";
+            TempData["success"] = "Р—Р°СЏРІРєР° РѕС‚РјРµРЅРµРЅР°";
 
             return RedirectToPage(new { orderId = OrderId });
         }
@@ -262,17 +263,17 @@ namespace Application.Areas.Manager.Pages
 
             switch(order.State)
             {
-                case States.Cancelled:
+                case Order.States.Cancelled:
                     return RedirectToPage(new { orderId = OrderId });
-                case States.Completed:
+                case Order.States.Completed:
                     return RedirectToPage(new { orderId = OrderId });
-                case States.InProcess:
+                case Order.States.InProcess:
                     return RedirectToPage(new { orderId = OrderId });
             }
 
             dataManager.Orders.ExecuteOrder(order, stock);
 
-            TempData["success"] = "Заказ принят в работу";
+            TempData["success"] = "Р—Р°РєР°Р· РїСЂРёРЅСЏС‚ РІ СЂР°Р±РѕС‚Сѓ";
 
             return RedirectToPage(new { orderId = OrderId });
         }
@@ -281,7 +282,7 @@ namespace Application.Areas.Manager.Pages
             Order order = dataManager.Orders.Get(OrderId);
             Stock stock = dataManager.Stocks.Get(StockId);
 
-            if (order.State != States.InProcess)
+            if (order.State != Order.States.InProcess)
             {
                 return RedirectToPage(new { orderId = OrderId });
             }
@@ -289,7 +290,7 @@ namespace Application.Areas.Manager.Pages
             dataManager.Orders.CompleteOrder(order);
             dataManager.Sales.CreateSale(order);
 
-            TempData["success"] = "Заказ успешно выполнен";
+            TempData["success"] = "Р—Р°РєР°Р· СѓСЃРїРµС€РЅРѕ РІС‹РїРѕР»РЅРµРЅ";
 
             return RedirectToPage(new { orderId = OrderId });
         }
@@ -302,10 +303,10 @@ namespace Application.Areas.Manager.Pages
             string partialName;
             switch(order.State)
             {
-                case States.New:
+                case Order.States.New:
                     partialName = "_StockOrderPartial";
                     break;
-                case States.OnHold:
+                case Order.States.OnHold:
                     partialName = "_StockOrderPartial";
                     break;
                 default:

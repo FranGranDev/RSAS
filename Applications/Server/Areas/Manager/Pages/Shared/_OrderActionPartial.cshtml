@@ -1,13 +1,14 @@
 ﻿@using Application.ViewModel.Orders;
 @using Microsoft.AspNetCore.Mvc.TagHelpers
 @using static Application.Model.Orders.Order;
+@using Application.Models
 @model OrderStateViewModel
 
 <form method="post">
     <div class="row">
             <div class="col-md-6 text-start">
                 @{
-                    if (Model.State == States.InProcess)
+                    if (Model.State == Order.States.InProcess)
                     {
                         <button asp-page-handler="Complete" type="submit" class="btn btn-primary btn-lg">Подтвердить продажу</button>
                     }
@@ -15,10 +16,10 @@
                     {
                         @switch (Model.State)
                         {
-                            case States.New:
+                            case Order.States.New:
                                 <button asp-page-handler="Ready" type="submit" class="btn btn-primary btn-lg">Подготовить товар</button>
                                 break;
-                            case States.OnHold:
+                            case Order.States.OnHold:
                                 <button asp-page-handler="Ready" type="submit" class="btn btn-primary btn-lg">Подготовить товар</button>
                                 break;
                         }
@@ -27,7 +28,7 @@
                     {
                         switch (Model.State)
                         {
-                            case States.New:
+                            case Order.States.New:
                                 <button asp-page-handler="Hold" type="submit" class="btn btn-secondary btn-lg">Отложить заявку</button>
                                 break;
                         }
@@ -39,10 +40,10 @@
             <div class="col-md-6 text-end">
                 @switch (Model.State)
                 {
-                    case States.New:
+                    case Order.States.New:
                         <button asp-page-handler="Cancel" type="submit" class="btn btn-danger btn-lg">Отменить заявку</button>
                         break;
-                    case States.OnHold:
+                    case Order.States.OnHold:
                         <button asp-page-handler="Cancel" type="submit" class="btn btn-danger btn-lg">Отменить заявку</button>
                         break;
                 }

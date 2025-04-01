@@ -1,5 +1,4 @@
-using System;
-using Application.Model.Sales;
+using Application.Models;
 
 namespace Application.DTOs
 {
@@ -30,4 +29,4 @@ namespace Application.DTOs
         public int StockId { get; set; }
         public SaleStatus Status { get; set; }
     }
-} 
+}

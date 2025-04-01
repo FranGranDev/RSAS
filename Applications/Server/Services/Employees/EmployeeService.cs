@@ -1,10 +1,10 @@
-using Application.Areas.Identity.Data;
 using Application.DTOs;
 using Application.Exceptions;
-using Server.Services.Repository;
+using Application.Models;
 using AutoMapper;
+using Server.Services.Repository;
 
-namespace Application.Services.Employees
+namespace Application.Services
 {
     public class EmployeeService : IEmployeeService
     {
@@ -66,7 +66,7 @@ namespace Application.Services.Employees
             }
 
             // Проверяем, не занят ли новый номер телефона другим сотрудником
-            if (employee.Phone != updateEmployeeDto.Phone && 
+            if (employee.Phone != updateEmployeeDto.Phone &&
                 await _employeeRepository.ExistsByPhoneAsync(updateEmployeeDto.Phone))
             {
                 throw new BusinessException("Сотрудник с таким номером телефона уже существует");

@@ -9,6 +9,11 @@ namespace Application.Services.Products
         Task<ProductDto> CreateProductAsync(CreateProductDto createProductDto);
         Task<ProductDto> UpdateProductAsync(int id, UpdateProductDto updateProductDto);
         Task DeleteProductAsync(int id);
-        Task<IEnumerable<ProductDto>> GetProductsByStockIdAsync(int stockId);
+        Task<ProductDto> GetProductByNameAsync(string name);
+        Task<ProductDto> GetProductByBarcodeAsync(string barcode);
+        Task<IEnumerable<ProductDto>> GetProductsByCategoryAsync(string category);
+        Task<IEnumerable<ProductDto>> GetProductsByPriceRangeAsync(decimal minPrice, decimal maxPrice);
+        Task<bool> ExistsByNameAsync(string name);
+        Task<bool> ExistsByBarcodeAsync(string barcode);
     }
 }

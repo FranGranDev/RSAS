@@ -19,6 +19,8 @@ namespace Application.ViewModel.Data
             RetailPrice = product.RetailPrice;
             WholesalePrice = product.WholesalePrice;
             Description = product.Description;
+            Barcode = product.Barcode;
+            Category = product.Category;
         }
 
         public int Id { get; set; }
@@ -42,6 +44,16 @@ namespace Application.ViewModel.Data
 
         [DisplayName("Описание")]
         public string Description { get; set; }
+
+        [DisplayName("Штрих-код")]
+        [Required]
+        [StringLength(50)]
+        public string Barcode { get; set; }
+
+        [DisplayName("Категория")]
+        [Required]
+        [StringLength(100)]
+        public string Category { get; set; }
     }
     public class QuantityProductViewModel: ProductViewModel
     {

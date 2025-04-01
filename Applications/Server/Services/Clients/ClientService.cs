@@ -1,36 +1,36 @@
 using Application.Areas.Identity.Data;
 using Application.DTOs;
 using Application.Exceptions;
-using Application.Services.Repository;
+using Server.Services.Repository;
 using AutoMapper;
 
 namespace Application.Services.Clients
 {
     public class ClientService : IClientService
     {
-        private readonly IClientsStore _clientsStore;
+        private readonly IClientRepository _clientRepository;
         private readonly IMapper _mapper;
 
         public ClientService(
-            IClientsStore clientsStore,
+            IClientRepository clientRepository,
             IMapper mapper)
         {
-            _clientsStore = clientsStore;
+            _clientRepository = clientRepository;
             _mapper = mapper;
         }
 
         public async Task<IEnumerable<ClientDto>> GetAllClientsAsync()
         {
-            var clients = await _clientsStore.GetAllAsync();
+            var clients = await _clientRepository.GetAllAsync();
             return _mapper.Map<IEnumerable<ClientDto>>(clients);
         }
 
-        public async Task<ClientDto> GetClientByIdAsync(int id)
+        public async Task<ClientDto> GetClientByIdAsync(string userId)
         {
-            var client = await _clientsStore.GetByIdAsync(id);
+            var client = await _clientRepository.GetWithUserAsync(userId);
             if (client == null)
             {
-                throw new BusinessException($"Клиент с ID {id} не найден");
+                throw new BusinessException($"Клиент с ID {userId} не найден");
             }
 
             return _mapper.Map<ClientDto>(client);
@@ -39,51 +39,81 @@ namespace Application.Services.Clients
         public async Task<ClientDto> CreateClientAsync(CreateClientDto createClientDto, string userId)
         {
             // Проверяем, не существует ли уже клиент с таким UserId
-            var existingClient = await _clientsStore.GetByUserIdAsync(userId);
+            var existingClient = await _clientRepository.GetWithUserAsync(userId);
             if (existingClient != null)
             {
                 throw new BusinessException("Клиент с таким UserId уже существует");
             }
 
+            // Проверяем, не существует ли уже клиент с таким телефоном
+            if (await _clientRepository.ExistsByPhoneAsync(createClientDto.Phone))
+            {
+                throw new BusinessException("Клиент с таким номером телефона уже существует");
+            }
+
             var client = _mapper.Map<Client>(createClientDto);
             client.UserId = userId;
-            await _clientsStore.SaveAsync(client);
+            await _clientRepository.AddAsync(client);
             return _mapper.Map<ClientDto>(client);
         }
 
-        public async Task<ClientDto> UpdateClientAsync(int id, UpdateClientDto updateClientDto)
+        public async Task<ClientDto> UpdateClientAsync(string userId, UpdateClientDto updateClientDto)
         {
-            var client = await _clientsStore.GetByIdAsync(id);
+            var client = await _clientRepository.GetWithUserAsync(userId);
             if (client == null)
             {
-                throw new BusinessException($"Клиент с ID {id} не найден");
+                throw new BusinessException($"Клиент с ID {userId} не найден");
+            }
+
+            // Проверяем, не занят ли новый номер телефона другим клиентом
+            if (client.Phone != updateClientDto.Phone && 
+                await _clientRepository.ExistsByPhoneAsync(updateClientDto.Phone))
+            {
+                throw new BusinessException("Клиент с таким номером телефона уже существует");
             }
 
             _mapper.Map(updateClientDto, client);
-            await _clientsStore.SaveAsync(client);
+            await _clientRepository.UpdateAsync(client);
             return _mapper.Map<ClientDto>(client);
         }
 
-        public async Task DeleteClientAsync(int id)
+        public async Task DeleteClientAsync(string userId)
         {
-            var client = await _clientsStore.GetByIdAsync(id);
+            var client = await _clientRepository.GetWithUserAsync(userId);
             if (client == null)
             {
-                throw new BusinessException($"Клиент с ID {id} не найден");
+                throw new BusinessException($"Клиент с ID {userId} не найден");
             }
 
-            await _clientsStore.DeleteAsync(id);
+            await _clientRepository.DeleteAsync(userId);
         }
 
-        public async Task<ClientDto> GetClientByUserIdAsync(string userId)
+        public async Task<ClientDto> GetClientByPhoneAsync(string phone)
         {
-            var client = await _clientsStore.GetByUserIdAsync(userId);
+            var client = await _clientRepository.GetByPhoneAsync(phone);
             if (client == null)
             {
-                throw new BusinessException($"Клиент с UserId {userId} не найден");
+                throw new BusinessException($"Клиент с телефоном {phone} не найден");
             }
 
             return _mapper.Map<ClientDto>(client);
+        }
+
+        public async Task<ClientDto> GetClientByNameAsync(string firstName, string lastName)
+        {
+            var clients = await _clientRepository.GetByNameAsync(firstName, lastName);
+            var client = clients.FirstOrDefault();
+            if (client == null)
+            {
+                throw new BusinessException($"Клиент с именем {firstName} {lastName} не найден");
+            }
+
+            return _mapper.Map<ClientDto>(client);
+        }
+
+        public async Task<bool> ExistsByPhoneAsync(string phone)
+        {
+            return await _clientRepository.ExistsByPhoneAsync(phone);
         }
     }
 }

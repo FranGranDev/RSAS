@@ -54,7 +54,9 @@ namespace Application.Areas.Admin.Pages.Stores
                     Description = "-",
                     RetailPrice = 0,
                     WholesalePrice = 0,
-                    Quantity = 0
+                    Quantity = 0,
+                    Barcode = "",
+                    Category = ""
                 };
             }
             else

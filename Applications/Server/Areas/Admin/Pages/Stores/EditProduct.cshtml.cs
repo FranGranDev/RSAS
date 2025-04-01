@@ -17,11 +17,9 @@ namespace Application.Areas.Admin.Pages.Stores
             this.dataManager = dataManager;
         }
 
-
         [BindProperty] public QuantityProductViewModel Product { get; set; }
 
         [BindProperty] public StockViewModel Stock { get; set; }
-
 
         public void OnGet(int id, int stockId)
         {
@@ -51,7 +49,9 @@ namespace Application.Areas.Admin.Pages.Stores
                 Name = Product.Name,
                 Description = Product.Description,
                 WholesalePrice = Product.WholesalePrice,
-                RetailPrice = Product.RetailPrice
+                RetailPrice = Product.RetailPrice,
+                Barcode = Product.Barcode,
+                Category = Product.Category
             };
             dataManager.Products.Save(product);
 
@@ -62,8 +62,7 @@ namespace Application.Areas.Admin.Pages.Stores
                 Quantity = Product.Quantity
             });
 
-
-            return RedirectToPage("StockInfo", new { id = Stock.Id });
+            return RedirectToPage("Edit", new { id = Stock.Id });
         }
     }
 }

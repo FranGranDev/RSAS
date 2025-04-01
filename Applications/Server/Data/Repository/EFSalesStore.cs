@@ -1,6 +1,7 @@
 ﻿using Application.Model.Orders;
 using Application.Model.Sales;
 using Application.Services;
+using Microsoft.EntityFrameworkCore;
 
 namespace Application.Data.Repository
 {
@@ -13,14 +14,16 @@ namespace Application.Data.Repository
 
         private readonly AppDbContext dbContext;
 
-
-
         public IQueryable<Sale> All => dbContext.Sales;
-
 
         public Sale Get(int id)
         {
-            return dbContext.Sales.FirstOrDefault(x => x.Id == id);
+            return dbContext.Sales
+                .Include(s => s.Order)
+                    .ThenInclude(o => o.Products)
+                        .ThenInclude(op => op.Product)
+                .Include(s => s.Stock)
+                .FirstOrDefault(x => x.Id == id);
         }
 
         public void Save(Sale sale)
@@ -39,7 +42,6 @@ namespace Application.Data.Repository
 
             dbContext.SaveChanges();
         }
-
 
         public void CreateSale(Order order)
         {

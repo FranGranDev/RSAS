@@ -1,4 +1,5 @@
 using System;
+using Application.Model.Sales;
 
 namespace Application.DTOs
 {
@@ -10,6 +11,11 @@ namespace Application.DTOs
         public int StockId { get; set; }
         public string StockName { get; set; }
         public DateTime SaleDate { get; set; }
+        public decimal TotalAmount { get; set; }
+        public SaleStatus Status { get; set; }
+        public string StatusDisplay { get; set; }
+        public string ClientName { get; set; }
+        public string ClientPhone { get; set; }
     }
 
     public class CreateSaleDto
@@ -22,5 +28,6 @@ namespace Application.DTOs
     {
         public int OrderId { get; set; }
         public int StockId { get; set; }
+        public SaleStatus Status { get; set; }
     }
 } 

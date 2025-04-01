@@ -58,7 +58,7 @@ namespace Application.Controllers
 
         // POST: api/Clients
         [HttpPost]
-        [Authorize(Policy = "RequireManagerRole")]
+        [Authorize(Policy = "RequireAdminRole")]
         public async Task<ActionResult<ClientDto>> CreateClient(CreateClientDto createClientDto)
         {
             var client = new Client
@@ -86,7 +86,7 @@ namespace Application.Controllers
 
         // PUT: api/Clients/5
         [HttpPut("{id}")]
-        [Authorize(Policy = "RequireManagerRole")]
+        [Authorize(Policy = "RequireAdminRole")]
         public async Task<IActionResult> UpdateClient(int id, UpdateClientDto updateClientDto)
         {
             var client = await _clientsStore.GetByIdAsync(id);
@@ -108,7 +108,7 @@ namespace Application.Controllers
 
         // DELETE: api/Clients/5
         [HttpDelete("{id}")]
-        [Authorize(Policy = "RequireManagerRole")]
+        [Authorize(Policy = "RequireAdminRole")]
         public async Task<IActionResult> DeleteClient(int id)
         {
             var client = await _clientsStore.GetByIdAsync(id);

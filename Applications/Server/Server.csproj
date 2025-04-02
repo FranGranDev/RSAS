@@ -31,6 +31,8 @@
         <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="8.0.0" />
 
         <PackageReference Include="Microsoft.CodeAnalysis.Common" Version="4.8.0" />
+
+        <PackageReference Include="xunit" Version="2.9.3" />
     </ItemGroup>
 
     <ItemGroup>
@@ -100,6 +102,8 @@
       <_ContentIncludedByDefault Remove="Areas\Manager\Pages\_ValidationScriptsPartial.cshtml" />
       <_ContentIncludedByDefault Remove="Areas\Manager\Pages\_ViewImports.cshtml" />
       <_ContentIncludedByDefault Remove="Areas\Manager\Pages\_ViewStart.cshtml" />
+      <_ContentIncludedByDefault Remove="Application.Tests\obj\Application.Tests.csproj.nuget.dgspec.json" />
+      <_ContentIncludedByDefault Remove="Application.Tests\obj\project.assets.json" />
     </ItemGroup>
 
     <ItemGroup>

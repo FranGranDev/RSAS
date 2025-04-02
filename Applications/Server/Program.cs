@@ -101,36 +101,21 @@ namespace Application
             {
                 c.SwaggerDoc("v1", new OpenApiInfo
                 {
-                    Title = "RSAS API",
+                    Title = "Application API",
                     Version = "v1",
                     Description = "API для системы управления заказами и складом"
                 });
 
                 c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
                 {
-                    Description = "JWT Authorization header using the Bearer scheme. Example: \"Bearer {token}\"",
+                    Description = "JWT Authorization header using the Bearer scheme. Example: \"Authorization: Bearer {token}\"",
                     Name = "Authorization",
                     In = ParameterLocation.Header,
                     Type = SecuritySchemeType.ApiKey,
                     Scheme = "Bearer"
                 });
 
-                c.AddSecurityRequirement(new OpenApiSecurityRequirement
-                {
-                    {
-                        new OpenApiSecurityScheme
-                        {
-                            Reference = new OpenApiReference
-                            {
-                                Type = ReferenceType.SecurityScheme,
-                                Id = "Bearer"
-                            }
-                        },
-                        Array.Empty<string>()
-                    }
-                });
-
-                c.OperationFilter<SwaggerAuthorizeOperationFilter>();
+                c.OperationFilter<SwaggerSecurityFilter>();
             });
 
             // CORS

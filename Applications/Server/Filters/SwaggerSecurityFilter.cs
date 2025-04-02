@@ -3,7 +3,7 @@ using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace Application.Filters
 {
-    public class SwaggerAuthorizeOperationFilter : IOperationFilter
+    public class SwaggerSecurityFilter : IOperationFilter
     {
         public void Apply(OpenApiOperation operation, OperationFilterContext context)
         {
@@ -11,13 +11,27 @@ namespace Application.Filters
                 .Union(context.MethodInfo.GetCustomAttributes(true))
                 .OfType<Microsoft.AspNetCore.Authorization.AuthorizeAttribute>();
 
-            if (authAttributes.Any())
+            var allowAnonymousAttributes = context.MethodInfo.DeclaringType.GetCustomAttributes(true)
+                .Union(context.MethodInfo.GetCustomAttributes(true))
+                .OfType<Microsoft.AspNetCore.Authorization.AllowAnonymousAttribute>();
+
+            if (authAttributes.Any() && !allowAnonymousAttributes.Any())
             {
                 if (!operation.Responses.ContainsKey("401"))
-                    operation.Responses.Add("401", new OpenApiResponse { Description = "Unauthorized" });
-                
+                {
+                    operation.Responses.Add("401", new OpenApiResponse
+                    {
+                        Description = "Unauthorized - Требуется аутентификация"
+                    });
+                }
+
                 if (!operation.Responses.ContainsKey("403"))
-                    operation.Responses.Add("403", new OpenApiResponse { Description = "Forbidden" });
+                {
+                    operation.Responses.Add("403", new OpenApiResponse
+                    {
+                        Description = "Forbidden - Недостаточно прав"
+                    });
+                }
 
                 operation.Security = new List<OpenApiSecurityRequirement>
                 {

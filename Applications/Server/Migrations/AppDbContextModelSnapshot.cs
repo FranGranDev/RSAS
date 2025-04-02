@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace Application.Migrations
+namespace Server.Migrations
 {
     [DbContext(typeof(AppDbContext))]
     partial class AppDbContextModelSnapshot : ModelSnapshot
@@ -17,7 +17,7 @@ namespace Application.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "7.0.4")
+                .HasAnnotation("ProductVersion", "8.0.0")
                 .HasAnnotation("Proxies:ChangeTracking", false)
                 .HasAnnotation("Proxies:CheckEquality", false)
                 .HasAnnotation("Proxies:LazyLoading", true)
@@ -25,7 +25,7 @@ namespace Application.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("Application.Areas.Identity.Data.AppUser", b =>
+            modelBuilder.Entity("Application.Models.AppUser", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
@@ -90,7 +90,7 @@ namespace Application.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
-            modelBuilder.Entity("Application.Areas.Identity.Data.Client", b =>
+            modelBuilder.Entity("Application.Models.Client", b =>
                 {
                     b.Property<string>("UserId")
                         .HasColumnType("nvarchar(450)");
@@ -109,10 +109,10 @@ namespace Application.Migrations
 
                     b.HasKey("UserId");
 
-                    b.ToTable("Clients", (string)null);
+                    b.ToTable("Clients");
                 });
 
-            modelBuilder.Entity("Application.Areas.Identity.Data.Company", b =>
+            modelBuilder.Entity("Application.Models.Company", b =>
                 {
                     b.Property<string>("UserId")
                         .HasColumnType("nvarchar(450)");
@@ -151,36 +151,10 @@ namespace Application.Migrations
 
                     b.HasKey("UserId");
 
-                    b.ToTable("Companies", (string)null);
+                    b.ToTable("Companies");
                 });
 
-            modelBuilder.Entity("Application.Areas.Identity.Data.Employee", b =>
-                {
-                    b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("FirstName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("LastName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Phone")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Role")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("UserId");
-
-                    b.ToTable("Employees", (string)null);
-                });
-
-            modelBuilder.Entity("Application.Model.Orders.Delivery", b =>
+            modelBuilder.Entity("Application.Models.Delivery", b =>
                 {
                     b.Property<int>("OrderId")
                         .HasColumnType("int");
@@ -204,16 +178,46 @@ namespace Application.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Street")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("OrderId");
 
-                    b.ToTable("OrdersDelivery", (string)null);
+                    b.ToTable("Deliveries");
                 });
 
-            modelBuilder.Entity("Application.Model.Orders.Order", b =>
+            modelBuilder.Entity("Application.Models.Employee", b =>
+                {
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("FirstName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("LastName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Phone")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Role")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("UserId");
+
+                    b.ToTable("Employees");
+                });
+
+            modelBuilder.Entity("Application.Models.Order", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -244,9 +248,6 @@ namespace Application.Migrations
                     b.Property<int?>("StockId")
                         .HasColumnType("int");
 
-                    b.Property<int>("Type")
-                        .HasColumnType("int");
-
                     b.Property<string>("UserId")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
@@ -257,10 +258,10 @@ namespace Application.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Orders", (string)null);
+                    b.ToTable("Orders");
                 });
 
-            modelBuilder.Entity("Application.Model.Orders.OrderProduct", b =>
+            modelBuilder.Entity("Application.Models.OrderProduct", b =>
                 {
                     b.Property<int>("OrderId")
                         .HasColumnType("int");
@@ -286,10 +287,42 @@ namespace Application.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("OrderProducts", (string)null);
+                    b.ToTable("OrderProducts");
                 });
 
-            modelBuilder.Entity("Application.Model.Sales.Sale", b =>
+            modelBuilder.Entity("Application.Models.Product", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Barcode")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Category")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("Price")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Products");
+                });
+
+            modelBuilder.Entity("Application.Models.Sale", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -303,11 +336,14 @@ namespace Application.Migrations
                     b.Property<DateTime>("SaleDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("SaleType")
+                    b.Property<int>("Status")
                         .HasColumnType("int");
 
                     b.Property<int>("StockId")
                         .HasColumnType("int");
+
+                    b.Property<decimal>("TotalAmount")
+                        .HasColumnType("decimal(18,2)");
 
                     b.HasKey("Id");
 
@@ -315,10 +351,10 @@ namespace Application.Migrations
 
                     b.HasIndex("StockId");
 
-                    b.ToTable("Sales", (string)null);
+                    b.ToTable("Sales");
                 });
 
-            modelBuilder.Entity("Application.Model.Stocks.Product", b =>
+            modelBuilder.Entity("Application.Models.Stock", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -326,7 +362,15 @@ namespace Application.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Description")
+                    b.Property<string>("Address")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("City")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Email")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -334,42 +378,16 @@ namespace Application.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<decimal>("RetailPrice")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<decimal>("WholesalePrice")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Products", (string)null);
-                });
-
-            modelBuilder.Entity("Application.Model.Stocks.Stock", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Location")
+                    b.Property<string>("Phone")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("SaleType")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
 
-                    b.ToTable("Stocks", (string)null);
+                    b.ToTable("Stocks");
                 });
 
-            modelBuilder.Entity("Application.Model.Stocks.StockProducts", b =>
+            modelBuilder.Entity("Application.Models.StockProducts", b =>
                 {
                     b.Property<int>("StockId")
                         .HasColumnType("int");
@@ -387,7 +405,7 @@ namespace Application.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("StockProducts", (string)null);
+                    b.ToTable("StockProducts");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -470,12 +488,10 @@ namespace Application.Migrations
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
                     b.Property<string>("LoginProvider")
-                        .HasMaxLength(128)
-                        .HasColumnType("nvarchar(128)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("ProviderKey")
-                        .HasMaxLength(128)
-                        .HasColumnType("nvarchar(128)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("ProviderDisplayName")
                         .HasColumnType("nvarchar(max)");
@@ -512,12 +528,10 @@ namespace Application.Migrations
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("LoginProvider")
-                        .HasMaxLength(128)
-                        .HasColumnType("nvarchar(128)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Name")
-                        .HasMaxLength(128)
-                        .HasColumnType("nvarchar(128)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Value")
                         .HasColumnType("nvarchar(max)");
@@ -527,57 +541,57 @@ namespace Application.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("Application.Areas.Identity.Data.Client", b =>
+            modelBuilder.Entity("Application.Models.Client", b =>
                 {
-                    b.HasOne("Application.Areas.Identity.Data.AppUser", "User")
+                    b.HasOne("Application.Models.AppUser", "User")
                         .WithOne("Client")
-                        .HasForeignKey("Application.Areas.Identity.Data.Client", "UserId")
+                        .HasForeignKey("Application.Models.Client", "UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("Application.Areas.Identity.Data.Company", b =>
+            modelBuilder.Entity("Application.Models.Company", b =>
                 {
-                    b.HasOne("Application.Areas.Identity.Data.AppUser", "User")
+                    b.HasOne("Application.Models.AppUser", "User")
                         .WithOne("Company")
-                        .HasForeignKey("Application.Areas.Identity.Data.Company", "UserId")
+                        .HasForeignKey("Application.Models.Company", "UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("Application.Areas.Identity.Data.Employee", b =>
+            modelBuilder.Entity("Application.Models.Delivery", b =>
                 {
-                    b.HasOne("Application.Areas.Identity.Data.AppUser", "User")
-                        .WithOne("Employee")
-                        .HasForeignKey("Application.Areas.Identity.Data.Employee", "UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("Application.Model.Orders.Delivery", b =>
-                {
-                    b.HasOne("Application.Model.Orders.Order", "Order")
+                    b.HasOne("Application.Models.Order", "Order")
                         .WithOne("Delivery")
-                        .HasForeignKey("Application.Model.Orders.Delivery", "OrderId")
+                        .HasForeignKey("Application.Models.Delivery", "OrderId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Order");
                 });
 
-            modelBuilder.Entity("Application.Model.Orders.Order", b =>
+            modelBuilder.Entity("Application.Models.Employee", b =>
                 {
-                    b.HasOne("Application.Model.Stocks.Stock", "Stock")
+                    b.HasOne("Application.Models.AppUser", "User")
+                        .WithOne("Employee")
+                        .HasForeignKey("Application.Models.Employee", "UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Application.Models.Order", b =>
+                {
+                    b.HasOne("Application.Models.Stock", "Stock")
                         .WithMany()
                         .HasForeignKey("StockId");
 
-                    b.HasOne("Application.Areas.Identity.Data.AppUser", "User")
+                    b.HasOne("Application.Models.AppUser", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -588,15 +602,15 @@ namespace Application.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("Application.Model.Orders.OrderProduct", b =>
+            modelBuilder.Entity("Application.Models.OrderProduct", b =>
                 {
-                    b.HasOne("Application.Model.Orders.Order", "Order")
+                    b.HasOne("Application.Models.Order", "Order")
                         .WithMany("Products")
                         .HasForeignKey("OrderId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Application.Model.Stocks.Product", "Product")
+                    b.HasOne("Application.Models.Product", "Product")
                         .WithMany()
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -607,15 +621,15 @@ namespace Application.Migrations
                     b.Navigation("Product");
                 });
 
-            modelBuilder.Entity("Application.Model.Sales.Sale", b =>
+            modelBuilder.Entity("Application.Models.Sale", b =>
                 {
-                    b.HasOne("Application.Model.Orders.Order", "Order")
+                    b.HasOne("Application.Models.Order", "Order")
                         .WithMany()
                         .HasForeignKey("OrderId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Application.Model.Stocks.Stock", "Stock")
+                    b.HasOne("Application.Models.Stock", "Stock")
                         .WithMany()
                         .HasForeignKey("StockId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -626,15 +640,15 @@ namespace Application.Migrations
                     b.Navigation("Stock");
                 });
 
-            modelBuilder.Entity("Application.Model.Stocks.StockProducts", b =>
+            modelBuilder.Entity("Application.Models.StockProducts", b =>
                 {
-                    b.HasOne("Application.Model.Stocks.Product", "Product")
+                    b.HasOne("Application.Models.Product", "Product")
                         .WithMany("StockProducts")
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Application.Model.Stocks.Stock", "Stock")
+                    b.HasOne("Application.Models.Stock", "Stock")
                         .WithMany("StockProducts")
                         .HasForeignKey("StockId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -656,7 +670,7 @@ namespace Application.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
                 {
-                    b.HasOne("Application.Areas.Identity.Data.AppUser", null)
+                    b.HasOne("Application.Models.AppUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -665,7 +679,7 @@ namespace Application.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
-                    b.HasOne("Application.Areas.Identity.Data.AppUser", null)
+                    b.HasOne("Application.Models.AppUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -680,7 +694,7 @@ namespace Application.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Application.Areas.Identity.Data.AppUser", null)
+                    b.HasOne("Application.Models.AppUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -689,14 +703,14 @@ namespace Application.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
-                    b.HasOne("Application.Areas.Identity.Data.AppUser", null)
+                    b.HasOne("Application.Models.AppUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Application.Areas.Identity.Data.AppUser", b =>
+            modelBuilder.Entity("Application.Models.AppUser", b =>
                 {
                     b.Navigation("Client")
                         .IsRequired();
@@ -708,7 +722,7 @@ namespace Application.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Application.Model.Orders.Order", b =>
+            modelBuilder.Entity("Application.Models.Order", b =>
                 {
                     b.Navigation("Delivery")
                         .IsRequired();
@@ -716,12 +730,12 @@ namespace Application.Migrations
                     b.Navigation("Products");
                 });
 
-            modelBuilder.Entity("Application.Model.Stocks.Product", b =>
+            modelBuilder.Entity("Application.Models.Product", b =>
                 {
                     b.Navigation("StockProducts");
                 });
 
-            modelBuilder.Entity("Application.Model.Stocks.Stock", b =>
+            modelBuilder.Entity("Application.Models.Stock", b =>
                 {
                     b.Navigation("StockProducts");
                 });

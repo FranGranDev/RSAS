@@ -44,6 +44,9 @@ namespace Application.Services
             CreateMap<Employee, EmployeeDto>();
             CreateMap<CreateEmployeeDto, Employee>();
             CreateMap<UpdateEmployeeDto, Employee>();
+
+            // System Users
+            CreateMap<AppUser, UserDto>();
         }
     }
 }

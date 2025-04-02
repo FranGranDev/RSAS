@@ -68,9 +68,8 @@ namespace Application
             // Authorization Policies
             builder.Services.AddAuthorization(options =>
             {
-                options.AddPolicy("RequireAdminRole", policy => policy.RequireRole("Admin"));
-                options.AddPolicy("RequireManagerRole", policy => policy.RequireRole("Admin", "Manager"));
-                options.AddPolicy("RequireUserRole", policy => policy.RequireRole("Admin", "Manager", "User"));
+                options.AddPolicy("RequireManagerRole", policy => policy.RequireRole("Manager"));
+                options.AddPolicy("RequireClientRole", policy => policy.RequireRole("Client"));
             });
 
             // AutoMapper
@@ -104,21 +103,8 @@ namespace Application
                 {
                     Title = "RSAS API",
                     Version = "v1",
-                    Description = "API для системы управления заказами и складом",
-                    Contact = new OpenApiContact
-                    {
-                        Name = "RSAS Team",
-                        Email = "support@rsas.com"
-                    }
+                    Description = "API для системы управления заказами и складом"
                 });
-
-                // Добавляем XML-комментарии
-                var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
-                var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
-                if (File.Exists(xmlPath))
-                {
-                    c.IncludeXmlComments(xmlPath);
-                }
 
                 c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
                 {
@@ -128,6 +114,7 @@ namespace Application
                     Type = SecuritySchemeType.ApiKey,
                     Scheme = "Bearer"
                 });
+
                 c.AddSecurityRequirement(new OpenApiSecurityRequirement
                 {
                     {
@@ -143,7 +130,6 @@ namespace Application
                     }
                 });
 
-                // Добавляем аннотации для авторизации
                 c.OperationFilter<SwaggerAuthorizeOperationFilter>();
             });
 
@@ -153,9 +139,17 @@ namespace Application
                 options.AddPolicy("AllowFrontend",
                     builder =>
                     {
-                        builder.WithOrigins("http://localhost:5001") // Frontend URL
+                        builder
+                            .WithOrigins(
+                                "http://localhost:5001",  // Development
+                                "http://localhost:3000",  // React development
+                                "https://localhost:5001", // Development HTTPS
+                                "https://localhost:3000"  // React development HTTPS
+                            )
                             .AllowAnyMethod()
-                            .AllowAnyHeader();
+                            .AllowAnyHeader()
+                            .AllowCredentials()
+                            .SetIsOriginAllowedToAllowWildcardSubdomains();
                     });
             });
 
@@ -180,6 +174,8 @@ namespace Application
             }
 
             app.UseHttpsRedirection();
+            
+            // CORS должен быть до аутентификации и авторизации
             app.UseCors("AllowFrontend");
 
             // Добавляем middleware для обработки ошибок

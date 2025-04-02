@@ -8,7 +8,7 @@ namespace Application.Data
     {
         public static async Task SeedRoles(RoleManager<IdentityRole> roleManager)
         {
-            string[] roles = { "Client", "Company", "Admin", "Manager" };
+            string[] roles = { "Client", "Manager" };
 
             foreach (var roleName in roles)
             {
@@ -26,26 +26,25 @@ namespace Application.Data
 
         public static async Task SeedUsers(UserManager<AppUser> userManager, IEmployeeRepository employeeRepository)
         {
-            if (userManager.FindByNameAsync("Admin@gmail.com").Result == null)
+            if (userManager.FindByNameAsync("Manager@gmail.com").Result == null)
             {
                 AppUser user = new AppUser
                 {
-                    UserName = "Admin@gmail.com",
-                    Email = "Admin@gmail.com"
+                    UserName = "Manager@gmail.com",
+                    Email = "Manager@gmail.com"
                 };
                 Employee employee = new Employee
                 {
-                    FirstName = "Admin",
-                    LastName = "Admin",
+                    FirstName = "Manager",
+                    LastName = "Manager",
                     Phone = "-",
-                    Role = "Администратор системы"
+                    Role = "Менеджер системы"
                 };
 
-                var result = userManager.CreateAsync(user, "Admin123").Result;
+                var result = userManager.CreateAsync(user, "Manager123").Result;
 
                 if (result.Succeeded)
                 {
-                    userManager.AddToRoleAsync(user, "Admin").Wait();
                     userManager.AddToRoleAsync(user, "Manager").Wait();
 
                     employee.UserId = user.Id;
@@ -54,19 +53,18 @@ namespace Application.Data
             }
             else
             {
-                var admin = userManager.FindByNameAsync("Admin@gmail.com").Result;
-                userManager.AddToRoleAsync(admin, "Admin").Wait();
-                userManager.AddToRoleAsync(admin, "Manager").Wait();
+                var manager = userManager.FindByNameAsync("Manager@gmail.com").Result;
+                userManager.AddToRoleAsync(manager, "Manager").Wait();
 
-                if (await employeeRepository.GetByIdAsync(admin.Id) == null)
+                if (await employeeRepository.GetByIdAsync(manager.Id) == null)
                 {
                     Employee employee = new Employee
                     {
-                        UserId = admin.Id,
-                        FirstName = "Admin",
-                        LastName = "Admin",
+                        UserId = manager.Id,
+                        FirstName = "Manager",
+                        LastName = "Manager",
                         Phone = "-",
-                        Role = "Администратор системы"
+                        Role = "Менеджер системы"
                     };
 
                     await employeeRepository.AddAsync(employee);

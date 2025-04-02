@@ -61,4 +61,12 @@ namespace Application.Exceptions
         {
         }
     }
+
+    public class DeliveryNotFoundException : BusinessException
+    {
+        public DeliveryNotFoundException(int deliveryId) 
+            : base($"Доставка с ID {deliveryId} не найдена")
+        {
+        }
+    }
 } 

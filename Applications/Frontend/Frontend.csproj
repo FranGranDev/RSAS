@@ -16,4 +16,77 @@
     <PackageReference Include="System.Net.Http.Json" Version="7.0.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Legacy\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <AdditionalFiles Include="Legacy\Areas\Admin\Pages\Analytics\Index.cshtml" />
+    <AdditionalFiles Include="Legacy\Areas\Admin\Pages\Employees\Create.cshtml" />
+    <AdditionalFiles Include="Legacy\Areas\Admin\Pages\Employees\Index.cshtml" />
+    <AdditionalFiles Include="Legacy\Areas\Admin\Pages\Products\Create.cshtml" />
+    <AdditionalFiles Include="Legacy\Areas\Admin\Pages\Products\Edit.cshtml" />
+    <AdditionalFiles Include="Legacy\Areas\Admin\Pages\Products\Index.cshtml" />
+    <AdditionalFiles Include="Legacy\Areas\Admin\Pages\Shared\_EmptySalesAnalyticsPartial.cshtml" />
+    <AdditionalFiles Include="Legacy\Areas\Admin\Pages\Shared\_ProductSalesPartial.cshtml" />
+    <AdditionalFiles Include="Legacy\Areas\Admin\Pages\Shared\_SaleInfoPartial.cshtml" />
+    <AdditionalFiles Include="Legacy\Areas\Admin\Pages\Shared\_SalesAnalyticsPartial.cshtml" />
+    <AdditionalFiles Include="Legacy\Areas\Admin\Pages\Shared\_SalesPartial.cshtml" />
+    <AdditionalFiles Include="Legacy\Areas\Admin\Pages\Stores\AddProduct.cshtml" />
+    <AdditionalFiles Include="Legacy\Areas\Admin\Pages\Stores\AddStock.cshtml" />
+    <AdditionalFiles Include="Legacy\Areas\Admin\Pages\Stores\Edit.cshtml" />
+    <AdditionalFiles Include="Legacy\Areas\Admin\Pages\Stores\EditProduct.cshtml" />
+    <AdditionalFiles Include="Legacy\Areas\Admin\Pages\Stores\Index.cshtml" />
+    <AdditionalFiles Include="Legacy\Areas\Admin\Pages\Stores\StockInfo.cshtml" />
+    <AdditionalFiles Include="Legacy\Areas\Admin\Pages\Test\Index.cshtml" />
+    <AdditionalFiles Include="Legacy\Areas\Admin\Pages\_ValidationScriptsPartial.cshtml" />
+    <AdditionalFiles Include="Legacy\Areas\Admin\Pages\_ViewImports.cshtml" />
+    <AdditionalFiles Include="Legacy\Areas\Admin\Pages\_ViewStart.cshtml" />
+    <AdditionalFiles Include="Legacy\Areas\Identity\Pages\Account\About\Client.cshtml" />
+    <AdditionalFiles Include="Legacy\Areas\Identity\Pages\Account\About\Company.cshtml" />
+    <AdditionalFiles Include="Legacy\Areas\Identity\Pages\Account\About\Employee.cshtml" />
+    <AdditionalFiles Include="Legacy\Areas\Identity\Pages\Account\About\Index.cshtml" />
+    <AdditionalFiles Include="Legacy\Areas\Identity\Pages\Account\AccessDenied.cshtml" />
+    <AdditionalFiles Include="Legacy\Areas\Identity\Pages\Account\Login.cshtml" />
+    <AdditionalFiles Include="Legacy\Areas\Identity\Pages\Account\Register.cshtml" />
+    <AdditionalFiles Include="Legacy\Areas\Identity\Pages\Account\RegisterClient.cshtml" />
+    <AdditionalFiles Include="Legacy\Areas\Identity\Pages\Account\RegisterCompany.cshtml" />
+    <AdditionalFiles Include="Legacy\Areas\Identity\Pages\Account\_ViewImports.cshtml" />
+    <AdditionalFiles Include="Legacy\Areas\Identity\Pages\_ValidationScriptsPartial.cshtml" />
+    <AdditionalFiles Include="Legacy\Areas\Identity\Pages\_ViewImports.cshtml" />
+    <AdditionalFiles Include="Legacy\Areas\Identity\Pages\_ViewStart.cshtml" />
+    <AdditionalFiles Include="Legacy\Areas\Manager\Pages\Orders\Index.cshtml" />
+    <AdditionalFiles Include="Legacy\Areas\Manager\Pages\Orders\OrderInfo.cshtml" />
+    <AdditionalFiles Include="Legacy\Areas\Manager\Pages\Shared\_OrderActionPartial.cshtml" />
+    <AdditionalFiles Include="Legacy\Areas\Manager\Pages\Shared\_OrdersPartial.cshtml" />
+    <AdditionalFiles Include="Legacy\Areas\Manager\Pages\Shared\_StockOrderPartial.cshtml" />
+    <AdditionalFiles Include="Legacy\Areas\Manager\Pages\_ValidationScriptsPartial.cshtml" />
+    <AdditionalFiles Include="Legacy\Areas\Manager\Pages\_ViewImports.cshtml" />
+    <AdditionalFiles Include="Legacy\Areas\Manager\Pages\_ViewStart.cshtml" />
+    <AdditionalFiles Include="Legacy\Pages\Companies\Catalog.cshtml" />
+    <AdditionalFiles Include="Legacy\Pages\Companies\Ordering.cshtml" />
+    <AdditionalFiles Include="Legacy\Pages\Error.cshtml" />
+    <AdditionalFiles Include="Legacy\Pages\Index.cshtml" />
+    <AdditionalFiles Include="Legacy\Pages\OrderDone.cshtml" />
+    <AdditionalFiles Include="Legacy\Pages\OrderInfo.cshtml" />
+    <AdditionalFiles Include="Legacy\Pages\Orders.cshtml" />
+    <AdditionalFiles Include="Legacy\Pages\Privacy.cshtml" />
+    <AdditionalFiles Include="Legacy\Pages\Shared\_CartInfoPartial.cshtml" />
+    <AdditionalFiles Include="Legacy\Pages\Shared\_CatalogPartial.cshtml" />
+    <AdditionalFiles Include="Legacy\Pages\Shared\_CompanyPartial.cshtml" />
+    <AdditionalFiles Include="Legacy\Pages\Shared\_ContactPartial.cshtml" />
+    <AdditionalFiles Include="Legacy\Pages\Shared\_DeliveryPartial.cshtml" />
+    <AdditionalFiles Include="Legacy\Pages\Shared\_Layout.cshtml" />
+    <AdditionalFiles Include="Legacy\Pages\Shared\_LoginPartial.cshtml" />
+    <AdditionalFiles Include="Legacy\Pages\Shared\_NavMenuPartial.cshtml" />
+    <AdditionalFiles Include="Legacy\Pages\Shared\_Notification.cshtml" />
+    <AdditionalFiles Include="Legacy\Pages\Shared\_OrderPartial.cshtml" />
+    <AdditionalFiles Include="Legacy\Pages\Shared\_PaymentPartial.cshtml" />
+    <AdditionalFiles Include="Legacy\Pages\Shared\_ValidationScriptsPartial.cshtml" />
+    <AdditionalFiles Include="Legacy\Pages\User\Catalog.cshtml" />
+    <AdditionalFiles Include="Legacy\Pages\User\Ordering.cshtml" />
+    <AdditionalFiles Include="Legacy\Pages\_ViewImports.cshtml" />
+    <AdditionalFiles Include="Legacy\Pages\_ViewStart.cshtml" />
+  </ItemGroup>
+
 </Project> 

@@ -10,12 +10,15 @@ namespace Application.Services.Stocks
     {
         private readonly IMapper _mapper;
         private readonly IStockRepository _stockRepository;
+        private readonly IProductRepository _productRepository;
 
         public StockService(
             IStockRepository stockRepository,
+            IProductRepository productRepository,
             IMapper mapper)
         {
             _stockRepository = stockRepository;
+            _productRepository = productRepository;
             _mapper = mapper;
         }
 
@@ -166,6 +169,113 @@ namespace Application.Services.Stocks
             await _stockRepository.UpdateAsync(stock);
 
             return _mapper.Map<StockProductDto>(stockProduct);
+        }
+
+        public async Task<StockProductDto> AddProductToStockAsync(int stockId, int productId, int quantity)
+        {
+            if (quantity <= 0)
+            {
+                throw new BusinessException("Количество товара должно быть больше 0");
+            }
+
+            var stock = await _stockRepository.GetWithStockProductsAsync(stockId);
+            if (stock == null)
+            {
+                throw new BusinessException($"Склад с ID {stockId} не найден");
+            }
+
+            var product = await _productRepository.GetByIdAsync(productId);
+            if (product == null)
+            {
+                throw new BusinessException($"Товар с ID {productId} не найден");
+            }
+
+            var existingStockProduct = stock.StockProducts.FirstOrDefault(sp => sp.ProductId == productId);
+            if (existingStockProduct != null)
+            {
+                throw new BusinessException($"Товар с ID {productId} уже существует на складе");
+            }
+
+            var stockProduct = new StockProducts()
+            {
+                StockId = stockId,
+                ProductId = productId,
+                Quantity = quantity
+            };
+
+            stock.StockProducts.Add(stockProduct);
+            await _stockRepository.UpdateAsync(stock);
+
+            return _mapper.Map<StockProductDto>(stockProduct);
+        }
+
+        public async Task RemoveProductFromStockAsync(int stockId, int productId)
+        {
+            var stock = await _stockRepository.GetWithStockProductsAsync(stockId);
+            if (stock == null)
+            {
+                throw new BusinessException($"Склад с ID {stockId} не найден");
+            }
+
+            var stockProduct = stock.StockProducts.FirstOrDefault(sp => sp.ProductId == productId);
+            if (stockProduct == null)
+            {
+                throw new BusinessException($"Товар с ID {productId} не найден на складе");
+            }
+
+            stock.StockProducts.Remove(stockProduct);
+            await _stockRepository.UpdateAsync(stock);
+        }
+
+        public async Task<StockProductDto> GetStockProductAsync(int stockId, int productId)
+        {
+            var stock = await _stockRepository.GetWithStockProductsAsync(stockId);
+            if (stock == null)
+            {
+                throw new BusinessException($"Склад с ID {stockId} не найден");
+            }
+
+            var stockProduct = stock.StockProducts.FirstOrDefault(sp => sp.ProductId == productId);
+            if (stockProduct == null)
+            {
+                throw new BusinessException($"Товар с ID {productId} не найден на складе");
+            }
+
+            return _mapper.Map<StockProductDto>(stockProduct);
+        }
+
+        public async Task<bool> HasProductOnStockAsync(int stockId, int productId)
+        {
+            var stock = await _stockRepository.GetWithStockProductsAsync(stockId);
+            if (stock == null)
+            {
+                throw new BusinessException($"Склад с ID {stockId} не найден");
+            }
+
+            var product = await _productRepository.GetByIdAsync(productId);
+            if (product == null)
+            {
+                throw new BusinessException($"Товар с ID {productId} не найден");
+            }
+
+            return stock.StockProducts.Any(sp => sp.ProductId == productId);
+        }
+
+        public async Task<int> GetProductQuantityOnStockAsync(int stockId, int productId)
+        {
+            var stock = await _stockRepository.GetWithStockProductsAsync(stockId);
+            if (stock == null)
+            {
+                throw new BusinessException($"Склад с ID {stockId} не найден");
+            }
+
+            var stockProduct = stock.StockProducts.FirstOrDefault(sp => sp.ProductId == productId);
+            if (stockProduct == null)
+            {
+                throw new BusinessException($"Товар с ID {productId} не найден на складе");
+            }
+
+            return stockProduct.Quantity;
         }
     }
 }

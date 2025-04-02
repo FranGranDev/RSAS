@@ -1,5 +1,8 @@
+using System.ComponentModel.DataAnnotations;
 using System.Net;
 using System.Text.Json;
+using Application.Exceptions;
+using Microsoft.EntityFrameworkCore;
 
 namespace Application.Middleware
 {
@@ -32,9 +35,13 @@ namespace Application.Middleware
             context.Response.ContentType = "application/json";
             context.Response.StatusCode = exception switch
             {
+                BusinessException => (int)HttpStatusCode.BadRequest,
                 UnauthorizedAccessException => (int)HttpStatusCode.Unauthorized,
                 ArgumentException => (int)HttpStatusCode.BadRequest,
                 KeyNotFoundException => (int)HttpStatusCode.NotFound,
+                ValidationException => (int)HttpStatusCode.BadRequest,
+                DbUpdateException => (int)HttpStatusCode.InternalServerError,
+                JsonException => (int)HttpStatusCode.BadRequest,
                 _ => (int)HttpStatusCode.InternalServerError
             };
 
@@ -44,11 +51,16 @@ namespace Application.Middleware
                 {
                     message = exception.Message,
                     type = exception.GetType().Name,
-                    statusCode = context.Response.StatusCode
+                    statusCode = context.Response.StatusCode,
                 }
             };
 
-            await context.Response.WriteAsync(JsonSerializer.Serialize(response));
+            var options = new JsonSerializerOptions
+            {
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+            };
+
+            await context.Response.WriteAsync(JsonSerializer.Serialize(response, options));
         }
     }
 } 

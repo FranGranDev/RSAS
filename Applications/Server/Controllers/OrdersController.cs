@@ -1,8 +1,6 @@
-using System.ComponentModel.DataAnnotations;
 using System.Security.Claims;
 using Application.DTOs;
 using Application.Exceptions;
-using Application.Models;
 using Application.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -12,25 +10,15 @@ namespace Application.Controllers
     /// <summary>
     ///     Контроллер для управления заказами
     /// </summary>
-    [Authorize(Policy = "RequireManagerRole")]
+    [Authorize]
     [ApiController]
     [Route("api/[controller]")]
     public class OrdersController : ControllerBase
     {
         private readonly IOrderService _orderService;
-        private readonly IOrderStore _orderStore;
-        private readonly IStockProductsStore _stockProductsStore;
-        private readonly IStockStore _stockStore;
 
-        public OrdersController(
-            IOrderStore orderStore,
-            IStockStore stockStore,
-            IStockProductsStore stockProductsStore,
-            IOrderService orderService)
+        public OrdersController(IOrderService orderService)
         {
-            _orderStore = orderStore;
-            _stockStore = stockStore;
-            _stockProductsStore = stockProductsStore;
             _orderService = orderService;
         }
 
@@ -38,7 +26,9 @@ namespace Application.Controllers
         ///     Получить список всех заказов
         /// </summary>
         /// <returns>Список заказов</returns>
+        /// <response code="403">Недостаточно прав для просмотра всех заказов</response>
         [HttpGet]
+        [Authorize(Policy = "RequireManagerRole")]
         public async Task<ActionResult<IEnumerable<OrderDto>>> GetOrders()
         {
             var orders = await _orderService.GetAllOrdersAsync();
@@ -50,18 +40,27 @@ namespace Application.Controllers
         /// </summary>
         /// <param name="id">ID заказа</param>
         /// <returns>Информация о заказе</returns>
+        /// <response code="403">Недостаточно прав для просмотра заказа</response>
         /// <response code="404">Заказ не найден</response>
         [HttpGet("{id}")]
+        [Authorize(Policy = "RequireManagerRole")]
         public async Task<ActionResult<OrderDto>> GetOrder(int id)
         {
             try
             {
                 var order = await _orderService.GetOrderByIdAsync(id);
+                var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+                if (!await _orderService.IsOrderOwnerAsync(id, userId))
+                {
+                    return Forbid();
+                }
+
                 return Ok(order);
             }
-            catch (NotFoundException ex)
+            catch (OrderNotFoundException)
             {
-                throw new BusinessException($"Заказ с ID {id} не найден", ex);
+                return NotFound($"Заказ с ID {id} не найден");
             }
         }
 
@@ -71,22 +70,49 @@ namespace Application.Controllers
         /// <param name="createOrderDto">Данные для создания заказа</param>
         /// <returns>Созданный заказ</returns>
         /// <response code="400">Некорректные входные данные</response>
+        /// <response code="404">Склад не найден</response>
         [HttpPost]
+        [Authorize(Policy = "RequireUserRole")]
         public async Task<ActionResult<OrderDto>> CreateOrder(CreateOrderDto createOrderDto)
         {
             if (!ModelState.IsValid)
             {
-                throw new ValidationException("Некорректные данные заказа", ModelState);
+                return BadRequest(ModelState);
+            }
+
+            if (createOrderDto.Products == null || !createOrderDto.Products.Any())
+            {
+                return BadRequest("Заказ должен содержать хотя бы один товар");
+            }
+
+            if (string.IsNullOrEmpty(createOrderDto.ClientName))
+            {
+                return BadRequest("Имя клиента обязательно для заполнения");
+            }
+
+            if (string.IsNullOrEmpty(createOrderDto.ContactPhone))
+            {
+                return BadRequest("Контактный телефон обязателен для заполнения");
             }
 
             try
             {
-                var order = await _orderService.CreateOrderAsync(createOrderDto);
+                var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                if (string.IsNullOrEmpty(userId))
+                {
+                    return BadRequest("Не удалось определить пользователя");
+                }
+
+                var order = await _orderService.CreateOrderAsync(createOrderDto, userId);
                 return CreatedAtAction(nameof(GetOrder), new { id = order.Id }, order);
             }
-            catch (NotFoundException ex)
+            catch (StockNotFoundException)
             {
-                throw new BusinessException("Клиент или товар не найден", ex);
+                return NotFound($"Склад с ID {createOrderDto.StockId} не найден");
+            }
+            catch (InsufficientStockException ex)
+            {
+                return BadRequest(ex.Message);
             }
         }
 
@@ -97,23 +123,36 @@ namespace Application.Controllers
         /// <param name="updateOrderDto">Данные для обновления заказа</param>
         /// <returns>Обновленный заказ</returns>
         /// <response code="400">Некорректные входные данные</response>
+        /// <response code="403">Недостаточно прав для обновления заказа</response>
         /// <response code="404">Заказ не найден</response>
         [HttpPut("{id}")]
-        public async Task<ActionResult<OrderDto>> UpdateOrder(int id, UpdateOrderDto updateOrderDto)
+        [Authorize(Policy = "RequireManagerRole")]
+        public async Task<IActionResult> UpdateOrder(int id, UpdateOrderDto updateOrderDto)
         {
             if (!ModelState.IsValid)
             {
-                throw new ValidationException("Некорректные данные заказа", ModelState);
+                return BadRequest(ModelState);
+            }
+
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (!await _orderService.IsOrderOwnerAsync(id, userId))
+            {
+                return Forbid();
             }
 
             try
             {
-                var order = await _orderService.UpdateOrderAsync(id, updateOrderDto);
-                return Ok(order);
+                await _orderService.UpdateOrderAsync(id, updateOrderDto);
+                return NoContent();
             }
-            catch (NotFoundException ex)
+            catch (OrderNotFoundException)
             {
-                throw new BusinessException($"Заказ с ID {id} не найден", ex);
+                return NotFound($"Заказ с ID {id} не найден");
+            }
+            catch (InvalidOrderStateException ex)
+            {
+                return BadRequest(ex.Message);
             }
         }
 
@@ -122,8 +161,10 @@ namespace Application.Controllers
         /// </summary>
         /// <param name="id">ID заказа</param>
         /// <returns>Результат операции</returns>
+        /// <response code="403">Недостаточно прав для удаления заказа</response>
         /// <response code="404">Заказ не найден</response>
         [HttpDelete("{id}")]
+        [Authorize(Policy = "RequireAdminRole")]
         public async Task<IActionResult> DeleteOrder(int id)
         {
             try
@@ -131,256 +172,35 @@ namespace Application.Controllers
                 await _orderService.DeleteOrderAsync(id);
                 return NoContent();
             }
-            catch (NotFoundException ex)
+            catch (OrderNotFoundException)
             {
-                throw new BusinessException($"Заказ с ID {id} не найден", ex);
+                return NotFound($"Заказ с ID {id} не найден");
+            }
+            catch (InvalidOrderStateException ex)
+            {
+                return BadRequest(ex.Message);
             }
         }
 
         /// <summary>
-        ///     Получить заказы клиента
+        ///     Получить заказы пользователя
         /// </summary>
-        /// <param name="clientId">ID клиента</param>
-        /// <returns>Список заказов клиента</returns>
-        /// <response code="404">Клиент не найден</response>
-        [HttpGet("client/{clientId}")]
-        public async Task<ActionResult<IEnumerable<OrderDto>>> GetClientOrders(int clientId)
+        /// <param name="userId">ID пользователя</param>
+        /// <returns>Список заказов пользователя</returns>
+        /// <response code="403">Недостаточно прав для просмотра заказов пользователя</response>
+        [HttpGet("user/{userId}")]
+        [Authorize(Policy = "RequireManagerRole")]
+        public async Task<ActionResult<IEnumerable<OrderDto>>> GetUserOrders(string userId)
         {
             try
             {
-                var orders = await _orderService.GetOrdersByClientIdAsync(clientId);
+                var orders = await _orderService.GetOrdersByUserIdAsync(userId);
                 return Ok(orders);
             }
-            catch (NotFoundException ex)
+            catch (Exception ex)
             {
-                throw new BusinessException($"Клиент с ID {clientId} не найден", ex);
-                var orders = _orderStore.All
-                    .Select(o => new OrderDto
-                    {
-                        Id = o.Id,
-                        UserId = o.UserId,
-                        UserName = o.User.UserName,
-                        StockId = o.StockId,
-                        StockName = o.Stock.Name,
-                        ClientName = o.ClientName,
-                        ContactPhone = o.ContactPhone,
-                        PaymentType = o.PaymentType,
-                        PaymentTypeDisplay = o.PaymentType.ToString(),
-                        ChangeDate = o.ChangeDate,
-                        OrderDate = o.OrderDate,
-                        State = o.State,
-                        StateDisplay = o.State.ToString(),
-                        TotalAmount = o.Products.Sum(p => p.ProductPrice * p.Quantity),
-                        Products = o.Products.Select(p => new OrderProductDto
-                        {
-                            Id = p.Id,
-                            ProductId = p.ProductId,
-                            ProductName = p.Product.Name,
-                            Quantity = p.Quantity,
-                            ProductPrice = p.ProductPrice
-                        }),
-                        Delivery = o.Delivery != null
-                            ? new DeliveryDto
-                            {
-                                Id = o.Delivery.Id,
-                                DeliveryDate = o.Delivery.DeliveryDate,
-                                City = o.Delivery.City,
-                                Street = o.Delivery.Street,
-                                House = o.Delivery.House,
-                                Flat = o.Delivery.Flat,
-                                PostalCode = o.Delivery.PostalCode
-                            }
-                            : null
-                    })
-                    .ToList();
-
-                return Ok(orders);
-            }
-
-            [HttpGet("{id}")]
-            [Authorize(Policy = "RequireManagerRole")]
-            public ActionResult<OrderDto> GetOrder(int id)
-            {
-                var order = _orderStore.Get(id);
-                if (order == null)
-                {
-                    throw new OrderNotFoundException(id);
-                }
-
-                var orderDto = new OrderDto
-                {
-                    Id = order.Id,
-                    UserId = order.UserId,
-                    UserName = order.User.UserName,
-                    StockId = order.StockId,
-                    StockName = order.Stock.Name,
-                    ClientName = order.ClientName,
-                    ContactPhone = order.ContactPhone,
-                    PaymentType = order.PaymentType,
-                    PaymentTypeDisplay = order.PaymentType.ToString(),
-                    ChangeDate = order.ChangeDate,
-                    OrderDate = order.OrderDate,
-                    State = order.State,
-                    StateDisplay = order.State.ToString(),
-                    TotalAmount = order.Products.Sum(p => p.ProductPrice * p.Quantity),
-                    Products = order.Products.Select(p => new OrderProductDto
-                    {
-                        Id = p.Id,
-                        ProductId = p.ProductId,
-                        ProductName = p.Product.Name,
-                        Quantity = p.Quantity,
-                        ProductPrice = p.ProductPrice
-                    }),
-                    Delivery = order.Delivery != null
-                        ? new DeliveryDto
-                        {
-                            Id = order.Delivery.Id,
-                            DeliveryDate = order.Delivery.DeliveryDate,
-                            City = order.Delivery.City,
-                            Street = order.Delivery.Street,
-                            House = order.Delivery.House,
-                            Flat = order.Delivery.Flat,
-                            PostalCode = order.Delivery.PostalCode
-                        }
-                        : null
-                };
-
-                return Ok(orderDto);
-            }
-
-            [HttpPost]
-            [Authorize(Policy = "RequireManagerRole")]
-            public ActionResult<OrderDto> CreateOrder(CreateOrderDto createOrderDto)
-            {
-                if (!ModelState.IsValid)
-                {
-                    return BadRequest(ModelState);
-                }
-
-                if (createOrderDto.StockId.HasValue)
-                {
-                    var stock = _stockStore.Get(createOrderDto.StockId.Value);
-                    if (stock == null)
-                    {
-                        throw new StockNotFoundException(createOrderDto.StockId.Value);
-                    }
-                }
-
-                var order = new Order
-                {
-                    UserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value,
-                    StockId = createOrderDto.StockId,
-                    ClientName = createOrderDto.ClientName,
-                    ContactPhone = createOrderDto.ContactPhone,
-                    PaymentType = createOrderDto.PaymentType,
-                    OrderDate = DateTime.Now,
-                    ChangeDate = DateTime.Now,
-                    State = Order.States.New,
-                    Products = createOrderDto.Products.Select(p => new OrderProduct
-                    {
-                        ProductId = p.ProductId,
-                        Quantity = p.Quantity,
-                        ProductPrice = p.ProductPrice
-                    }).ToList(),
-                    Delivery = createOrderDto.Delivery != null
-                        ? new Delivery
-                        {
-                            DeliveryDate = createOrderDto.Delivery.DeliveryDate,
-                            City = createOrderDto.Delivery.City,
-                            Street = createOrderDto.Delivery.Street,
-                            House = createOrderDto.Delivery.House,
-                            Flat = createOrderDto.Delivery.Flat,
-                            PostalCode = createOrderDto.Delivery.PostalCode
-                        }
-                        : null
-                };
-
-                _orderStore.Save(order);
-                return CreatedAtAction(nameof(GetOrder), new { id = order.Id }, order);
-            }
-
-            [HttpPut("{id}")]
-            [Authorize(Policy = "RequireManagerRole")]
-            public IActionResult UpdateOrder(int id, UpdateOrderDto updateOrderDto)
-            {
-                if (!ModelState.IsValid)
-                {
-                    return BadRequest(ModelState);
-                }
-
-                var order = _orderStore.Get(id);
-                if (order == null)
-                {
-                    throw new OrderNotFoundException(id);
-                }
-
-                if (order.State == Order.States.Cancelled)
-                {
-                    throw new InvalidOrderStateException("Нельзя изменить отмененный заказ");
-                }
-
-                if (updateOrderDto.StockId.HasValue)
-                {
-                    var stock = _stockStore.Get(updateOrderDto.StockId.Value);
-                    if (stock == null)
-                    {
-                        throw new StockNotFoundException(updateOrderDto.StockId.Value);
-                    }
-                }
-
-                order.StockId = updateOrderDto.StockId;
-                order.ClientName = updateOrderDto.ClientName;
-                order.ContactPhone = updateOrderDto.ContactPhone;
-                order.PaymentType = updateOrderDto.PaymentType;
-                order.State = updateOrderDto.State;
-                order.ChangeDate = DateTime.Now;
-
-                // Обновляем товары
-                order.Products.Clear();
-                order.Products = updateOrderDto.Products.Select(p => new OrderProduct
-                {
-                    ProductId = p.ProductId,
-                    Quantity = p.Quantity,
-                    ProductPrice = p.ProductPrice
-                }).ToList();
-
-                // Обновляем доставку
-                if (updateOrderDto.Delivery != null)
-                {
-                    if (order.Delivery == null)
-                    {
-                        order.Delivery = new Delivery();
-                    }
-
-                    order.Delivery.DeliveryDate = updateOrderDto.Delivery.DeliveryDate;
-                    order.Delivery.City = updateOrderDto.Delivery.City;
-                    order.Delivery.Street = updateOrderDto.Delivery.Street;
-                    order.Delivery.House = updateOrderDto.Delivery.House;
-                    order.Delivery.Flat = updateOrderDto.Delivery.Flat;
-                    order.Delivery.PostalCode = updateOrderDto.Delivery.PostalCode;
-                }
-
-                _orderStore.Save(order);
-                return NoContent();
-            }
-
-            [HttpDelete("{id}")]
-            [Authorize(Policy = "RequireAdminRole")]
-            public IActionResult DeleteOrder(int id)
-            {
-                var order = _orderStore.Get(id);
-                if (order == null)
-                {
-                    throw new OrderNotFoundException(id);
-                }
-
-                if (order.State == Order.States.Completed)
-                {
-                    throw new InvalidOrderStateException("Нельзя удалить завершенный заказ");
-                }
-
-                _orderStore.Delete(id);
-                return NoContent();
+                return BadRequest($"Ошибка при получении заказов пользователя: {ex.Message}");
             }
         }
     }
+}

@@ -16,5 +16,6 @@ namespace Application.Services
         Task<IEnumerable<OrderDto>> GetOrdersByDateRangeAsync(DateTime startDate, DateTime endDate);
         Task<OrderDto> ExecuteOrderAsync(int id);
         Task<OrderDto> CompleteOrderAsync(int id);
+        Task<bool> IsOrderOwnerAsync(int orderId, string userId);
     }
 }

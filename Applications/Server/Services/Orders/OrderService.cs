@@ -185,5 +185,14 @@ namespace Application.Services
             await _orderRepository.UpdateAsync(order);
             return _mapper.Map<OrderDto>(order);
         }
+
+        public async Task<bool> IsOrderOwnerAsync(int orderId, string userId)
+        {
+            var order = await _orderRepository.GetByIdAsync(orderId);
+            if (order == null) return false;
+
+            // Проверяем, является ли пользователь создателем заказа
+            return order.UserId == userId;
+        }
     }
 }

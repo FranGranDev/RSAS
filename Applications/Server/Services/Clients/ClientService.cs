@@ -21,7 +21,7 @@ namespace Application.Services
 
         public async Task<IEnumerable<ClientDto>> GetAllClientsAsync()
         {
-            var clients = await _clientRepository.GetAllAsync();
+            var clients = await _clientRepository.GetAllWithUserAsync();
             return _mapper.Map<IEnumerable<ClientDto>>(clients);
         }
 
@@ -54,6 +54,9 @@ namespace Application.Services
             var client = _mapper.Map<Client>(createClientDto);
             client.UserId = userId;
             await _clientRepository.AddAsync(client);
+            
+            // Получаем клиента с User для корректного маппинга
+            client = await _clientRepository.GetWithUserAsync(userId);
             return _mapper.Map<ClientDto>(client);
         }
 
@@ -74,6 +77,9 @@ namespace Application.Services
 
             _mapper.Map(updateClientDto, client);
             await _clientRepository.UpdateAsync(client);
+            
+            // Получаем обновленного клиента с User для корректного маппинга
+            client = await _clientRepository.GetWithUserAsync(userId);
             return _mapper.Map<ClientDto>(client);
         }
 
@@ -90,7 +96,7 @@ namespace Application.Services
 
         public async Task<ClientDto> GetClientByPhoneAsync(string phone)
         {
-            var client = await _clientRepository.GetByPhoneAsync(phone);
+            var client = await _clientRepository.GetByPhoneWithUserAsync(phone);
             if (client == null)
             {
                 throw new BusinessException($"Клиент с телефоном {phone} не найден");
@@ -101,7 +107,7 @@ namespace Application.Services
 
         public async Task<ClientDto> GetClientByNameAsync(string firstName, string lastName)
         {
-            var clients = await _clientRepository.GetByNameAsync(firstName, lastName);
+            var clients = await _clientRepository.GetByNameWithUserAsync(firstName, lastName);
             var client = clients.FirstOrDefault();
             if (client == null)
             {

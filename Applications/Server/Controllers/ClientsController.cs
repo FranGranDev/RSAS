@@ -5,6 +5,8 @@ using Application.Exceptions;
 using Application.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Identity;
+using Application.Models;
 
 namespace Application.Controllers
 {
@@ -17,10 +19,12 @@ namespace Application.Controllers
     public class ClientsController : ControllerBase
     {
         private readonly IClientService _clientService;
+        private readonly UserManager<AppUser> _userManager;
 
-        public ClientsController(IClientService clientService)
+        public ClientsController(IClientService clientService, UserManager<AppUser> userManager)
         {
             _clientService = clientService;
+            _userManager = userManager;
         }
 
         /// <summary>
@@ -39,7 +43,7 @@ namespace Application.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest($"Ошибка при получении списка клиентов: {ex.Message}");
+                return BadRequest(new { error = $"Ошибка при получении списка клиентов: {ex.Message}" });
             }
         }
 
@@ -60,11 +64,11 @@ namespace Application.Controllers
             }
             catch (ClientNotFoundException)
             {
-                return NotFound($"Клиент с ID {id} не найден");
+                return NotFound(new { error = $"Клиент с ID {id} не найден" });
             }
             catch (Exception ex)
             {
-                return BadRequest($"Ошибка при получении клиента: {ex.Message}");
+                return BadRequest(new { error = $"Ошибка при получении клиента: {ex.Message}" });
             }
         }
 
@@ -85,11 +89,11 @@ namespace Application.Controllers
             }
             catch (ClientNotFoundException)
             {
-                return NotFound($"Клиент с телефоном {phone} не найден");
+                return NotFound(new { error = $"Клиент с телефоном {phone} не найден" });
             }
             catch (Exception ex)
             {
-                return BadRequest($"Ошибка при получении клиента: {ex.Message}");
+                return BadRequest(new { error = $"Ошибка при получении клиента: {ex.Message}" });
             }
         }
 
@@ -111,11 +115,11 @@ namespace Application.Controllers
             }
             catch (ClientNotFoundException)
             {
-                return NotFound($"Клиент {firstName} {lastName} не найден");
+                return NotFound(new { error = $"Клиент {firstName} {lastName} не найден" });
             }
             catch (Exception ex)
             {
-                return BadRequest($"Ошибка при получении клиента: {ex.Message}");
+                return BadRequest(new { error = $"Ошибка при получении клиента: {ex.Message}" });
             }
         }
 
@@ -135,7 +139,7 @@ namespace Application.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest($"Ошибка при проверке существования клиента: {ex.Message}");
+                return BadRequest(new { error = $"Ошибка при проверке существования клиента: {ex.Message}" });
             }
         }
 
@@ -151,38 +155,58 @@ namespace Application.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return BadRequest(ModelState);
+                return BadRequest(new { errors = ModelState.Values.SelectMany(v => v.Errors.Select(e => e.ErrorMessage)) });
             }
 
             if (string.IsNullOrEmpty(createClientDto.FirstName))
             {
-                return BadRequest("Имя клиента обязательно для заполнения");
+                return BadRequest(new { error = "Имя клиента обязательно для заполнения" });
             }
 
             if (string.IsNullOrEmpty(createClientDto.LastName))
             {
-                return BadRequest("Фамилия клиента обязательна для заполнения");
+                return BadRequest(new { error = "Фамилия клиента обязательна для заполнения" });
             }
 
             if (string.IsNullOrEmpty(createClientDto.Phone))
             {
-                return BadRequest("Телефон клиента обязателен для заполнения");
+                return BadRequest(new { error = "Телефон клиента обязателен для заполнения" });
+            }
+
+            if (string.IsNullOrEmpty(createClientDto.Email))
+            {
+                return BadRequest(new { error = "Email клиента обязателен для заполнения" });
             }
 
             try
             {
-                var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-                if (string.IsNullOrEmpty(userId))
+                // Создаем нового пользователя
+                var user = new AppUser
                 {
-                    return BadRequest("Не удалось определить пользователя");
+                    UserName = createClientDto.Email,
+                    Email = createClientDto.Email,
+                    EmailConfirmed = true,
+                    PhoneNumber = createClientDto.Phone,
+                    PhoneNumberConfirmed = true,
+                    LockoutEnabled = false
+                };
+
+                var result = await _userManager.CreateAsync(user);
+                if (!result.Succeeded)
+                {
+                    return BadRequest(new { errors = result.Errors.Select(e => e.Description) });
                 }
 
-                var client = await _clientService.CreateClientAsync(createClientDto, userId);
+                // Добавляем роль клиента
+                await _userManager.AddToRoleAsync(user, "Client");
+
+                // Создаем клиента
+                var client = await _clientService.CreateClientAsync(createClientDto, user.Id);
                 return CreatedAtAction(nameof(GetClient), new { id = client.Id }, client);
             }
             catch (Exception ex)
             {
-                return BadRequest($"Ошибка при создании клиента: {ex.Message}");
+                return BadRequest(new { error = $"Ошибка при создании клиента: {ex.Message}" });
             }
         }
 
@@ -200,21 +224,48 @@ namespace Application.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return BadRequest(ModelState);
+                return BadRequest(new { errors = ModelState.Values.SelectMany(v => v.Errors.Select(e => e.ErrorMessage)) });
             }
 
             try
             {
-                var client = await _clientService.UpdateClientAsync(id, updateClientDto);
-                return Ok(client);
+                // Получаем текущего клиента
+                var currentClient = await _clientService.GetClientByIdAsync(id);
+                if (currentClient == null)
+                {
+                    return NotFound(new { error = $"Клиент с ID {id} не найден" });
+                }
+
+                // Получаем пользователя
+                var user = await _userManager.FindByIdAsync(id);
+                if (user == null)
+                {
+                    return NotFound(new { error = $"Пользователь с ID {id} не найден" });
+                }
+
+                // Обновляем email пользователя, если он изменился
+                if (user.Email != updateClientDto.Email)
+                {
+                    user.Email = updateClientDto.Email;
+                    user.UserName = updateClientDto.Email;
+                    var result = await _userManager.UpdateAsync(user);
+                    if (!result.Succeeded)
+                    {
+                        return BadRequest(new { errors = result.Errors.Select(e => e.Description) });
+                    }
+                }
+
+                // Обновляем клиента
+                var updatedClient = await _clientService.UpdateClientAsync(id, updateClientDto);
+                return Ok(updatedClient);
             }
             catch (ClientNotFoundException)
             {
-                return NotFound($"Клиент с ID {id} не найден");
+                return NotFound(new { error = $"Клиент с ID {id} не найден" });
             }
             catch (Exception ex)
             {
-                return BadRequest($"Ошибка при обновлении клиента: {ex.Message}");
+                return BadRequest(new { error = $"Ошибка при обновлении клиента: {ex.Message}" });
             }
         }
 
@@ -223,6 +274,7 @@ namespace Application.Controllers
         /// </summary>
         /// <param name="id">ID клиента</param>
         /// <returns>Результат операции</returns>
+        /// <response code="403">Недостаточно прав для удаления клиента</response>
         /// <response code="404">Клиент не найден</response>
         [HttpDelete("{id}")]
         [Authorize(Policy = "RequireManagerRole")]
@@ -230,16 +282,39 @@ namespace Application.Controllers
         {
             try
             {
+                // Получаем клиента
+                var client = await _clientService.GetClientByIdAsync(id);
+                if (client == null)
+                {
+                    return NotFound(new { error = $"Клиент с ID {id} не найден" });
+                }
+
+                // Получаем пользователя
+                var user = await _userManager.FindByIdAsync(id);
+                if (user == null)
+                {
+                    return NotFound(new { error = $"Пользователь с ID {id} не найден" });
+                }
+
+                // Удаляем клиента
                 await _clientService.DeleteClientAsync(id);
+
+                // Удаляем пользователя
+                var result = await _userManager.DeleteAsync(user);
+                if (!result.Succeeded)
+                {
+                    return BadRequest(new { errors = result.Errors.Select(e => e.Description) });
+                }
+
                 return NoContent();
             }
-            catch (ClientNotFoundException)
+            catch (BusinessException ex)
             {
-                return NotFound($"Клиент с ID {id} не найден");
+                return NotFound(new { error = ex.Message });
             }
             catch (Exception ex)
             {
-                return BadRequest($"Ошибка при удалении клиента: {ex.Message}");
+                return BadRequest(new { error = $"Ошибка при удалении клиента: {ex.Message}" });
             }
         }
     }

@@ -10,15 +10,37 @@ namespace Server.Services.Repository
         {
         }
 
+        public async Task<IEnumerable<Client>> GetAllWithUserAsync()
+        {
+            return await _dbSet
+                .Include(c => c.User)
+                .ToListAsync();
+        }
+
         public async Task<Client?> GetByPhoneAsync(string phone)
         {
             return await _dbSet
                 .FirstOrDefaultAsync(c => c.Phone == phone);
         }
 
+        public async Task<Client?> GetByPhoneWithUserAsync(string phone)
+        {
+            return await _dbSet
+                .Include(c => c.User)
+                .FirstOrDefaultAsync(c => c.Phone == phone);
+        }
+
         public async Task<IEnumerable<Client>> GetByNameAsync(string firstName, string lastName)
         {
             return await _dbSet
+                .Where(c => c.FirstName == firstName && c.LastName == lastName)
+                .ToListAsync();
+        }
+
+        public async Task<IEnumerable<Client>> GetByNameWithUserAsync(string firstName, string lastName)
+        {
+            return await _dbSet
+                .Include(c => c.User)
                 .Where(c => c.FirstName == firstName && c.LastName == lastName)
                 .ToListAsync();
         }

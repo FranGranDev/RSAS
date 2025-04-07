@@ -103,13 +103,6 @@ public class OrdersControllerTests
         _orderServiceMock.Setup(x => x.GetAllOrdersAsync())
             .ReturnsAsync(expectedOrders);
 
-        _authorizationServiceMock
-            .Setup(x => x.AuthorizeAsync(
-                It.IsAny<ClaimsPrincipal>(),
-                It.IsAny<object>(),
-                It.Is<string>(policy => policy == "RequireManagerRole")))
-            .ReturnsAsync(AuthorizationResult.Success());
-
         // Act
         var result = await _controller.GetOrders();
 
@@ -120,7 +113,72 @@ public class OrdersControllerTests
     }
 
     [Fact]
-    public async Task GetOrder_WithValidId_ShouldReturnOrder()
+    public async Task GetOrders_AsUser_ShouldBeForbidden()
+    {
+        // Arrange
+        var user = new ClaimsPrincipal(new ClaimsIdentity(new Claim[]
+        {
+            new(ClaimTypes.NameIdentifier, "test-user-id"),
+            new(ClaimTypes.Role, "User")
+        }, "mock"));
+
+        _controller.ControllerContext = new ControllerContext
+        {
+            HttpContext = new DefaultHttpContext { User = user }
+        };
+
+        // Настройка сервиса авторизации для возврата неудачи
+        _authorizationServiceMock
+            .Setup(x => x.AuthorizeAsync(
+                It.IsAny<ClaimsPrincipal>(),
+                It.IsAny<object>(),
+                It.Is<string>(policy => policy == "RequireManagerRole")))
+            .ReturnsAsync(AuthorizationResult.Failed());
+
+        // Act
+        var result = await _controller.GetOrders();
+
+        // Assert
+        result.Result.Should().BeOfType<ForbidResult>();
+    }
+
+    [Fact]
+    public async Task GetMyOrders_AsUser_ShouldReturnUserOrders()
+    {
+        // Arrange
+        var expectedOrders = new List<OrderDto> { CreateTestOrderDto() };
+        _orderServiceMock.Setup(x => x.GetOrdersByUserIdAsync("test-user-id"))
+            .ReturnsAsync(expectedOrders);
+
+        // Act
+        var result = await _controller.GetMyOrders();
+
+        // Assert
+        var okResult = result.Result.Should().BeOfType<OkObjectResult>().Subject;
+        var orders = okResult.Value.Should().BeAssignableTo<IEnumerable<OrderDto>>().Subject;
+        orders.Should().BeEquivalentTo(expectedOrders);
+    }
+
+    [Fact]
+    public async Task GetOrder_AsManager_ShouldReturnAnyOrder()
+    {
+        // Arrange
+        var orderId = 1;
+        var expectedOrder = CreateTestOrderDto();
+        _orderServiceMock.Setup(x => x.GetOrderByIdAsync(orderId))
+            .ReturnsAsync(expectedOrder);
+
+        // Act
+        var result = await _controller.GetOrder(orderId);
+
+        // Assert
+        var okResult = result.Result.Should().BeOfType<OkObjectResult>().Subject;
+        var order = okResult.Value.Should().BeOfType<OrderDto>().Subject;
+        order.Should().BeEquivalentTo(expectedOrder);
+    }
+
+    [Fact]
+    public async Task GetOrder_AsUser_ShouldReturnOwnOrder()
     {
         // Arrange
         var orderId = 1;
@@ -137,6 +195,36 @@ public class OrdersControllerTests
         var okResult = result.Result.Should().BeOfType<OkObjectResult>().Subject;
         var order = okResult.Value.Should().BeOfType<OrderDto>().Subject;
         order.Should().BeEquivalentTo(expectedOrder);
+    }
+
+    [Fact]
+    public async Task GetOrder_AsUser_ShouldReturnForbiddenForNotOwnOrder()
+    {
+        // Arrange
+        var orderId = 1;
+        var expectedOrder = CreateTestOrderDto();
+        _orderServiceMock.Setup(x => x.GetOrderByIdAsync(orderId))
+            .ReturnsAsync(expectedOrder);
+        _orderServiceMock.Setup(x => x.IsOrderOwnerAsync(orderId, "test-user-id"))
+            .ReturnsAsync(false);
+
+        // Настройка пользователя с ролью User
+        var user = new ClaimsPrincipal(new ClaimsIdentity(new Claim[]
+        {
+            new(ClaimTypes.NameIdentifier, "test-user-id"),
+            new(ClaimTypes.Role, "User")
+        }, "mock"));
+
+        _controller.ControllerContext = new ControllerContext
+        {
+            HttpContext = new DefaultHttpContext { User = user }
+        };
+
+        // Act
+        var result = await _controller.GetOrder(orderId);
+
+        // Assert
+        result.Result.Should().BeOfType<ForbidResult>();
     }
 
     [Fact]
@@ -378,35 +466,6 @@ public class OrdersControllerTests
         var okResult = result.Result.Should().BeOfType<OkObjectResult>().Subject;
         var deliveries = okResult.Value.Should().BeAssignableTo<IEnumerable<DeliveryDto>>().Subject;
         deliveries.Should().BeEquivalentTo(expectedDeliveries);
-    }
-
-    [Fact]
-    public async Task GetOrders_WithoutManagerRole_ShouldReturnForbidden()
-    {
-        // Arrange
-        var user = new ClaimsPrincipal(new ClaimsIdentity(new Claim[]
-        {
-            new(ClaimTypes.NameIdentifier, "test-user-id"),
-            new(ClaimTypes.Role, "User")
-        }, "mock"));
-
-        _authorizationServiceMock
-            .Setup(x => x.AuthorizeAsync(
-                It.IsAny<ClaimsPrincipal>(),
-                It.IsAny<object>(),
-                It.Is<string>(policy => policy == "RequireManagerRole")))
-            .ReturnsAsync(AuthorizationResult.Failed());
-
-        _controller.ControllerContext = new ControllerContext
-        {
-            HttpContext = new DefaultHttpContext { User = user }
-        };
-
-        // Act
-        var result = await _controller.GetOrders();
-
-        // Assert
-        result.Result.Should().BeOfType<ForbidResult>();
     }
 
     [Fact]

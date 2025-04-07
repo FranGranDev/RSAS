@@ -1,6 +1,7 @@
 ﻿using Application.Models;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Server.Models;
 
 namespace Application.Data
 {
@@ -22,6 +23,7 @@ namespace Application.Data
 
         //Sales
         public DbSet<Sale> Sales { get; set; }
+        public DbSet<SaleProduct> SaleProducts { get; set; }
 
         //Clients
         public DbSet<Client> Clients { get; set; }
@@ -104,15 +106,35 @@ namespace Application.Data
                 .HasKey(k => k.OrderId);
 
             //Sales
-            builder.Entity<Sale>()
-                .HasOne(s => s.Order)
-                .WithMany()
-                .HasForeignKey(k => k.OrderId);
+            builder.Entity<Sale>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+                
+                entity.HasOne(e => e.Order)
+                    .WithMany()
+                    .HasForeignKey(e => e.OrderId)
+                    .OnDelete(DeleteBehavior.Restrict);
 
-            builder.Entity<Sale>()
-                .HasOne(s => s.Stock)
-                .WithMany()
-                .HasForeignKey(k => k.StockId);
+                entity.HasMany(e => e.Products)
+                    .WithOne(e => e.Sale)
+                    .HasForeignKey(e => e.SaleId)
+                    .OnDelete(DeleteBehavior.Cascade);
+            });
+
+            builder.Entity<SaleProduct>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+
+                entity.HasOne(e => e.Sale)
+                    .WithMany(e => e.Products)
+                    .HasForeignKey(e => e.SaleId)
+                    .OnDelete(DeleteBehavior.Cascade);
+
+                entity.HasOne(e => e.Product)
+                    .WithMany()
+                    .HasForeignKey(e => e.ProductId)
+                    .OnDelete(DeleteBehavior.Restrict);
+            });
         }
     }
 }

@@ -25,7 +25,7 @@ namespace Application.Controllers
         }
 
         /// <summary>
-        ///     Получить список всех заказов
+        ///     Получить список всех заказов (только для менеджеров)
         /// </summary>
         /// <returns>Список заказов</returns>
         /// <response code="403">Недостаточно прав для просмотра всех заказов</response>
@@ -33,13 +33,20 @@ namespace Application.Controllers
         [Authorize(Policy = "RequireManagerRole")]
         public async Task<ActionResult<IEnumerable<OrderDto>>> GetOrders()
         {
-            var authorizationResult = await _authorizationService.AuthorizeAsync(User, null, "RequireManagerRole");
-            if (!authorizationResult.Succeeded)
-            {
-                return Forbid();
-            }
-
             var orders = await _orderService.GetAllOrdersAsync();
+            return Ok(orders);
+        }
+
+        /// <summary>
+        ///     Получить список заказов текущего пользователя
+        /// </summary>
+        /// <returns>Список заказов пользователя</returns>
+        [HttpGet("my")]
+        [Authorize]
+        public async Task<ActionResult<IEnumerable<OrderDto>>> GetMyOrders()
+        {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var orders = await _orderService.GetOrdersByUserIdAsync(userId);
             return Ok(orders);
         }
 
@@ -51,15 +58,17 @@ namespace Application.Controllers
         /// <response code="403">Недостаточно прав для просмотра заказа</response>
         /// <response code="404">Заказ не найден</response>
         [HttpGet("{id}")]
-        [Authorize(Policy = "RequireManagerRole")]
+        [Authorize]
         public async Task<ActionResult<OrderDto>> GetOrder(int id)
         {
             try
             {
                 var order = await _orderService.GetOrderByIdAsync(id);
                 var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                var isManager = User.IsInRole("Manager");
 
-                if (!await _orderService.IsOrderOwnerAsync(id, userId))
+                // Если пользователь не менеджер и не владелец заказа - запрещаем доступ
+                if (!isManager && !await _orderService.IsOrderOwnerAsync(id, userId))
                 {
                     return Forbid();
                 }

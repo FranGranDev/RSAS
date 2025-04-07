@@ -1,6 +1,7 @@
 using Application.DTOs;
 using Application.Models;
 using AutoMapper;
+using Server.Models;
 
 namespace Application.Services
 {
@@ -26,8 +27,6 @@ namespace Application.Services
 
             // Sales
             CreateMap<Sale, SaleDto>();
-            CreateMap<CreateSaleDto, Sale>();
-            CreateMap<UpdateSaleDto, Sale>();
 
             // Stocks
             CreateMap<Stock, StockDto>();

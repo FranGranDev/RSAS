@@ -43,7 +43,8 @@ namespace Application.Services
             CreateMap<UpdateClientDto, Client>();
 
             // Employees
-            CreateMap<Employee, EmployeeDto>();
+            CreateMap<Employee, EmployeeDto>()
+                .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.User.Email));
             CreateMap<CreateEmployeeDto, Employee>();
             CreateMap<UpdateEmployeeDto, Employee>();
 

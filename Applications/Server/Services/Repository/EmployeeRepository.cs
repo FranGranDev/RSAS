@@ -42,5 +42,12 @@ namespace Server.Services.Repository
             return await _dbSet
                 .AnyAsync(e => e.Phone == phone);
         }
+
+        public async Task<IEnumerable<Employee>> GetAllWithUsersAsync()
+        {
+            return await _dbSet
+                .Include(e => e.User)
+                .ToListAsync();
+        }
     }
 }

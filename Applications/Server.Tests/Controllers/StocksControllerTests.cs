@@ -1,41 +1,15 @@
 using System.Net;
+using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using Application.DTOs;
 using Application.Models;
 using FluentAssertions;
-using Microsoft.AspNetCore.Identity;
-using Xunit;
 using Xunit.Abstractions;
 
 namespace Server.Tests.Controllers;
 
 public class StocksControllerTests(ITestOutputHelper output) : TestBase(output)
 {
-    private async Task<(string Token, string UserId)> LoginAsManager()
-    {
-        // Создаем менеджера
-        var manager = new AppUser
-        {
-            UserName = "manager@test.com",
-            Email = "manager@test.com"
-        };
-        await UserManager.CreateAsync(manager, "Test123!");
-        await UserManager.AddToRoleAsync(manager, "Manager");
-
-        // Выполняем вход
-        var loginDto = new LoginDto
-        {
-            Email = "manager@test.com",
-            Password = "Test123!"
-        };
-
-        var response = await Client.PostAsJsonAsync("/api/auth/login", loginDto);
-        var result = await response.Content.ReadFromJsonAsync<AuthResponseDto>();
-        Client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", result!.Token);
-        
-        return (result.Token, manager.Id);
-    }
-
     [Fact]
     public async Task GetStocks_AsManager_ShouldReturnStocks()
     {
@@ -71,7 +45,7 @@ public class StocksControllerTests(ITestOutputHelper output) : TestBase(output)
 
         var loginResponse = await Client.PostAsJsonAsync("/api/auth/login", loginDto);
         var loginResult = await loginResponse.Content.ReadFromJsonAsync<AuthResponseDto>();
-        Client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", loginResult!.Token);
+        Client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", loginResult!.Token);
 
         // Act
         var response = await Client.GetAsync("/api/stocks");
@@ -85,7 +59,7 @@ public class StocksControllerTests(ITestOutputHelper output) : TestBase(output)
     {
         // Arrange
         await LoginAsManager();
-        
+
         var createStockDto = new CreateStockDto
         {
             Name = $"Test Stock {DateTime.Now.Ticks}",
@@ -103,7 +77,7 @@ public class StocksControllerTests(ITestOutputHelper output) : TestBase(output)
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.Created);
-        
+
         var stock = await response.Content.ReadFromJsonAsync<StockDto>();
         stock.Should().NotBeNull();
         stock!.Name.Should().Be(createStockDto.Name);
@@ -118,14 +92,14 @@ public class StocksControllerTests(ITestOutputHelper output) : TestBase(output)
     {
         // Arrange
         await LoginAsManager();
-        
+
         var createStockDto = new CreateStockDto
         {
-            Name = "",  // Пустое название
+            Name = "", // Пустое название
             Address = "Test Address",
             City = "Test City",
-            Phone = "123",  // Неверный формат телефона
-            Email = "invalid-email"  // Неверный формат email
+            Phone = "123", // Неверный формат телефона
+            Email = "invalid-email" // Неверный формат email
         };
 
         // Act
@@ -144,7 +118,7 @@ public class StocksControllerTests(ITestOutputHelper output) : TestBase(output)
     {
         // Arrange
         await LoginAsManager();
-        
+
         var createStockDto1 = new CreateStockDto
         {
             Name = "Test Stock",
@@ -156,7 +130,7 @@ public class StocksControllerTests(ITestOutputHelper output) : TestBase(output)
 
         var createStockDto2 = new CreateStockDto
         {
-            Name = "Test Stock",  // То же название
+            Name = "Test Stock", // То же название
             Address = "Test Address 2",
             City = "Test City",
             Phone = "+375297654321",
@@ -180,7 +154,7 @@ public class StocksControllerTests(ITestOutputHelper output) : TestBase(output)
     {
         // Arrange
         await LoginAsManager();
-        
+
         var createStockDto = new CreateStockDto
         {
             Name = $"Test Stock {DateTime.Now.Ticks}",
@@ -225,7 +199,7 @@ public class StocksControllerTests(ITestOutputHelper output) : TestBase(output)
     {
         // Arrange
         await LoginAsManager();
-        
+
         var createStockDto = new CreateStockDto
         {
             Name = $"Test Stock {DateTime.Now.Ticks}",
@@ -255,7 +229,7 @@ public class StocksControllerTests(ITestOutputHelper output) : TestBase(output)
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.OK);
-        
+
         var updatedStock = await response.Content.ReadFromJsonAsync<StockDto>();
         updatedStock.Should().NotBeNull();
         updatedStock!.Name.Should().Be(updateStockDto.Name);
@@ -270,7 +244,7 @@ public class StocksControllerTests(ITestOutputHelper output) : TestBase(output)
     {
         // Arrange
         await LoginAsManager();
-        
+
         // Создаем склад
         var createStockDto = new CreateStockDto
         {
@@ -303,7 +277,7 @@ public class StocksControllerTests(ITestOutputHelper output) : TestBase(output)
     {
         // Arrange
         await LoginAsManager();
-        
+
         var createStockDto = new CreateStockDto
         {
             Name = $"Test Stock {DateTime.Now.Ticks}",
@@ -331,7 +305,7 @@ public class StocksControllerTests(ITestOutputHelper output) : TestBase(output)
     {
         // Arrange
         await LoginAsManager();
-        
+
         var createStockDto = new CreateStockDto
         {
             Name = $"Test Stock {DateTime.Now.Ticks}",
@@ -359,7 +333,7 @@ public class StocksControllerTests(ITestOutputHelper output) : TestBase(output)
     {
         // Arrange
         await LoginAsManager();
-        
+
         var createStockDto = new CreateStockDto
         {
             Name = $"Test Stock {DateTime.Now.Ticks}",
@@ -386,7 +360,7 @@ public class StocksControllerTests(ITestOutputHelper output) : TestBase(output)
     {
         // Arrange
         await LoginAsManager();
-        
+
         var createStockDto = new CreateStockDto
         {
             Name = $"Test Stock {DateTime.Now.Ticks}",
@@ -412,7 +386,7 @@ public class StocksControllerTests(ITestOutputHelper output) : TestBase(output)
     {
         // Arrange
         await LoginAsManager();
-        
+
         var createStockDto = new CreateStockDto
         {
             Name = $"Test Stock {DateTime.Now.Ticks}",
@@ -432,4 +406,4 @@ public class StocksControllerTests(ITestOutputHelper output) : TestBase(output)
         response.StatusCode.Should().Be(HttpStatusCode.OK);
         exists.Should().BeTrue();
     }
-} 
+}

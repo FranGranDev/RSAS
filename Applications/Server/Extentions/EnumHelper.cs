@@ -19,7 +19,6 @@ namespace Application.Extensions
             {
                 return value.ToString();
             }
-
         }
     }
 }

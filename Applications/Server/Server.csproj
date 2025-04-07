@@ -9,105 +9,105 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.1" />
-        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.0" />
-        <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.0" />
-        <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="8.0.0" />
-        <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="8.0.0" />
-        <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
+        <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.1"/>
+        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.0"/>
+        <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.0"/>
+        <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="8.0.0"/>
+        <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="8.0.0"/>
+        <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0"/>
 
-        <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.0" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.0"/>
         <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.0">
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
             <PrivateAssets>all</PrivateAssets>
         </PackageReference>
-        <PackageReference Include="Microsoft.EntityFrameworkCore.Proxies" Version="8.0.0" />
-        <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.0" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Proxies" Version="8.0.0"/>
+        <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.0"/>
         <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.0">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
 
-        <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="8.0.0" />
+        <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="8.0.0"/>
 
-        <PackageReference Include="Microsoft.CodeAnalysis.Common" Version="4.8.0" />
+        <PackageReference Include="Microsoft.CodeAnalysis.Common" Version="4.8.0"/>
 
-        <PackageReference Include="xunit" Version="2.9.3" />
+        <PackageReference Include="xunit" Version="2.9.3"/>
     </ItemGroup>
 
     <ItemGroup>
-      <_ContentIncludedByDefault Remove="Pages\Companies\Catalog.cshtml" />
-      <_ContentIncludedByDefault Remove="Pages\Companies\Ordering.cshtml" />
-      <_ContentIncludedByDefault Remove="Pages\Error.cshtml" />
-      <_ContentIncludedByDefault Remove="Pages\Index.cshtml" />
-      <_ContentIncludedByDefault Remove="Pages\OrderDone.cshtml" />
-      <_ContentIncludedByDefault Remove="Pages\OrderInfo.cshtml" />
-      <_ContentIncludedByDefault Remove="Pages\Orders.cshtml" />
-      <_ContentIncludedByDefault Remove="Pages\Privacy.cshtml" />
-      <_ContentIncludedByDefault Remove="Pages\Shared\_CartInfoPartial.cshtml" />
-      <_ContentIncludedByDefault Remove="Pages\Shared\_CatalogPartial.cshtml" />
-      <_ContentIncludedByDefault Remove="Pages\Shared\_CompanyPartial.cshtml" />
-      <_ContentIncludedByDefault Remove="Pages\Shared\_ContactPartial.cshtml" />
-      <_ContentIncludedByDefault Remove="Pages\Shared\_DeliveryPartial.cshtml" />
-      <_ContentIncludedByDefault Remove="Pages\Shared\_Layout.cshtml" />
-      <_ContentIncludedByDefault Remove="Pages\Shared\_LoginPartial.cshtml" />
-      <_ContentIncludedByDefault Remove="Pages\Shared\_NavMenuPartial.cshtml" />
-      <_ContentIncludedByDefault Remove="Pages\Shared\_Notification.cshtml" />
-      <_ContentIncludedByDefault Remove="Pages\Shared\_OrderPartial.cshtml" />
-      <_ContentIncludedByDefault Remove="Pages\Shared\_PaymentPartial.cshtml" />
-      <_ContentIncludedByDefault Remove="Pages\Shared\_ValidationScriptsPartial.cshtml" />
-      <_ContentIncludedByDefault Remove="Pages\User\Catalog.cshtml" />
-      <_ContentIncludedByDefault Remove="Pages\User\Ordering.cshtml" />
-      <_ContentIncludedByDefault Remove="Pages\_ViewImports.cshtml" />
-      <_ContentIncludedByDefault Remove="Pages\_ViewStart.cshtml" />
-      <_ContentIncludedByDefault Remove="Areas\Admin\Pages\Analytics\Index.cshtml" />
-      <_ContentIncludedByDefault Remove="Areas\Admin\Pages\Employees\Create.cshtml" />
-      <_ContentIncludedByDefault Remove="Areas\Admin\Pages\Employees\Index.cshtml" />
-      <_ContentIncludedByDefault Remove="Areas\Admin\Pages\Products\Create.cshtml" />
-      <_ContentIncludedByDefault Remove="Areas\Admin\Pages\Products\Edit.cshtml" />
-      <_ContentIncludedByDefault Remove="Areas\Admin\Pages\Products\Index.cshtml" />
-      <_ContentIncludedByDefault Remove="Areas\Admin\Pages\Shared\_EmptySalesAnalyticsPartial.cshtml" />
-      <_ContentIncludedByDefault Remove="Areas\Admin\Pages\Shared\_ProductSalesPartial.cshtml" />
-      <_ContentIncludedByDefault Remove="Areas\Admin\Pages\Shared\_SaleInfoPartial.cshtml" />
-      <_ContentIncludedByDefault Remove="Areas\Admin\Pages\Shared\_SalesAnalyticsPartial.cshtml" />
-      <_ContentIncludedByDefault Remove="Areas\Admin\Pages\Shared\_SalesPartial.cshtml" />
-      <_ContentIncludedByDefault Remove="Areas\Admin\Pages\Stores\AddProduct.cshtml" />
-      <_ContentIncludedByDefault Remove="Areas\Admin\Pages\Stores\AddStock.cshtml" />
-      <_ContentIncludedByDefault Remove="Areas\Admin\Pages\Stores\Edit.cshtml" />
-      <_ContentIncludedByDefault Remove="Areas\Admin\Pages\Stores\EditProduct.cshtml" />
-      <_ContentIncludedByDefault Remove="Areas\Admin\Pages\Stores\Index.cshtml" />
-      <_ContentIncludedByDefault Remove="Areas\Admin\Pages\Stores\StockInfo.cshtml" />
-      <_ContentIncludedByDefault Remove="Areas\Admin\Pages\Test\Index.cshtml" />
-      <_ContentIncludedByDefault Remove="Areas\Admin\Pages\_ValidationScriptsPartial.cshtml" />
-      <_ContentIncludedByDefault Remove="Areas\Admin\Pages\_ViewImports.cshtml" />
-      <_ContentIncludedByDefault Remove="Areas\Admin\Pages\_ViewStart.cshtml" />
-      <_ContentIncludedByDefault Remove="Areas\Identity\Pages\Account\About\Client.cshtml" />
-      <_ContentIncludedByDefault Remove="Areas\Identity\Pages\Account\About\Company.cshtml" />
-      <_ContentIncludedByDefault Remove="Areas\Identity\Pages\Account\About\Employee.cshtml" />
-      <_ContentIncludedByDefault Remove="Areas\Identity\Pages\Account\About\Index.cshtml" />
-      <_ContentIncludedByDefault Remove="Areas\Identity\Pages\Account\AccessDenied.cshtml" />
-      <_ContentIncludedByDefault Remove="Areas\Identity\Pages\Account\Login.cshtml" />
-      <_ContentIncludedByDefault Remove="Areas\Identity\Pages\Account\Register.cshtml" />
-      <_ContentIncludedByDefault Remove="Areas\Identity\Pages\Account\RegisterClient.cshtml" />
-      <_ContentIncludedByDefault Remove="Areas\Identity\Pages\Account\RegisterCompany.cshtml" />
-      <_ContentIncludedByDefault Remove="Areas\Identity\Pages\Account\_ViewImports.cshtml" />
-      <_ContentIncludedByDefault Remove="Areas\Identity\Pages\_ValidationScriptsPartial.cshtml" />
-      <_ContentIncludedByDefault Remove="Areas\Identity\Pages\_ViewImports.cshtml" />
-      <_ContentIncludedByDefault Remove="Areas\Identity\Pages\_ViewStart.cshtml" />
-      <_ContentIncludedByDefault Remove="Areas\Manager\Pages\Orders\Index.cshtml" />
-      <_ContentIncludedByDefault Remove="Areas\Manager\Pages\Orders\OrderInfo.cshtml" />
-      <_ContentIncludedByDefault Remove="Areas\Manager\Pages\Shared\_OrderActionPartial.cshtml" />
-      <_ContentIncludedByDefault Remove="Areas\Manager\Pages\Shared\_OrdersPartial.cshtml" />
-      <_ContentIncludedByDefault Remove="Areas\Manager\Pages\Shared\_StockOrderPartial.cshtml" />
-      <_ContentIncludedByDefault Remove="Areas\Manager\Pages\_ValidationScriptsPartial.cshtml" />
-      <_ContentIncludedByDefault Remove="Areas\Manager\Pages\_ViewImports.cshtml" />
-      <_ContentIncludedByDefault Remove="Areas\Manager\Pages\_ViewStart.cshtml" />
-      <_ContentIncludedByDefault Remove="Application.Tests\obj\Application.Tests.csproj.nuget.dgspec.json" />
-      <_ContentIncludedByDefault Remove="Application.Tests\obj\project.assets.json" />
+        <_ContentIncludedByDefault Remove="Pages\Companies\Catalog.cshtml"/>
+        <_ContentIncludedByDefault Remove="Pages\Companies\Ordering.cshtml"/>
+        <_ContentIncludedByDefault Remove="Pages\Error.cshtml"/>
+        <_ContentIncludedByDefault Remove="Pages\Index.cshtml"/>
+        <_ContentIncludedByDefault Remove="Pages\OrderDone.cshtml"/>
+        <_ContentIncludedByDefault Remove="Pages\OrderInfo.cshtml"/>
+        <_ContentIncludedByDefault Remove="Pages\Orders.cshtml"/>
+        <_ContentIncludedByDefault Remove="Pages\Privacy.cshtml"/>
+        <_ContentIncludedByDefault Remove="Pages\Shared\_CartInfoPartial.cshtml"/>
+        <_ContentIncludedByDefault Remove="Pages\Shared\_CatalogPartial.cshtml"/>
+        <_ContentIncludedByDefault Remove="Pages\Shared\_CompanyPartial.cshtml"/>
+        <_ContentIncludedByDefault Remove="Pages\Shared\_ContactPartial.cshtml"/>
+        <_ContentIncludedByDefault Remove="Pages\Shared\_DeliveryPartial.cshtml"/>
+        <_ContentIncludedByDefault Remove="Pages\Shared\_Layout.cshtml"/>
+        <_ContentIncludedByDefault Remove="Pages\Shared\_LoginPartial.cshtml"/>
+        <_ContentIncludedByDefault Remove="Pages\Shared\_NavMenuPartial.cshtml"/>
+        <_ContentIncludedByDefault Remove="Pages\Shared\_Notification.cshtml"/>
+        <_ContentIncludedByDefault Remove="Pages\Shared\_OrderPartial.cshtml"/>
+        <_ContentIncludedByDefault Remove="Pages\Shared\_PaymentPartial.cshtml"/>
+        <_ContentIncludedByDefault Remove="Pages\Shared\_ValidationScriptsPartial.cshtml"/>
+        <_ContentIncludedByDefault Remove="Pages\User\Catalog.cshtml"/>
+        <_ContentIncludedByDefault Remove="Pages\User\Ordering.cshtml"/>
+        <_ContentIncludedByDefault Remove="Pages\_ViewImports.cshtml"/>
+        <_ContentIncludedByDefault Remove="Pages\_ViewStart.cshtml"/>
+        <_ContentIncludedByDefault Remove="Areas\Admin\Pages\Analytics\Index.cshtml"/>
+        <_ContentIncludedByDefault Remove="Areas\Admin\Pages\Employees\Create.cshtml"/>
+        <_ContentIncludedByDefault Remove="Areas\Admin\Pages\Employees\Index.cshtml"/>
+        <_ContentIncludedByDefault Remove="Areas\Admin\Pages\Products\Create.cshtml"/>
+        <_ContentIncludedByDefault Remove="Areas\Admin\Pages\Products\Edit.cshtml"/>
+        <_ContentIncludedByDefault Remove="Areas\Admin\Pages\Products\Index.cshtml"/>
+        <_ContentIncludedByDefault Remove="Areas\Admin\Pages\Shared\_EmptySalesAnalyticsPartial.cshtml"/>
+        <_ContentIncludedByDefault Remove="Areas\Admin\Pages\Shared\_ProductSalesPartial.cshtml"/>
+        <_ContentIncludedByDefault Remove="Areas\Admin\Pages\Shared\_SaleInfoPartial.cshtml"/>
+        <_ContentIncludedByDefault Remove="Areas\Admin\Pages\Shared\_SalesAnalyticsPartial.cshtml"/>
+        <_ContentIncludedByDefault Remove="Areas\Admin\Pages\Shared\_SalesPartial.cshtml"/>
+        <_ContentIncludedByDefault Remove="Areas\Admin\Pages\Stores\AddProduct.cshtml"/>
+        <_ContentIncludedByDefault Remove="Areas\Admin\Pages\Stores\AddStock.cshtml"/>
+        <_ContentIncludedByDefault Remove="Areas\Admin\Pages\Stores\Edit.cshtml"/>
+        <_ContentIncludedByDefault Remove="Areas\Admin\Pages\Stores\EditProduct.cshtml"/>
+        <_ContentIncludedByDefault Remove="Areas\Admin\Pages\Stores\Index.cshtml"/>
+        <_ContentIncludedByDefault Remove="Areas\Admin\Pages\Stores\StockInfo.cshtml"/>
+        <_ContentIncludedByDefault Remove="Areas\Admin\Pages\Test\Index.cshtml"/>
+        <_ContentIncludedByDefault Remove="Areas\Admin\Pages\_ValidationScriptsPartial.cshtml"/>
+        <_ContentIncludedByDefault Remove="Areas\Admin\Pages\_ViewImports.cshtml"/>
+        <_ContentIncludedByDefault Remove="Areas\Admin\Pages\_ViewStart.cshtml"/>
+        <_ContentIncludedByDefault Remove="Areas\Identity\Pages\Account\About\Client.cshtml"/>
+        <_ContentIncludedByDefault Remove="Areas\Identity\Pages\Account\About\Company.cshtml"/>
+        <_ContentIncludedByDefault Remove="Areas\Identity\Pages\Account\About\Employee.cshtml"/>
+        <_ContentIncludedByDefault Remove="Areas\Identity\Pages\Account\About\Index.cshtml"/>
+        <_ContentIncludedByDefault Remove="Areas\Identity\Pages\Account\AccessDenied.cshtml"/>
+        <_ContentIncludedByDefault Remove="Areas\Identity\Pages\Account\Login.cshtml"/>
+        <_ContentIncludedByDefault Remove="Areas\Identity\Pages\Account\Register.cshtml"/>
+        <_ContentIncludedByDefault Remove="Areas\Identity\Pages\Account\RegisterClient.cshtml"/>
+        <_ContentIncludedByDefault Remove="Areas\Identity\Pages\Account\RegisterCompany.cshtml"/>
+        <_ContentIncludedByDefault Remove="Areas\Identity\Pages\Account\_ViewImports.cshtml"/>
+        <_ContentIncludedByDefault Remove="Areas\Identity\Pages\_ValidationScriptsPartial.cshtml"/>
+        <_ContentIncludedByDefault Remove="Areas\Identity\Pages\_ViewImports.cshtml"/>
+        <_ContentIncludedByDefault Remove="Areas\Identity\Pages\_ViewStart.cshtml"/>
+        <_ContentIncludedByDefault Remove="Areas\Manager\Pages\Orders\Index.cshtml"/>
+        <_ContentIncludedByDefault Remove="Areas\Manager\Pages\Orders\OrderInfo.cshtml"/>
+        <_ContentIncludedByDefault Remove="Areas\Manager\Pages\Shared\_OrderActionPartial.cshtml"/>
+        <_ContentIncludedByDefault Remove="Areas\Manager\Pages\Shared\_OrdersPartial.cshtml"/>
+        <_ContentIncludedByDefault Remove="Areas\Manager\Pages\Shared\_StockOrderPartial.cshtml"/>
+        <_ContentIncludedByDefault Remove="Areas\Manager\Pages\_ValidationScriptsPartial.cshtml"/>
+        <_ContentIncludedByDefault Remove="Areas\Manager\Pages\_ViewImports.cshtml"/>
+        <_ContentIncludedByDefault Remove="Areas\Manager\Pages\_ViewStart.cshtml"/>
+        <_ContentIncludedByDefault Remove="Application.Tests\obj\Application.Tests.csproj.nuget.dgspec.json"/>
+        <_ContentIncludedByDefault Remove="Application.Tests\obj\project.assets.json"/>
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Migrations\" />
+        <Folder Include="Migrations\"/>
     </ItemGroup>
 
 </Project>

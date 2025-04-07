@@ -9,6 +9,7 @@ namespace Application.Services
 {
     public class OrderService : IOrderService
     {
+        private readonly IDeliveryRepository _deliveryRepository;
         private readonly IMapper _mapper;
         private readonly IOrderRepository _orderRepository;
         private readonly IStockRepository _stockRepository;
@@ -16,11 +17,13 @@ namespace Application.Services
         public OrderService(
             IOrderRepository orderRepository,
             IStockRepository stockRepository,
-            IMapper mapper)
+            IMapper mapper,
+            IDeliveryRepository deliveryRepository)
         {
             _orderRepository = orderRepository;
             _stockRepository = stockRepository;
             _mapper = mapper;
+            _deliveryRepository = deliveryRepository;
         }
 
         public async Task<IEnumerable<OrderDto>> GetAllOrdersAsync()
@@ -78,6 +81,16 @@ namespace Application.Services
             order.State = Order.States.New;
 
             await _orderRepository.AddAsync(order);
+
+            // Создаем доставку
+            if (createOrderDto.Delivery != null)
+            {
+                var delivery = _mapper.Map<Delivery>(createOrderDto.Delivery);
+                delivery.OrderId = order.Id;
+                delivery.Status = "Создана";
+                await _deliveryRepository.AddAsync(delivery);
+            }
+
             return _mapper.Map<OrderDto>(order);
         }
 
@@ -189,10 +202,51 @@ namespace Application.Services
         public async Task<bool> IsOrderOwnerAsync(int orderId, string userId)
         {
             var order = await _orderRepository.GetByIdAsync(orderId);
-            if (order == null) return false;
+            if (order == null)
+            {
+                return false;
+            }
 
             // Проверяем, является ли пользователь создателем заказа
             return order.UserId == userId;
+        }
+
+        // Методы для работы с доставкой
+        public async Task<DeliveryDto> UpdateDeliveryAsync(int orderId, UpdateDeliveryDto updateDeliveryDto)
+        {
+            var order = await _orderRepository.GetWithDetailsAsync(orderId);
+            if (order == null)
+            {
+                throw new BusinessException($"Заказ с ID {orderId} не найден");
+            }
+
+            if (order.State == Order.States.Cancelled)
+            {
+                throw new BusinessException("Нельзя изменить доставку отмененного заказа");
+            }
+
+            var delivery = await _deliveryRepository.GetByOrderIdAsync(orderId);
+            if (delivery == null)
+            {
+                throw new BusinessException($"Доставка для заказа с ID {orderId} не найдена");
+            }
+
+            _mapper.Map(updateDeliveryDto, delivery);
+            await _deliveryRepository.UpdateAsync(delivery);
+
+            return _mapper.Map<DeliveryDto>(delivery);
+        }
+
+        public async Task<IEnumerable<DeliveryDto>> GetDeliveriesByStatusAsync(string status)
+        {
+            var deliveries = await _deliveryRepository.GetByStatusAsync(status);
+            return _mapper.Map<IEnumerable<DeliveryDto>>(deliveries);
+        }
+
+        public async Task<IEnumerable<DeliveryDto>> GetDeliveriesByDateRangeAsync(DateTime startDate, DateTime endDate)
+        {
+            var deliveries = await _deliveryRepository.GetByDateRangeAsync(startDate, endDate);
+            return _mapper.Map<IEnumerable<DeliveryDto>>(deliveries);
         }
     }
 }

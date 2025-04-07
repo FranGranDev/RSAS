@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
@@ -9,11 +10,11 @@ namespace Application.Filters
         {
             var authAttributes = context.MethodInfo.DeclaringType.GetCustomAttributes(true)
                 .Union(context.MethodInfo.GetCustomAttributes(true))
-                .OfType<Microsoft.AspNetCore.Authorization.AuthorizeAttribute>();
+                .OfType<AuthorizeAttribute>();
 
             var allowAnonymousAttributes = context.MethodInfo.DeclaringType.GetCustomAttributes(true)
                 .Union(context.MethodInfo.GetCustomAttributes(true))
-                .OfType<Microsoft.AspNetCore.Authorization.AllowAnonymousAttribute>();
+                .OfType<AllowAnonymousAttribute>();
 
             if (authAttributes.Any() && !allowAnonymousAttributes.Any())
             {
@@ -35,7 +36,7 @@ namespace Application.Filters
 
                 operation.Security = new List<OpenApiSecurityRequirement>
                 {
-                    new OpenApiSecurityRequirement
+                    new()
                     {
                         {
                             new OpenApiSecurityScheme
@@ -53,4 +54,4 @@ namespace Application.Filters
             }
         }
     }
-} 
+}

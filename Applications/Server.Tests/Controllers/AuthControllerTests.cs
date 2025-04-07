@@ -3,8 +3,6 @@ using System.Net.Http.Json;
 using Application.DTOs;
 using Application.Models;
 using FluentAssertions;
-using Microsoft.AspNetCore.Identity;
-using Xunit;
 using Xunit.Abstractions;
 
 namespace Server.Tests.Controllers;
@@ -25,12 +23,12 @@ public class AuthControllerTests(ITestOutputHelper output) : TestBase(output)
 
         // Act
         var response = await Client.PostAsJsonAsync("/api/auth/register", registerDto);
-        
+
         // Логируем ответ для отладки
         var responseContent = await response.Content.ReadAsStringAsync();
         Console.WriteLine($"Response Status: {response.StatusCode}");
         Console.WriteLine($"Response Content: {responseContent}");
-        
+
         var result = await response.Content.ReadFromJsonAsync<AuthResponseDto>();
 
         // Assert
@@ -127,4 +125,4 @@ public class AuthControllerTests(ITestOutputHelper output) : TestBase(output)
         result!.Email.Should().Be(user.Email);
         result.UserName.Should().Be(user.UserName);
     }
-} 
+}

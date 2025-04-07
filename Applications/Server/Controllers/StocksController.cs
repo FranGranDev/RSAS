@@ -1,6 +1,5 @@
 using Application.DTOs;
 using Application.Exceptions;
-using Application.Services;
 using Application.Services.Stocks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

@@ -1,8 +1,9 @@
-using System.Security.Claims;
 using Application.DTOs;
 using Application.Exceptions;
+using Application.Models;
 using Application.Services;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Application.Controllers
@@ -16,10 +17,12 @@ namespace Application.Controllers
     public class EmployeesController : ControllerBase
     {
         private readonly IEmployeeService _employeeService;
+        private readonly UserManager<AppUser> _userManager;
 
-        public EmployeesController(IEmployeeService employeeService)
+        public EmployeesController(IEmployeeService employeeService, UserManager<AppUser> userManager)
         {
             _employeeService = employeeService;
+            _userManager = userManager;
         }
 
         /// <summary>
@@ -65,7 +68,7 @@ namespace Application.Controllers
         /// <response code="400">Некорректные входные данные</response>
         /// <response code="403">Недостаточно прав для создания сотрудника</response>
         [HttpPost]
-        [Authorize(Policy = "RequireAdminRole")]
+        [Authorize(Policy = "RequireManagerRole")]
         public async Task<ActionResult<EmployeeDto>> CreateEmployee(CreateEmployeeDto createEmployeeDto)
         {
             if (!ModelState.IsValid)
@@ -75,14 +78,25 @@ namespace Application.Controllers
 
             try
             {
-                var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-                if (string.IsNullOrEmpty(userId))
+                // Создаем нового пользователя
+                var user = new AppUser
                 {
-                    return Unauthorized();
+                    UserName = createEmployeeDto.Email,
+                    Email = createEmployeeDto.Email
+                };
+                var result = await _userManager.CreateAsync(user, "Test123!"); // Временный пароль
+                if (!result.Succeeded)
+                {
+                    return BadRequest(
+                        $"Ошибка при создании пользователя: {string.Join(", ", result.Errors.Select(e => e.Description))}");
                 }
 
-                var employee = await _employeeService.CreateEmployeeAsync(createEmployeeDto, userId);
-                return CreatedAtAction(nameof(GetEmployee), new { id = employee.Id }, employee);
+                // Добавляем роль
+                await _userManager.AddToRoleAsync(user, createEmployeeDto.Role);
+
+                // Создаем сотрудника
+                var employee = await _employeeService.CreateEmployeeAsync(createEmployeeDto, user.Id);
+                return CreatedAtAction(nameof(GetEmployee), new { id = user.Id }, employee);
             }
             catch (Exception ex)
             {
@@ -100,7 +114,7 @@ namespace Application.Controllers
         /// <response code="403">Недостаточно прав для обновления сотрудника</response>
         /// <response code="404">Сотрудник не найден</response>
         [HttpPut("{id}")]
-        [Authorize(Policy = "RequireAdminRole")]
+        [Authorize(Policy = "RequireManagerRole")]
         public async Task<ActionResult<EmployeeDto>> UpdateEmployee(string id, UpdateEmployeeDto updateEmployeeDto)
         {
             if (!ModelState.IsValid)
@@ -131,12 +145,21 @@ namespace Application.Controllers
         /// <response code="403">Недостаточно прав для удаления сотрудника</response>
         /// <response code="404">Сотрудник не найден</response>
         [HttpDelete("{id}")]
-        [Authorize(Policy = "RequireAdminRole")]
+        [Authorize(Policy = "RequireManagerRole")]
         public async Task<IActionResult> DeleteEmployee(string id)
         {
             try
             {
+                // Удаляем сотрудника
                 await _employeeService.DeleteEmployeeAsync(id);
+
+                // Удаляем связанного пользователя
+                var user = await _userManager.FindByIdAsync(id);
+                if (user != null)
+                {
+                    await _userManager.DeleteAsync(user);
+                }
+
                 return NoContent();
             }
             catch (EmployeeNotFoundException)
@@ -222,6 +245,111 @@ namespace Application.Controllers
         {
             var exists = await _employeeService.ExistsByPhoneAsync(phone);
             return Ok(exists);
+        }
+
+        /// <summary>
+        ///     Получить сотрудника по email
+        /// </summary>
+        /// <param name="email">Email сотрудника</param>
+        /// <returns>Информация о сотруднике</returns>
+        /// <response code="403">Недостаточно прав для просмотра сотрудника</response>
+        /// <response code="404">Сотрудник не найден</response>
+        [HttpGet("email/{email}")]
+        [Authorize(Policy = "RequireManagerRole")]
+        public async Task<ActionResult<EmployeeDto>> GetEmployeeByEmail(string email)
+        {
+            try
+            {
+                var user = await _userManager.FindByEmailAsync(email);
+                if (user == null)
+                {
+                    return NotFound($"Сотрудник с email {email} не найден");
+                }
+
+                var employee = await _employeeService.GetEmployeeByIdAsync(user.Id);
+                return Ok(employee);
+            }
+            catch (EmployeeNotFoundException)
+            {
+                return NotFound($"Сотрудник с email {email} не найден");
+            }
+        }
+
+        /// <summary>
+        ///     Обновить информацию о сотруднике по email
+        /// </summary>
+        /// <param name="email">Email сотрудника</param>
+        /// <param name="updateEmployeeDto">Данные для обновления сотрудника</param>
+        /// <returns>Обновленный сотрудник</returns>
+        /// <response code="400">Некорректные входные данные</response>
+        /// <response code="403">Недостаточно прав для обновления сотрудника</response>
+        /// <response code="404">Сотрудник не найден</response>
+        [HttpPut("email/{email}")]
+        [Authorize(Policy = "RequireManagerRole")]
+        public async Task<ActionResult<EmployeeDto>> UpdateEmployeeByEmail(string email,
+            UpdateEmployeeDto updateEmployeeDto)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            try
+            {
+                var user = await _userManager.FindByEmailAsync(email);
+                if (user == null)
+                {
+                    return NotFound($"Сотрудник с email {email} не найден");
+                }
+
+                var employee = await _employeeService.UpdateEmployeeAsync(user.Id, updateEmployeeDto);
+                return Ok(employee);
+            }
+            catch (EmployeeNotFoundException)
+            {
+                return NotFound($"Сотрудник с email {email} не найден");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest($"Ошибка при обновлении сотрудника: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        ///     Удалить сотрудника по email
+        /// </summary>
+        /// <param name="email">Email сотрудника</param>
+        /// <returns>Результат операции</returns>
+        /// <response code="403">Недостаточно прав для удаления сотрудника</response>
+        /// <response code="404">Сотрудник не найден</response>
+        [HttpDelete("email/{email}")]
+        [Authorize(Policy = "RequireManagerRole")]
+        public async Task<IActionResult> DeleteEmployeeByEmail(string email)
+        {
+            try
+            {
+                var user = await _userManager.FindByEmailAsync(email);
+                if (user == null)
+                {
+                    return NotFound($"Сотрудник с email {email} не найден");
+                }
+
+                // Удаляем сотрудника
+                await _employeeService.DeleteEmployeeAsync(user.Id);
+
+                // Удаляем связанного пользователя
+                await _userManager.DeleteAsync(user);
+
+                return NoContent();
+            }
+            catch (EmployeeNotFoundException)
+            {
+                return NotFound($"Сотрудник с email {email} не найден");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest($"Ошибка при удалении сотрудника: {ex.Message}");
+            }
         }
     }
 }

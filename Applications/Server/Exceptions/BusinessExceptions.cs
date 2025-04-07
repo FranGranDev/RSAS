@@ -9,7 +9,7 @@ namespace Application.Exceptions
 
     public class ProductNotFoundException : BusinessException
     {
-        public ProductNotFoundException(int productId) 
+        public ProductNotFoundException(int productId)
             : base($"Товар с ID {productId} не найден")
         {
         }
@@ -17,7 +17,7 @@ namespace Application.Exceptions
 
     public class ClientNotFoundException : BusinessException
     {
-        public ClientNotFoundException(string clientId) 
+        public ClientNotFoundException(string clientId)
             : base($"Клиент с ID {clientId} не найден")
         {
         }
@@ -25,7 +25,7 @@ namespace Application.Exceptions
 
     public class EmployeeNotFoundException : BusinessException
     {
-        public EmployeeNotFoundException(int employeeId) 
+        public EmployeeNotFoundException(string employeeId)
             : base($"Сотрудник с ID {employeeId} не найден")
         {
         }
@@ -33,7 +33,7 @@ namespace Application.Exceptions
 
     public class OrderNotFoundException : BusinessException
     {
-        public OrderNotFoundException(int orderId) 
+        public OrderNotFoundException(int orderId)
             : base($"Заказ с ID {orderId} не найден")
         {
         }
@@ -41,7 +41,7 @@ namespace Application.Exceptions
 
     public class StockNotFoundException : BusinessException
     {
-        public StockNotFoundException(int stockId) 
+        public StockNotFoundException(int stockId)
             : base($"Склад с ID {stockId} не найден")
         {
         }
@@ -49,8 +49,9 @@ namespace Application.Exceptions
 
     public class InsufficientStockException : BusinessException
     {
-        public InsufficientStockException(int productId, int requestedQuantity, int availableQuantity) 
-            : base($"Недостаточно товара с ID {productId}. Запрошено: {requestedQuantity}, Доступно: {availableQuantity}")
+        public InsufficientStockException(int productId, int requestedQuantity, int availableQuantity)
+            : base(
+                $"Недостаточно товара с ID {productId}. Запрошено: {requestedQuantity}, Доступно: {availableQuantity}")
         {
         }
     }
@@ -64,9 +65,9 @@ namespace Application.Exceptions
 
     public class DeliveryNotFoundException : BusinessException
     {
-        public DeliveryNotFoundException(int deliveryId) 
+        public DeliveryNotFoundException(int deliveryId)
             : base($"Доставка с ID {deliveryId} не найдена")
         {
         }
     }
-} 
+}

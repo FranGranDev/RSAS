@@ -9,10 +9,10 @@ namespace Server.Services.Sales
 {
     public class SaleService : ISaleService
     {
-        private readonly ISaleRepository _saleRepository;
-        private readonly IOrderRepository _orderRepository;
-        private readonly IStockRepository _stockRepository;
         private readonly IMapper _mapper;
+        private readonly IOrderRepository _orderRepository;
+        private readonly ISaleRepository _saleRepository;
+        private readonly IStockRepository _stockRepository;
 
         public SaleService(
             ISaleRepository saleRepository,
@@ -36,7 +36,9 @@ namespace Server.Services.Sales
         {
             var sale = await _saleRepository.GetWithDetailsAsync(id);
             if (sale == null)
+            {
                 throw new BusinessException($"Продажа с ID {id} не найдена");
+            }
 
             return _mapper.Map<SaleDto>(sale);
         }
@@ -46,19 +48,27 @@ namespace Server.Services.Sales
             // Проверяем существование заказа
             var order = await _orderRepository.GetWithDetailsAsync(createSaleDto.OrderId);
             if (order == null)
+            {
                 throw new BusinessException($"Заказ с ID {createSaleDto.OrderId} не найден");
+            }
 
             if (order.State != Order.States.InProcess)
+            {
                 throw new BusinessException("Можно создать продажу только для заказа в процессе");
+            }
 
             // Проверяем существование склада
             var stock = await _stockRepository.GetByIdAsync(createSaleDto.StockId);
             if (stock == null)
+            {
                 throw new BusinessException($"Склад с ID {createSaleDto.StockId} не найден");
+            }
 
             // Проверяем, не существует ли уже продажа для этого заказа
             if (await _saleRepository.ExistsByOrderIdAsync(createSaleDto.OrderId))
+            {
                 throw new BusinessException($"Продажа для заказа с ID {createSaleDto.OrderId} уже существует");
+            }
 
             var sale = _mapper.Map<Sale>(createSaleDto);
             sale.SaleDate = DateTime.UtcNow;
@@ -72,13 +82,19 @@ namespace Server.Services.Sales
         {
             var sale = await _saleRepository.GetWithDetailsAsync(id);
             if (sale == null)
+            {
                 throw new BusinessException($"Продажа с ID {id} не найдена");
+            }
 
             if (sale.Status == SaleStatus.Completed)
+            {
                 throw new BusinessException("Нельзя изменить завершенную продажу");
+            }
 
             if (sale.Status == SaleStatus.Cancelled)
+            {
                 throw new BusinessException("Нельзя изменить отмененную продажу");
+            }
 
             _mapper.Map(updateSaleDto, sale);
             await _saleRepository.UpdateAsync(sale);
@@ -89,10 +105,14 @@ namespace Server.Services.Sales
         {
             var sale = await _saleRepository.GetWithDetailsAsync(id);
             if (sale == null)
+            {
                 throw new BusinessException($"Продажа с ID {id} не найдена");
+            }
 
             if (sale.Status == SaleStatus.Completed)
+            {
                 throw new BusinessException("Нельзя удалить завершенную продажу");
+            }
 
             await _saleRepository.DeleteAsync(sale);
         }
@@ -125,10 +145,14 @@ namespace Server.Services.Sales
         {
             var sale = await _saleRepository.GetWithDetailsAsync(id);
             if (sale == null)
+            {
                 throw new BusinessException($"Продажа с ID {id} не найдена");
+            }
 
             if (sale.Status != SaleStatus.Processing)
+            {
                 throw new BusinessException("Можно завершить только продажу в обработке");
+            }
 
             sale.Status = SaleStatus.Completed;
             await _saleRepository.UpdateAsync(sale);
@@ -139,10 +163,14 @@ namespace Server.Services.Sales
         {
             var sale = await _saleRepository.GetWithDetailsAsync(id);
             if (sale == null)
+            {
                 throw new BusinessException($"Продажа с ID {id} не найдена");
+            }
 
             if (sale.Status != SaleStatus.Processing)
+            {
                 throw new BusinessException("Можно отменить только продажу в обработке");
+            }
 
             sale.Status = SaleStatus.Cancelled;
             await _saleRepository.UpdateAsync(sale);

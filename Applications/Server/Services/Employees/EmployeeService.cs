@@ -21,7 +21,7 @@ namespace Application.Services
 
         public async Task<IEnumerable<EmployeeDto>> GetAllEmployeesAsync()
         {
-            var employees = await _employeeRepository.GetAllAsync();
+            var employees = await _employeeRepository.GetAllWithUsersAsync();
             return _mapper.Map<IEnumerable<EmployeeDto>>(employees);
         }
 
@@ -54,7 +54,10 @@ namespace Application.Services
             var employee = _mapper.Map<Employee>(createEmployeeDto);
             employee.UserId = userId;
             await _employeeRepository.AddAsync(employee);
-            return _mapper.Map<EmployeeDto>(employee);
+
+            // Загружаем сотрудника с пользователем для корректного маппинга
+            var createdEmployee = await _employeeRepository.GetWithUserAsync(userId);
+            return _mapper.Map<EmployeeDto>(createdEmployee);
         }
 
         public async Task<EmployeeDto> UpdateEmployeeAsync(string userId, UpdateEmployeeDto updateEmployeeDto)
@@ -82,7 +85,7 @@ namespace Application.Services
             var employee = await _employeeRepository.GetWithUserAsync(userId);
             if (employee == null)
             {
-                throw new BusinessException($"Сотрудник с ID {userId} не найден");
+                throw new EmployeeNotFoundException($"Сотрудник с ID {userId} не найден");
             }
 
             await _employeeRepository.DeleteAsync(userId);

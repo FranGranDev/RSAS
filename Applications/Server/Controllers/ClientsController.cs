@@ -1,12 +1,10 @@
-using System.Security.Claims;
-using System.ComponentModel.DataAnnotations;
 using Application.DTOs;
 using Application.Exceptions;
+using Application.Models;
 using Application.Services;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity;
-using Application.Models;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Application.Controllers
 {
@@ -106,7 +104,8 @@ namespace Application.Controllers
         /// <response code="404">Клиент не найден</response>
         [HttpGet("by-name")]
         [Authorize(Policy = "RequireManagerRole")]
-        public async Task<ActionResult<ClientDto>> GetClientByName([FromQuery] string firstName, [FromQuery] string lastName)
+        public async Task<ActionResult<ClientDto>> GetClientByName([FromQuery] string firstName,
+            [FromQuery] string lastName)
         {
             try
             {
@@ -155,7 +154,8 @@ namespace Application.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return BadRequest(new { errors = ModelState.Values.SelectMany(v => v.Errors.Select(e => e.ErrorMessage)) });
+                return BadRequest(new
+                    { errors = ModelState.Values.SelectMany(v => v.Errors.Select(e => e.ErrorMessage)) });
             }
 
             if (string.IsNullOrEmpty(createClientDto.FirstName))
@@ -198,7 +198,7 @@ namespace Application.Controllers
                 }
 
                 // Добавляем роль клиента
-                await _userManager.AddToRoleAsync(user, "Client");
+                await _userManager.AddToRoleAsync(user, "User");
 
                 // Создаем клиента
                 var client = await _clientService.CreateClientAsync(createClientDto, user.Id);
@@ -224,7 +224,8 @@ namespace Application.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return BadRequest(new { errors = ModelState.Values.SelectMany(v => v.Errors.Select(e => e.ErrorMessage)) });
+                return BadRequest(new
+                    { errors = ModelState.Values.SelectMany(v => v.Errors.Select(e => e.ErrorMessage)) });
             }
 
             try

@@ -34,6 +34,7 @@ namespace Server.Controllers
             {
                 return NotFound();
             }
+
             return Ok(sale);
         }
 

@@ -16,7 +16,7 @@ namespace Application.Services.Stocks
         Task<bool> ExistsByAddressAsync(string address);
         Task<IEnumerable<StockProductDto>> GetStockProductsAsync(int stockId);
         Task<StockProductDto> UpdateStockProductQuantityAsync(int stockId, int productId, int quantity);
-        
+
         // Новые методы для управления товарами на складе
         Task<StockProductDto> AddProductToStockAsync(int stockId, int productId, int quantity);
         Task RemoveProductFromStockAsync(int stockId, int productId);

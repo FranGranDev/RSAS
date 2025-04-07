@@ -15,11 +15,13 @@ namespace Application.Controllers
     [Route("api/[controller]")]
     public class OrdersController : ControllerBase
     {
+        private readonly IAuthorizationService _authorizationService;
         private readonly IOrderService _orderService;
 
-        public OrdersController(IOrderService orderService)
+        public OrdersController(IOrderService orderService, IAuthorizationService authorizationService)
         {
             _orderService = orderService;
+            _authorizationService = authorizationService;
         }
 
         /// <summary>
@@ -31,6 +33,12 @@ namespace Application.Controllers
         [Authorize(Policy = "RequireManagerRole")]
         public async Task<ActionResult<IEnumerable<OrderDto>>> GetOrders()
         {
+            var authorizationResult = await _authorizationService.AuthorizeAsync(User, null, "RequireManagerRole");
+            if (!authorizationResult.Succeeded)
+            {
+                return Forbid();
+            }
+
             var orders = await _orderService.GetAllOrdersAsync();
             return Ok(orders);
         }
@@ -164,11 +172,18 @@ namespace Application.Controllers
         /// <response code="403">Недостаточно прав для удаления заказа</response>
         /// <response code="404">Заказ не найден</response>
         [HttpDelete("{id}")]
-        [Authorize(Policy = "RequireAdminRole")]
+        [Authorize(Policy = "RequireManagerRole")]
         public async Task<IActionResult> DeleteOrder(int id)
         {
             try
             {
+                var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+                if (!await _orderService.IsOrderOwnerAsync(id, userId))
+                {
+                    return Forbid();
+                }
+
                 await _orderService.DeleteOrderAsync(id);
                 return NoContent();
             }
@@ -201,6 +216,70 @@ namespace Application.Controllers
             {
                 return BadRequest($"Ошибка при получении заказов пользователя: {ex.Message}");
             }
+        }
+
+        /// <summary>
+        ///     Обновить информацию о доставке заказа
+        /// </summary>
+        /// <param name="orderId">ID заказа</param>
+        /// <param name="updateDeliveryDto">Данные для обновления доставки</param>
+        /// <returns>Обновленная информация о доставке</returns>
+        /// <response code="400">Некорректные входные данные</response>
+        /// <response code="403">Недостаточно прав для обновления доставки</response>
+        /// <response code="404">Заказ не найден</response>
+        [HttpPut("{orderId}/delivery")]
+        [Authorize(Policy = "RequireManagerRole")]
+        public async Task<ActionResult<DeliveryDto>> UpdateDelivery(int orderId, UpdateDeliveryDto updateDeliveryDto)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            try
+            {
+                var delivery = await _orderService.UpdateDeliveryAsync(orderId, updateDeliveryDto);
+                return Ok(delivery);
+            }
+            catch (OrderNotFoundException)
+            {
+                return NotFound($"Заказ с ID {orderId} не найден");
+            }
+            catch (InvalidOrderStateException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        /// <summary>
+        ///     Получить доставки по статусу
+        /// </summary>
+        /// <param name="status">Статус доставки</param>
+        /// <returns>Список доставок</returns>
+        /// <response code="403">Недостаточно прав для просмотра доставок</response>
+        [HttpGet("deliveries/status/{status}")]
+        [Authorize(Policy = "RequireManagerRole")]
+        public async Task<ActionResult<IEnumerable<DeliveryDto>>> GetDeliveriesByStatus(string status)
+        {
+            var deliveries = await _orderService.GetDeliveriesByStatusAsync(status);
+            return Ok(deliveries);
+        }
+
+        /// <summary>
+        ///     Получить доставки по диапазону дат
+        /// </summary>
+        /// <param name="startDate">Начальная дата</param>
+        /// <param name="endDate">Конечная дата</param>
+        /// <returns>Список доставок</returns>
+        /// <response code="403">Недостаточно прав для просмотра доставок</response>
+        [HttpGet("deliveries/date-range")]
+        [Authorize(Policy = "RequireManagerRole")]
+        public async Task<ActionResult<IEnumerable<DeliveryDto>>> GetDeliveriesByDateRange(
+            [FromQuery] DateTime startDate,
+            [FromQuery] DateTime endDate)
+        {
+            var deliveries = await _orderService.GetDeliveriesByDateRangeAsync(startDate, endDate);
+            return Ok(deliveries);
         }
     }
 }

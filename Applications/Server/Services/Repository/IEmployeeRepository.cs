@@ -18,5 +18,8 @@ namespace Server.Services.Repository
 
         // Проверка существования сотрудника по телефону
         Task<bool> ExistsByPhoneAsync(string phone);
+
+        // Получение всех сотрудников с включением связанных пользователей
+        Task<IEnumerable<Employee>> GetAllWithUsersAsync();
     }
 }

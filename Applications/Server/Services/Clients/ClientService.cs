@@ -54,7 +54,7 @@ namespace Application.Services
             var client = _mapper.Map<Client>(createClientDto);
             client.UserId = userId;
             await _clientRepository.AddAsync(client);
-            
+
             // Получаем клиента с User для корректного маппинга
             client = await _clientRepository.GetWithUserAsync(userId);
             return _mapper.Map<ClientDto>(client);
@@ -77,7 +77,7 @@ namespace Application.Services
 
             _mapper.Map(updateClientDto, client);
             await _clientRepository.UpdateAsync(client);
-            
+
             // Получаем обновленного клиента с User для корректного маппинга
             client = await _clientRepository.GetWithUserAsync(userId);
             return _mapper.Map<ClientDto>(client);

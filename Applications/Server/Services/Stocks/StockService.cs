@@ -9,8 +9,8 @@ namespace Application.Services.Stocks
     public class StockService : IStockService
     {
         private readonly IMapper _mapper;
-        private readonly IStockRepository _stockRepository;
         private readonly IProductRepository _productRepository;
+        private readonly IStockRepository _stockRepository;
 
         public StockService(
             IStockRepository stockRepository,
@@ -196,7 +196,7 @@ namespace Application.Services.Stocks
                 throw new BusinessException($"Товар с ID {productId} уже существует на складе");
             }
 
-            var stockProduct = new StockProducts()
+            var stockProduct = new StockProducts
             {
                 StockId = stockId,
                 ProductId = productId,

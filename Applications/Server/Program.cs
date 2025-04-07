@@ -1,5 +1,4 @@
 using System.Globalization;
-using System.Reflection;
 using System.Text;
 using Application.Data;
 using Application.Filters;
@@ -92,7 +91,6 @@ namespace Application
             builder.Services.AddScoped<ISaleService, SaleService>();
             builder.Services.AddScoped<IClientService, ClientService>();
             builder.Services.AddScoped<IEmployeeService, EmployeeService>();
-            builder.Services.AddScoped<IDeliveryService, DeliveryService>();
 
             // API
             builder.Services.AddControllers();
@@ -108,7 +106,8 @@ namespace Application
 
                 c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
                 {
-                    Description = "JWT Authorization header using the Bearer scheme. Example: \"Authorization: Bearer {token}\"",
+                    Description =
+                        "JWT Authorization header using the Bearer scheme. Example: \"Authorization: Bearer {token}\"",
                     Name = "Authorization",
                     In = ParameterLocation.Header,
                     Type = SecuritySchemeType.ApiKey,
@@ -126,10 +125,10 @@ namespace Application
                     {
                         builder
                             .WithOrigins(
-                                "http://localhost:5001",  // Development
-                                "http://localhost:3000",  // React development
+                                "http://localhost:5001", // Development
+                                "http://localhost:3000", // React development
                                 "https://localhost:5001", // Development HTTPS
-                                "https://localhost:3000"  // React development HTTPS
+                                "https://localhost:3000" // React development HTTPS
                             )
                             .AllowAnyMethod()
                             .AllowAnyHeader()
@@ -140,15 +139,18 @@ namespace Application
 
             var app = builder.Build();
 
-            // Seed Data
-            using (var scope = app.Services.CreateScope())
+            // Seed Data только в Production
+            if (!app.Environment.IsDevelopment())
             {
-                var services = scope.ServiceProvider;
-                var userManager = services.GetService<UserManager<AppUser>>();
-                var roleManager = services.GetService<RoleManager<IdentityRole>>();
-                var employeeRepository = services.GetService<IEmployeeRepository>();
-                await AppDbConfigure.SeedRoles(roleManager);
-                await AppDbConfigure.SeedUsers(userManager, employeeRepository);
+                using (var scope = app.Services.CreateScope())
+                {
+                    var services = scope.ServiceProvider;
+                    var userManager = services.GetService<UserManager<AppUser>>();
+                    var roleManager = services.GetService<RoleManager<IdentityRole>>();
+                    var employeeRepository = services.GetService<IEmployeeRepository>();
+                    await AppDbConfigure.SeedRoles(roleManager);
+                    await AppDbConfigure.SeedUsers(userManager, employeeRepository);
+                }
             }
 
             // Configure the HTTP request pipeline
@@ -159,7 +161,7 @@ namespace Application
             }
 
             app.UseHttpsRedirection();
-            
+
             // CORS должен быть до аутентификации и авторизации
             app.UseCors("AllowFrontend");
 

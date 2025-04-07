@@ -17,5 +17,10 @@ namespace Application.Services
         Task<OrderDto> ExecuteOrderAsync(int id);
         Task<OrderDto> CompleteOrderAsync(int id);
         Task<bool> IsOrderOwnerAsync(int orderId, string userId);
+
+        // Методы для работы с доставкой
+        Task<DeliveryDto> UpdateDeliveryAsync(int orderId, UpdateDeliveryDto updateDeliveryDto);
+        Task<IEnumerable<DeliveryDto>> GetDeliveriesByStatusAsync(string status);
+        Task<IEnumerable<DeliveryDto>> GetDeliveriesByDateRangeAsync(DateTime startDate, DateTime endDate);
     }
 }

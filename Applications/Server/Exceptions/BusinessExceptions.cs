@@ -17,7 +17,7 @@ namespace Application.Exceptions
 
     public class ClientNotFoundException : BusinessException
     {
-        public ClientNotFoundException(int clientId) 
+        public ClientNotFoundException(string clientId) 
             : base($"Клиент с ID {clientId} не найден")
         {
         }

@@ -55,6 +55,10 @@ namespace Application.Controllers
             {
                 return NotFound($"Склад с ID {id} не найден");
             }
+            catch (BusinessException ex)
+            {
+                return NotFound(ex.Message);
+            }
         }
 
         /// <summary>
@@ -125,7 +129,7 @@ namespace Application.Controllers
         /// <response code="403">Недостаточно прав для удаления склада</response>
         /// <response code="404">Склад не найден</response>
         [HttpDelete("{id}")]
-        [Authorize(Policy = "RequireAdminRole")]
+        [Authorize(Policy = "RequireManagerRole")]
         public async Task<IActionResult> DeleteStock(int id)
         {
             try

@@ -55,6 +55,10 @@ namespace Application.Controllers
             {
                 return NotFound($"Товар с ID {id} не найден");
             }
+            catch (BusinessException ex)
+            {
+                return NotFound(ex.Message);
+            }
         }
 
         /// <summary>
@@ -125,7 +129,7 @@ namespace Application.Controllers
         /// <response code="403">Недостаточно прав для удаления товара</response>
         /// <response code="404">Товар не найден</response>
         [HttpDelete("{id}")]
-        [Authorize(Policy = "RequireAdminRole")]
+        [Authorize(Policy = "RequireManagerRole")]
         public async Task<IActionResult> DeleteProduct(int id)
         {
             try

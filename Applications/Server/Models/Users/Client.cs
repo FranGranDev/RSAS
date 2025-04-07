@@ -6,7 +6,6 @@ namespace Application.Models
     {
         [Key] public string UserId { get; set; }
 
-
         [Required] public string FirstName { get; set; }
 
         [Required] public string LastName { get; set; }

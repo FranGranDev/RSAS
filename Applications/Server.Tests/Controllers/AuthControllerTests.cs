@@ -5,10 +5,11 @@ using Application.Models;
 using FluentAssertions;
 using Microsoft.AspNetCore.Identity;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace Server.Tests.Controllers;
 
-public class AuthControllerTests : TestBase
+public class AuthControllerTests(ITestOutputHelper output) : TestBase(output)
 {
     [Fact]
     public async Task Register_WithValidData_ShouldReturnSuccess()

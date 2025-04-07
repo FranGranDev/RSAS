@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Application.Data;
 using Microsoft.AspNetCore.Identity;
 using Application.Models;
+using Xunit.Abstractions;
 
 namespace Server.Tests;
 
@@ -17,9 +18,11 @@ public class TestBase : IDisposable
     protected readonly AppDbContext Context;
     protected readonly UserManager<AppUser> UserManager;
     protected readonly RoleManager<IdentityRole> RoleManager;
+    protected readonly ITestOutputHelper _output;
 
-    public TestBase()
+    public TestBase(ITestOutputHelper output)
     {
+        _output = output;
         Factory = new WebApplicationFactory<Program>()
             .WithWebHostBuilder(builder =>
             {

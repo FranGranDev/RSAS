@@ -30,7 +30,7 @@ namespace Application.Services
             var client = await _clientRepository.GetWithUserAsync(userId);
             if (client == null)
             {
-                throw new BusinessException($"Клиент с ID {userId} не найден");
+                throw new ClientNotFoundException($"Клиент с ID {userId} не найден");
             }
 
             return _mapper.Map<ClientDto>(client);

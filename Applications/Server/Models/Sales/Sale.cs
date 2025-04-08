@@ -13,7 +13,7 @@ namespace Server.Models
         public int OrderId { get; set; }
 
         [ForeignKey(nameof(OrderId))]
-        public Order Order { get; set; }
+        public virtual Order Order { get; set; }
 
         [Required]
         public string ClientName { get; set; }
@@ -36,6 +36,6 @@ namespace Server.Models
 
         public string? Comment { get; set; }
 
-        public ICollection<SaleProduct> Products { get; set; } = new List<SaleProduct>();
+        public virtual ICollection<SaleProduct> Products { get; set; } = new List<SaleProduct>();
     }
 } 

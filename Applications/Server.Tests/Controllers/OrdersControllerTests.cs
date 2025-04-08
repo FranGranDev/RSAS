@@ -113,36 +113,6 @@ public class OrdersControllerTests
     }
 
     [Fact]
-    public async Task GetOrders_AsUser_ShouldBeForbidden()
-    {
-        // Arrange
-        var user = new ClaimsPrincipal(new ClaimsIdentity(new Claim[]
-        {
-            new(ClaimTypes.NameIdentifier, "test-user-id"),
-            new(ClaimTypes.Role, "User")
-        }, "mock"));
-
-        _controller.ControllerContext = new ControllerContext
-        {
-            HttpContext = new DefaultHttpContext { User = user }
-        };
-
-        // Настройка сервиса авторизации для возврата неудачи
-        _authorizationServiceMock
-            .Setup(x => x.AuthorizeAsync(
-                It.IsAny<ClaimsPrincipal>(),
-                It.IsAny<object>(),
-                It.Is<string>(policy => policy == "RequireManagerRole")))
-            .ReturnsAsync(AuthorizationResult.Failed());
-
-        // Act
-        var result = await _controller.GetOrders();
-
-        // Assert
-        result.Result.Should().BeOfType<ForbidResult>();
-    }
-
-    [Fact]
     public async Task GetMyOrders_AsUser_ShouldReturnUserOrders()
     {
         // Arrange

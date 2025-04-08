@@ -110,7 +110,7 @@ namespace Application.Data
             {
                 entity.HasKey(e => e.Id);
                 
-                entity.HasOne(e => e.Order)
+                entity.HasOne<Order>(e => e.Order)
                     .WithMany()
                     .HasForeignKey(e => e.OrderId)
                     .OnDelete(DeleteBehavior.Restrict);
@@ -125,12 +125,12 @@ namespace Application.Data
             {
                 entity.HasKey(e => e.Id);
 
-                entity.HasOne(e => e.Sale)
+                entity.HasOne<Sale>(e => e.Sale)
                     .WithMany(e => e.Products)
                     .HasForeignKey(e => e.SaleId)
                     .OnDelete(DeleteBehavior.Cascade);
 
-                entity.HasOne(e => e.Product)
+                entity.HasOne<Product>(e => e.Product)
                     .WithMany()
                     .HasForeignKey(e => e.ProductId)
                     .OnDelete(DeleteBehavior.Restrict);

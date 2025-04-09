@@ -160,6 +160,51 @@ Authorization [Безопасность]
 - jQuery для AJAX
 - Chart.js для графиков
 
+### Frontend Технологии [UI][UX]
+
+#### Основной стек
+- ASP.NET Core Razor Pages 7.0
+- Bootstrap 5.3.2 (Material Design тема)
+- jQuery 3.7.1
+- jQuery Validation 1.20.0
+- Chart.js 4.4.1
+
+#### UI Компоненты
+- DataTables 1.13.7 (для таблиц с сортировкой и фильтрацией)
+- Select2 4.1.0 (для улучшенных выпадающих списков)
+- Toastr.js 2.1.4 (для уведомлений)
+- Font Awesome 6.4.2 (для иконок)
+
+#### Стилизация
+- SCSS для кастомных стилей
+- Bootstrap 5 с Material Design темой
+- Адаптивный дизайн (mobile-first подход)
+- CSS Grid и Flexbox для макетов
+
+#### Работа с API
+- Fetch API для HTTP запросов
+- JWT для аутентификации
+- LocalStorage для хранения токена
+- Axios для HTTP клиента (опционально)
+
+#### Оптимизация
+- Bundling и Minification для CSS/JS
+- Кэширование данных
+- Ленивая загрузка компонентов
+- Оптимизация изображений
+
+#### Безопасность
+- Валидация на стороне клиента
+- Защита от XSS
+- Обработка CSRF токенов
+- Санитизация входных данных
+
+#### Разработка
+- Visual Studio 2022
+- Chrome DevTools
+- ESLint для линтинга
+- Prettier для форматирования кода
+
 ### Testing [Тестирование]
 - xUnit для unit-тестов
 - Moq для мокирования
@@ -169,6 +214,168 @@ Authorization [Безопасность]
 - Docker для контейнеризации
 - GitHub Actions для CI/CD
 - Azure для хостинга
+
+## Требования к Frontend [UI][UX]
+
+### Структура проекта
+```
+Frontend/
+├── Pages/
+│   ├── Account/
+│   │   ├── Login.cshtml
+│   │   ├── Register.cshtml
+│   │   └── Profile.cshtml
+│   ├── Clients/
+│   │   ├── Index.cshtml (список клиентов)
+│   │   ├── Create.cshtml
+│   │   ├── Edit.cshtml
+│   │   └── Details.cshtml
+│   └── Shared/
+│       ├── _Layout.cshtml
+│       ├── _LoginPartial.cshtml
+│       └── _ValidationScriptsPartial.cshtml
+├── Services/
+│   ├── ApiService.cs
+│   ├── AuthService.cs
+│   └── ClientService.cs
+├── Models/
+│   └── ViewModels/
+│       ├── LoginViewModel.cs
+│       ├── RegisterViewModel.cs
+│       └── ClientViewModel.cs
+└── wwwroot/
+    ├── css/
+    │   └── site.css
+    ├── js/
+    │   └── site.js
+    └── lib/
+        ├── bootstrap/
+        ├── jquery/
+        └── jquery-validation/
+```
+
+### Функциональные требования
+
+#### Аутентификация [Безопасность]
+- Страница входа (Login)
+- Страница регистрации (Register)
+- Страница профиля пользователя (Profile)
+- Хранение JWT токена
+- Обработка истечения токена
+
+#### Модуль клиентов [UI]
+- Список клиентов (только для менеджеров)
+- Создание клиента
+- Редактирование клиента
+- Просмотр деталей клиента
+- Поиск по имени/телефону
+
+### Нефункциональные требования
+
+#### UI/UX [Дизайн]
+- Современный дизайн в стиле интернет-магазина
+- Адаптивный дизайн для всех устройств
+- Валидация форм на стороне клиента
+- Уведомления об успешных/неуспешных операциях
+- Загрузка данных через AJAX
+- Кэширование часто используемых данных
+
+#### Безопасность [Критично]
+- Хранение JWT в localStorage
+- Защита от XSS
+- Валидация всех входных данных
+- Обработка ошибок API
+
+#### Производительность [Оптимизация]
+- Минимальное время отклика
+- Оптимизация загрузки страниц
+- Кэширование данных
+- Ленивая загрузка компонентов
+
+### Технические детали
+
+#### Модели данных [БД]
+```csharp
+// AppUser (Identity)
+public class AppUser : IdentityUser
+{
+    public virtual Client Client { get; set; }
+    public virtual Company Company { get; set; }
+    public virtual Employee Employee { get; set; }
+}
+
+// Client
+public class Client
+{
+    [Key] public string UserId { get; set; }
+    [Required] public string FirstName { get; set; }
+    [Required] public string LastName { get; set; }
+    [Required] public string Phone { get; set; }
+    public virtual AppUser User { get; set; }
+}
+```
+
+#### DTO [API]
+```csharp
+// ClientDto
+public class ClientDto
+{
+    public string Id { get; set; }
+    public string FirstName { get; set; }
+    public string LastName { get; set; }
+    public string Email { get; set; }
+    public string Phone { get; set; }
+    public string FullName => $"{FirstName} {LastName}";
+}
+
+// CreateClientDto
+public class CreateClientDto
+{
+    [Required(ErrorMessage = "Имя клиента обязательно")]
+    [StringLength(50, ErrorMessage = "Имя не должно превышать 50 символов")]
+    public string FirstName { get; set; }
+
+    [Required(ErrorMessage = "Фамилия клиента обязательна")]
+    [StringLength(50, ErrorMessage = "Фамилия не должна превышать 50 символов")]
+    public string LastName { get; set; }
+
+    [Required(ErrorMessage = "Email клиента обязателен")]
+    [EmailAddress(ErrorMessage = "Некорректный формат email")]
+    public string Email { get; set; }
+
+    [Required(ErrorMessage = "Телефон клиента обязателен")]
+    [Phone(ErrorMessage = "Некорректный формат телефона")]
+    public string Phone { get; set; }
+}
+```
+
+#### API Endpoints [API]
+```
+Auth
+├── POST /api/auth/login
+├── POST /api/auth/register
+├── POST /api/auth/forgot-password
+└── POST /api/auth/reset-password
+
+Clients
+├── GET /api/clients (только для менеджеров)
+├── GET /api/clients/{id}
+├── POST /api/clients
+├── PUT /api/clients/{id}
+├── DELETE /api/clients/{id}
+├── GET /api/clients/by-phone/{phone}
+└── GET /api/clients/by-name?firstName={firstName}&lastName={lastName}
+```
+
+### Валидация [Безопасность]
+- Email: обязательный, формат email
+- Phone: обязательный, формат телефона
+- FirstName: обязательный, максимум 50 символов
+- LastName: обязательный, максимум 50 символов
+
+### Роли [Безопасность]
+- Client (пользователь)
+- Manager (менеджер)
 
 ## Структура проекта [Архитектура]
 

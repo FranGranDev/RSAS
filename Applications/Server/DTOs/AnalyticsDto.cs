@@ -20,7 +20,7 @@ namespace Application.DTOs
         public int TotalOrdersCount { get; set; }
 
         [Display(Name = "Топ товаров")]
-        public List<TopProductDto> TopProducts { get; set; } = new();
+        public List<TopProductResultDto> TopProducts { get; set; } = new();
 
         [Display(Name = "Статистика по статусам заказов")]
         public OrderStatusStatsDto OrderStatusStats { get; set; } = new();
@@ -44,10 +44,10 @@ namespace Application.DTOs
         public decimal AverageSaleAmount { get; set; }
 
         [Display(Name = "Продажи по категориям")]
-        public List<CategorySalesDto> CategorySales { get; set; } = new();
+        public List<CategorySalesResultDto> CategorySales { get; set; } = new();
 
         [Display(Name = "Динамика продаж")]
-        public List<SalesTrendDto> SalesTrend { get; set; } = new();
+        public List<SalesTrendResultDto> SalesTrend { get; set; } = new();
     }
 
     /// <summary>
@@ -79,23 +79,140 @@ namespace Application.DTOs
     /// </summary>
     public class ReportDto
     {
+        [Display(Name = "ID отчета")]
+        public int Id { get; set; }
+
         [Display(Name = "Тип отчета")]
         public ReportType Type { get; set; }
+
+        [Display(Name = "Название отчета")]
+        public string Title { get; set; } = string.Empty;
+
+        [Display(Name = "Описание")]
+        public string Description { get; set; } = string.Empty;
 
         [Display(Name = "Период")]
         public string Period { get; set; } = string.Empty;
 
-        [Display(Name = "Данные отчета")]
-        public object Data { get; set; } = new();
+        [Display(Name = "Дата создания")]
+        public DateTime CreatedAt { get; set; }
+
+        [Display(Name = "Создатель")]
+        public string CreatedBy { get; set; } = string.Empty;
+
+        [Display(Name = "Версия")]
+        public string Version { get; set; } = string.Empty;
 
         [Display(Name = "Формат")]
         public ReportFormat Format { get; set; }
+
+        [Display(Name = "Настройки форматирования")]
+        public ReportFormattingSettings FormattingSettings { get; set; } = new();
+
+        [Display(Name = "Данные отчета")]
+        public ReportDataDto Data { get; set; } = new();
+    }
+
+    /// <summary>
+    /// DTO для данных отчета
+    /// </summary>
+    public class ReportDataDto
+    {
+        [Display(Name = "Метрики")]
+        public Dictionary<string, decimal> Metrics { get; set; } = new();
+
+        [Display(Name = "Таблицы")]
+        public List<ReportTableDto> Tables { get; set; } = new();
+
+        [Display(Name = "Графики")]
+        public List<ReportChartDto> Charts { get; set; } = new();
+    }
+
+    /// <summary>
+    /// DTO для таблицы в отчете
+    /// </summary>
+    public class ReportTableDto
+    {
+        [Display(Name = "Название")]
+        public string Title { get; set; } = string.Empty;
+
+        [Display(Name = "Заголовки")]
+        public List<string> Headers { get; set; } = new();
+
+        [Display(Name = "Строки")]
+        public List<List<object>> Rows { get; set; } = new();
+
+        [Display(Name = "Итоги")]
+        public Dictionary<string, object> Totals { get; set; } = new();
+    }
+
+    /// <summary>
+    /// DTO для графика в отчете
+    /// </summary>
+    public class ReportChartDto
+    {
+        [Display(Name = "Название")]
+        public string Title { get; set; } = string.Empty;
+
+        [Display(Name = "Тип")]
+        public ChartType Type { get; set; }
+
+        [Display(Name = "Данные")]
+        public Dictionary<string, List<decimal>> Data { get; set; } = new();
+
+        [Display(Name = "Метки")]
+        public List<string> Labels { get; set; } = new();
+    }
+
+    /// <summary>
+    /// Настройки форматирования отчета
+    /// </summary>
+    public class ReportFormattingSettings
+    {
+        [Display(Name = "Язык")]
+        public string Language { get; set; } = "ru-RU";
+
+        [Display(Name = "Валюта")]
+        public string Currency { get; set; } = "RUB";
+
+        [Display(Name = "Формат даты")]
+        public string DateFormat { get; set; } = "dd.MM.yyyy";
+
+        [Display(Name = "Формат чисел")]
+        public string NumberFormat { get; set; } = "N2";
+
+        [Display(Name = "Шаблон")]
+        public string Template { get; set; } = "Default";
+
+        [Display(Name = "Стили")]
+        public Dictionary<string, string> Styles { get; set; } = new();
+    }
+
+    /// <summary>
+    /// Тип графика
+    /// </summary>
+    public enum ChartType
+    {
+        [Display(Name = "Линейный")]
+        Line,
+
+        [Display(Name = "Столбчатый")]
+        Bar,
+
+        [Display(Name = "Круговой")]
+        Pie,
+
+        [Display(Name = "Область")]
+        Area,
+
+        [Display(Name = "Точечный")]
+        Scatter
     }
 
     /// <summary>
     /// DTO для топа товаров
     /// </summary>
-    public class TopProductDto
+    public class TopProductResultDto
     {
         [Display(Name = "Название товара")]
         public string ProductName { get; set; } = string.Empty;
@@ -110,7 +227,7 @@ namespace Application.DTOs
     /// <summary>
     /// DTO для продаж по категориям
     /// </summary>
-    public class CategorySalesDto
+    public class CategorySalesResultDto
     {
         [Display(Name = "Категория")]
         public string Category { get; set; } = string.Empty;
@@ -128,7 +245,7 @@ namespace Application.DTOs
     /// <summary>
     /// DTO для тренда продаж
     /// </summary>
-    public class SalesTrendDto
+    public class SalesTrendResultDto
     {
         [Display(Name = "Дата")]
         public DateTime Date { get; set; }
@@ -198,5 +315,185 @@ namespace Application.DTOs
 
         [Display(Name = "PDF")]
         PDF
+    }
+
+    /// <summary>
+    /// DTO для расширенной аналитики продаж
+    /// </summary>
+    public class ExtendedSalesAnalyticsDto
+    {
+        [Display(Name = "Конверсия продаж")]
+        public decimal ConversionRate { get; set; }
+
+        [Display(Name = "Маржинальная прибыль")]
+        public decimal GrossProfit { get; set; }
+
+        [Display(Name = "Рентабельность")]
+        public decimal ProfitMargin { get; set; }
+
+        [Display(Name = "Среднее время выполнения заказа")]
+        public TimeSpan AverageOrderProcessingTime { get; set; }
+
+        [Display(Name = "Эффективность складов")]
+        public List<StockEfficiencyResultDto> StockEfficiency { get; set; } = new();
+
+        [Display(Name = "Сезонность продаж")]
+        public List<SeasonalityResultDto> Seasonality { get; set; } = new();
+
+        [Display(Name = "Прогноз продаж")]
+        public List<SalesForecastResultDto> SalesForecast { get; set; } = new();
+    }
+
+    /// <summary>
+    /// DTO для результата эффективности склада
+    /// </summary>
+    public class StockEfficiencyResultDto
+    {
+        [Display(Name = "Название склада")]
+        public string StockName { get; set; } = string.Empty;
+
+        [Display(Name = "Оборот")]
+        public decimal Turnover { get; set; }
+
+        [Display(Name = "Коэффициент оборачиваемости")]
+        public decimal TurnoverRatio { get; set; }
+    }
+
+    /// <summary>
+    /// DTO для результата сезонности
+    /// </summary>
+    public class SeasonalityResultDto
+    {
+        [Display(Name = "Период")]
+        public string Period { get; set; } = string.Empty;
+
+        [Display(Name = "Средний объем продаж")]
+        public decimal AverageSales { get; set; }
+
+        [Display(Name = "Отклонение от среднего")]
+        public decimal Deviation { get; set; }
+
+        [Display(Name = "Сезонный коэффициент")]
+        public decimal SeasonalityIndex { get; set; }
+    }
+
+    /// <summary>
+    /// DTO для результата прогноза продаж
+    /// </summary>
+    public class SalesForecastResultDto
+    {
+        [Display(Name = "Дата")]
+        public DateTime Date { get; set; }
+
+        [Display(Name = "Прогноз продаж")]
+        public decimal ForecastedSales { get; set; }
+
+        [Display(Name = "Доверительный интервал (нижний)")]
+        public decimal LowerBound { get; set; }
+
+        [Display(Name = "Доверительный интервал (верхний)")]
+        public decimal UpperBound { get; set; }
+    }
+
+    /// <summary>
+    /// DTO для KPI
+    /// </summary>
+    public class KpiDto
+    {
+        [Display(Name = "Конверсия продаж")]
+        public decimal SalesConversion { get; set; }
+
+        [Display(Name = "Среднее время выполнения заказа")]
+        public TimeSpan AverageOrderTime { get; set; }
+
+        [Display(Name = "Выручка")]
+        public decimal Revenue { get; set; }
+
+        [Display(Name = "Объем продаж")]
+        public int SalesVolume { get; set; }
+
+        [Display(Name = "Маржинальная прибыль")]
+        public decimal GrossProfit { get; set; }
+
+        [Display(Name = "Средний чек")]
+        public decimal AverageCheck { get; set; }
+
+        [Display(Name = "Рентабельность")]
+        public decimal ProfitMargin { get; set; }
+
+        [Display(Name = "Оборачиваемость склада")]
+        public decimal StockTurnover { get; set; }
+
+        [Display(Name = "Средний срок выполнения заказа")]
+        public TimeSpan AverageOrderProcessingTime { get; set; }
+    }
+
+    /// <summary>
+    /// DTO для прогноза по категориям
+    /// </summary>
+    public class CategoryForecastDto
+    {
+        [Display(Name = "Категория")]
+        public string Category { get; set; } = string.Empty;
+
+        [Display(Name = "Прогноз продаж")]
+        public decimal ForecastedSales { get; set; }
+
+        [Display(Name = "Доверительный интервал (нижний)")]
+        public decimal LowerBound { get; set; }
+
+        [Display(Name = "Доверительный интервал (верхний)")]
+        public decimal UpperBound { get; set; }
+
+        [Display(Name = "Точность прогноза")]
+        public decimal Confidence { get; set; }
+    }
+
+    /// <summary>
+    /// DTO для прогноза спроса
+    /// </summary>
+    public class DemandForecastDto
+    {
+        [Display(Name = "Товар")]
+        public string ProductName { get; set; } = string.Empty;
+
+        [Display(Name = "Категория")]
+        public string Category { get; set; } = string.Empty;
+
+        [Display(Name = "Прогноз спроса")]
+        public int ForecastedQuantity { get; set; }
+
+        [Display(Name = "Доверительный интервал (нижний)")]
+        public int LowerBound { get; set; }
+
+        [Display(Name = "Доверительный интервал (верхний)")]
+        public int UpperBound { get; set; }
+
+        [Display(Name = "Текущий остаток")]
+        public int CurrentStock { get; set; }
+
+        [Display(Name = "Рекомендуемый заказ")]
+        public int RecommendedOrder { get; set; }
+    }
+
+    /// <summary>
+    /// DTO для анализа влияния сезонности
+    /// </summary>
+    public class SeasonalityImpactDto
+    {
+        [Display(Name = "Категория")]
+        public string Category { get; set; } = string.Empty;
+
+        [Display(Name = "Сезонный коэффициент")]
+        public decimal SeasonalityIndex { get; set; }
+
+        [Display(Name = "Пиковый месяц")]
+        public string PeakMonth { get; set; } = string.Empty;
+
+        [Display(Name = "Спад")]
+        public string LowMonth { get; set; } = string.Empty;
+
+        [Display(Name = "Влияние на продажи")]
+        public decimal Impact { get; set; }
     }
 } 

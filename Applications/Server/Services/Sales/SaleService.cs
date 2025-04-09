@@ -9,154 +9,26 @@ namespace Server.Services.Sales
 {
     public class SaleService : ISaleService
     {
-        private readonly IMapper _mapper;
-        private readonly IOrderRepository _orderRepository;
         private readonly ISaleRepository _saleRepository;
-        private readonly ILogger<SaleService> _logger;
+        private readonly IOrderRepository _orderRepository;
+        private readonly IMapper _mapper;
 
         public SaleService(
-            ISaleRepository saleRepository,
+            ISaleRepository saleRepository, 
             IOrderRepository orderRepository,
-            IMapper mapper,
-            ILogger<SaleService> logger)
+            IMapper mapper)
         {
             _saleRepository = saleRepository;
             _orderRepository = orderRepository;
             _mapper = mapper;
-            _logger = logger;
         }
 
-        public async Task<SaleDto> CreateFromOrderAsync(int orderId)
-        {
-            try
-            {
-                _logger.LogInformation($"Начало создания продажи для заказа {orderId}");
-
-                // Получаем заказ с деталями
-                var order = await _orderRepository.GetWithDetailsAsync(orderId);
-                if (order == null)
-                {
-                    _logger.LogWarning($"Заказ с ID {orderId} не найден");
-                    throw new BusinessException($"Заказ с ID {orderId} не найден");
-                }
-
-                if (order.State != Order.States.InProcess)
-                {
-                    _logger.LogWarning($"Невозможно создать продажу для заказа {orderId} в статусе {order.State}");
-                    throw new BusinessException("Можно создать продажу только для заказа в процессе");
-                }
-
-                // Проверяем, не существует ли уже продажа для этого заказа
-                if (await _saleRepository.ExistsByOrderIdAsync(orderId))
-                {
-                    _logger.LogWarning($"Продажа для заказа с ID {orderId} уже существует");
-                    throw new BusinessException($"Продажа для заказа с ID {orderId} уже существует");
-                }
-
-                if (order.Products == null || !order.Products.Any())
-                {
-                    _logger.LogWarning($"Заказ {orderId} не содержит продуктов");
-                    throw new BusinessException("Заказ не содержит продуктов");
-                }
-
-                // Рассчитываем общую сумму и скидку
-                decimal totalAmount = 0;
-                decimal discountAmount = 0;
-
-                // Создаем продукты продажи и считаем суммы
-                var products = new List<SaleProduct>();
-                foreach (var orderProduct in order.Products)
-                {
-                    if (orderProduct.Quantity <= 0)
-                    {
-                        _logger.LogWarning($"Некорректное количество продукта {orderProduct.ProductId} в заказе {orderId}");
-                        throw new BusinessException($"Некорректное количество продукта {orderProduct.ProductId}");
-                    }
-
-                    if (orderProduct.ProductPrice < 0)
-                    {
-                        _logger.LogWarning($"Некорректная цена продукта {orderProduct.ProductId} в заказе {orderId}");
-                        throw new BusinessException($"Некорректная цена продукта {orderProduct.ProductId}");
-                    }
-
-                    var productTotal = orderProduct.Quantity * orderProduct.ProductPrice;
-                    totalAmount += productTotal;
-
-                    var saleProduct = new SaleProduct
-                    {
-                        ProductId = orderProduct.ProductId,
-                        ProductName = orderProduct.ProductName,
-                        ProductCategory = orderProduct.Product.Category,
-                        Quantity = orderProduct.Quantity,
-                        ProductPrice = orderProduct.ProductPrice,
-                        DiscountAmount = 0 // Скидка на уровне продукта не используется в заказе
-                    };
-                    products.Add(saleProduct);
-                }
-
-                _logger.LogInformation($"Создание продажи для заказа {orderId} с общей суммой {totalAmount}");
-
-                // Создаем продажу
-                var sale = new Sale
-                {
-                    OrderId = orderId,
-                    ClientName = order.ClientName,
-                    ClientPhone = order.ContactPhone,
-                    SaleDate = DateTime.UtcNow,
-                    TotalAmount = totalAmount,
-                    DiscountAmount = discountAmount,
-                    PaymentMethod = order.PaymentType.ToString(),
-                    Comment = $"Продажа по заказу #{orderId}",
-                    Products = products
-                };
-
-                // Добавляем продажу в репозиторий
-                await _saleRepository.AddAsync(sale);
-                await _saleRepository.SaveChangesAsync();
-
-                // Обновляем статус заказа
-                order.State = Order.States.Completed;
-                await _orderRepository.UpdateAsync(order);
-                await _orderRepository.SaveChangesAsync();
-
-                _logger.LogInformation($"Продажа {sale.Id} успешно создана для заказа {orderId}");
-
-                // Маппим Sale в SaleDto
-                return new SaleDto
-                {
-                    Id = sale.Id,
-                    OrderId = sale.OrderId,
-                    ClientName = sale.ClientName,
-                    ClientPhone = sale.ClientPhone,
-                    SaleDate = sale.SaleDate,
-                    TotalAmount = sale.TotalAmount,
-                    Products = sale.Products.Select(p => new SaleProductDto
-                    {
-                        Id = p.Id,
-                        SaleId = p.SaleId,
-                        ProductId = p.ProductId,
-                        ProductName = p.ProductName,
-                        ProductCategory = p.ProductCategory,
-                        Quantity = p.Quantity,
-                        ProductPrice = p.ProductPrice,
-                        DiscountAmount = p.DiscountAmount
-                    }).ToList()
-                };
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"Ошибка при создании продажи для заказа {orderId}");
-                throw;
-            }
-        }
-        
         public async Task<SaleDto> GetByIdAsync(int id)
         {
             var sale = await _saleRepository.GetByIdAsync(id);
             if (sale == null)
-            {
-                throw new BusinessException($"Продажа с ID {id} не найдена");
-            }
+                throw new SaleNotFoundException(id);
+
             return _mapper.Map<SaleDto>(sale);
         }
 
@@ -166,41 +38,50 @@ namespace Server.Services.Sales
             return _mapper.Map<IEnumerable<SaleDto>>(sales);
         }
 
-        public async Task DeleteAsync(int id)
+        public async Task<SaleDto> CreateFromOrderAsync(int orderId)
         {
-            var sale = await _saleRepository.GetWithDetailsAsync(id);
-            if (sale == null)
-            {
-                throw new BusinessException($"Продажа с ID {id} не найдена");
-            }
+            var order = await _orderRepository.GetWithDetailsAsync(orderId);
+            if (order == null)
+                throw new OrderNotFoundException(orderId);
 
-            await _saleRepository.DeleteAsync(sale);
-        }
+            if (await _saleRepository.ExistsByOrderIdAsync(orderId))
+                throw new BusinessException($"Продажа для заказа {orderId} уже существует");
 
-        public async Task<SaleDto> GetWithDetailsAsync(int id)
-        {
-            var sale = await _saleRepository.GetWithDetailsAsync(id);
-            if (sale == null)
+            // Рассчитываем общую сумму заказа
+            var totalAmount = order.Products.Sum(op => op.ProductPrice * op.Quantity);
+
+            var sale = new Sale
             {
-                throw new BusinessException($"Продажа с ID {id} не найдена");
-            }
+                OrderId = orderId,
+                SaleDate = DateTime.Now,
+                TotalAmount = totalAmount,
+                ClientName = order.ClientName,
+                ClientPhone = order.ContactPhone,
+                Products = order.Products.Select(op => new SaleProduct
+                {
+                    ProductId = op.ProductId,
+                    ProductName = op.ProductName,
+                    ProductCategory = op.Product.Category, // Берем категорию из Product
+                    Quantity = op.Quantity,
+                    ProductPrice = op.ProductPrice,
+                    DiscountAmount = 0 // Пока не реализовано
+                }).ToList()
+            };
+
+            await _saleRepository.AddAsync(sale);
             return _mapper.Map<SaleDto>(sale);
         }
 
-        public async Task<IEnumerable<SaleDto>> GetAllWithDetailsAsync()
+        public async Task<bool> ExistsByOrderIdAsync(int orderId)
         {
-            var sales = await _saleRepository.GetAllWithDetailsAsync();
-            return _mapper.Map<IEnumerable<SaleDto>>(sales);
+            return await _saleRepository.ExistsByOrderIdAsync(orderId);
         }
 
-        public async Task<IEnumerable<SaleDto>> GetByOrderIdAsync(int orderId)
-        {
-            var sales = await _saleRepository.GetByOrderIdAsync(orderId);
-            return _mapper.Map<IEnumerable<SaleDto>>(sales);
-        }
-        
         public async Task<IEnumerable<SaleDto>> GetByDateRangeAsync(DateTime startDate, DateTime endDate)
         {
+            if (startDate > endDate)
+                throw new InvalidDateRangeException("Дата начала не может быть позже даты окончания");
+
             var sales = await _saleRepository.GetByDateRangeAsync(startDate, endDate);
             return _mapper.Map<IEnumerable<SaleDto>>(sales);
         }
@@ -225,89 +106,65 @@ namespace Server.Services.Sales
 
         public async Task<decimal> GetTotalRevenueAsync(DateTime? startDate = null, DateTime? endDate = null)
         {
+            ValidateDateRange(startDate, endDate);
             return await _saleRepository.GetTotalRevenueAsync(startDate, endDate);
         }
 
         public async Task<decimal> GetTotalCostAsync(DateTime? startDate = null, DateTime? endDate = null)
         {
+            ValidateDateRange(startDate, endDate);
             return await _saleRepository.GetTotalCostAsync(startDate, endDate);
         }
 
         public async Task<int> GetTotalSalesCountAsync(DateTime? startDate = null, DateTime? endDate = null)
         {
+            ValidateDateRange(startDate, endDate);
             return await _saleRepository.GetTotalSalesCountAsync(startDate, endDate);
         }
 
         public async Task<decimal> GetAverageSaleAmountAsync(DateTime? startDate = null, DateTime? endDate = null)
         {
+            ValidateDateRange(startDate, endDate);
             return await _saleRepository.GetAverageSaleAmountAsync(startDate, endDate);
         }
 
-        public async Task<IEnumerable<TopProductDto>> GetTopProductsAsync(
+        public async Task<IEnumerable<TopProductResultDto>> GetTopProductsAsync(
             int count = 10,
             DateTime? startDate = null,
             DateTime? endDate = null)
         {
-            var result = await _saleRepository.GetTopProductsAsync(count, startDate, endDate);
-            return result.Select(x => new TopProductDto
-            {
-                ProductName = x.ProductName,
-                SalesCount = x.SalesCount,
-                Revenue = x.Revenue
-            });
+            ValidateDateRange(startDate, endDate);
+            if (count <= 0)
+                throw new InvalidAnalyticsParametersException("Количество товаров должно быть больше 0");
+
+            return await _saleRepository.GetTopProductsAsync(count, startDate, endDate);
         }
 
-        public async Task<IEnumerable<CategorySalesDto>> GetCategorySalesAsync(
+        public async Task<IEnumerable<CategorySalesResultDto>> GetCategorySalesAsync(
             DateTime? startDate = null,
             DateTime? endDate = null)
         {
-            var result = await _saleRepository.GetCategorySalesAsync(startDate, endDate);
-            return result.Select(x => new CategorySalesDto
-            {
-                Category = x.Category,
-                SalesCount = x.SalesCount,
-                Revenue = x.Revenue,
-                Share = x.Share
-            });
+            ValidateDateRange(startDate, endDate);
+            return await _saleRepository.GetCategorySalesAsync(startDate, endDate);
         }
 
-        public async Task<IEnumerable<SalesTrendDto>> GetSalesTrendAsync(
+        public async Task<IEnumerable<SalesTrendResultDto>> GetSalesTrendAsync(
             DateTime startDate,
             DateTime endDate,
             TimeSpan interval)
         {
             if (startDate > endDate)
-            {
-                throw new BusinessException("Дата начала не может быть позже даты окончания");
-            }
-
+                throw new InvalidDateRangeException("Дата начала не может быть позже даты окончания");
             if (interval <= TimeSpan.Zero)
-            {
-                throw new BusinessException("Интервал должен быть положительным");
-            }
+                throw new InvalidAnalyticsParametersException("Интервал должен быть больше 0");
 
-            var result = await _saleRepository.GetSalesTrendAsync(startDate, endDate, interval);
-            
-            if (!result.Any())
-            {
-                throw new BusinessException("Нет данных за указанный период");
-            }
-
-            return result.Select(x => new SalesTrendDto
-            {
-                Date = x.Date,
-                Revenue = x.Revenue,
-                SalesCount = x.SalesCount
-            });
-        }
-
-        public async Task<bool> ExistsByOrderIdAsync(int orderId)
-        {
-            return await _saleRepository.ExistsByOrderIdAsync(orderId);
+            return await _saleRepository.GetSalesTrendAsync(startDate, endDate, interval);
         }
 
         public async Task<DashboardAnalyticsDto> GetDashboardAnalyticsAsync(DateTime? startDate = null, DateTime? endDate = null)
         {
+            ValidateDateRange(startDate, endDate);
+            
             var totalRevenue = await GetTotalRevenueAsync(startDate, endDate);
             var totalSalesCount = await GetTotalSalesCountAsync(startDate, endDate);
             var averageOrderAmount = await GetAverageSaleAmountAsync(startDate, endDate);
@@ -324,18 +181,20 @@ namespace Server.Services.Sales
 
         public async Task<SalesAnalyticsDto> GetSalesAnalyticsAsync(DateTime? startDate = null, DateTime? endDate = null)
         {
+            ValidateDateRange(startDate, endDate);
+
             var revenue = await GetTotalRevenueAsync(startDate, endDate);
             var salesCount = await GetTotalSalesCountAsync(startDate, endDate);
             var averageSaleAmount = await GetAverageSaleAmountAsync(startDate, endDate);
             var categorySales = await GetCategorySalesAsync(startDate, endDate);
             var salesTrend = await GetSalesTrendAsync(
-                startDate ?? DateTime.UtcNow.AddDays(-30),
-                endDate ?? DateTime.UtcNow,
+                startDate ?? DateTime.MinValue,
+                endDate ?? DateTime.MaxValue,
                 TimeSpan.FromDays(1));
 
             return new SalesAnalyticsDto
             {
-                Period = $"{startDate?.ToString("dd.MM.yyyy") ?? "Начало"} - {endDate?.ToString("dd.MM.yyyy") ?? "Конец"}",
+                Period = GetPeriodString(startDate, endDate),
                 Revenue = revenue,
                 SalesCount = salesCount,
                 AverageSaleAmount = averageSaleAmount,
@@ -346,103 +205,290 @@ namespace Server.Services.Sales
 
         public async Task<OrdersAnalyticsDto> GetOrdersAnalyticsAsync(DateTime? startDate = null, DateTime? endDate = null)
         {
-            try
+            ValidateDateRange(startDate, endDate);
+
+            // Получаем заказы за период
+            var orders = await _orderRepository.GetByDateRangeAsync(
+                startDate ?? DateTime.MinValue,
+                endDate ?? DateTime.MaxValue);
+
+            var ordersCount = orders.Count();
+            var averageOrderAmount = orders.Any() 
+                ? orders.Average(o => o.Products.Sum(op => op.ProductPrice * op.Quantity))
+                : 0;
+            var averageProcessingTime = orders.Any() 
+                ? TimeSpan.FromTicks((long)orders.Average(o => (o.ChangeDate - o.OrderDate).Ticks))
+                : TimeSpan.Zero;
+
+            // Статистика по статусам
+            var statusStats = new OrderStatusStatsDto
             {
-                _logger.LogInformation("Начало анализа заказов");
+                NewCount = orders.Count(o => o.State == Order.States.New),
+                ProcessingCount = orders.Count(o => o.State == Order.States.InProcess),
+                CompletedCount = orders.Count(o => o.State == Order.States.Completed),
+                CancelledCount = orders.Count(o => o.State == Order.States.Cancelled)
+            };
 
-                // Устанавливаем период по умолчанию
-                startDate ??= DateTime.UtcNow.AddDays(-30);
-                endDate ??= DateTime.UtcNow;
-
-                if (startDate > endDate)
+            // Причины отмены
+            var cancellationReasons = orders
+                .Where(o => o.State == Order.States.Cancelled)
+                .GroupBy(o => o.CancellationReason ?? "Не указана")
+                .Select(g => new CancellationReasonDto
                 {
-                    throw new BusinessException("Дата начала не может быть позже даты окончания");
-                }
+                    Reason = g.Key,
+                    Count = g.Count(),
+                    Share = (decimal)g.Count() / orders.Count(o => o.State == Order.States.Cancelled)
+                })
+                .ToList();
 
-                // Получаем все заказы за период
-                var orders = await _orderRepository.GetByDateRangeAsync(startDate.Value, endDate.Value);
-                if (!orders.Any())
-                {
-                    return new OrdersAnalyticsDto
-                    {
-                        Period = $"{startDate.Value:dd.MM.yyyy} - {endDate.Value:dd.MM.yyyy}",
-                        OrdersCount = 0,
-                        AverageOrderAmount = 0,
-                        AverageProcessingTime = TimeSpan.Zero,
-                        StatusStats = new OrderStatusStatsDto(),
-                        CancellationReasons = new List<CancellationReasonDto>()
-                    };
-                }
-
-                // Рассчитываем статистику по статусам
-                var statusStats = new OrderStatusStatsDto
-                {
-                    NewCount = orders.Count(o => o.State == Order.States.New),
-                    ProcessingCount = orders.Count(o => o.State == Order.States.InProcess),
-                    CompletedCount = orders.Count(o => o.State == Order.States.Completed),
-                    CancelledCount = orders.Count(o => o.State == Order.States.Cancelled)
-                };
-
-                // Рассчитываем средний чек
-                var totalAmount = orders.Sum(o => o.Products.Sum(p => p.Quantity * p.ProductPrice));
-                var averageOrderAmount = orders.Any() ? totalAmount / orders.Count() : 0;
-
-                // Рассчитываем среднее время обработки
-                var completedOrders = orders.Where(o => o.State == Order.States.Completed).ToList();
-                var averageProcessingTime = completedOrders.Any()
-                    ? TimeSpan.FromTicks((long)completedOrders.Average(o => (o.ChangeDate - o.OrderDate).Ticks))
-                    : TimeSpan.Zero;
-
-                _logger.LogInformation("Анализ заказов успешно завершен");
-
-                return new OrdersAnalyticsDto
-                {
-                    Period = $"{startDate.Value:dd.MM.yyyy} - {endDate.Value:dd.MM.yyyy}",
-                    OrdersCount = orders.Count(),
-                    AverageOrderAmount = averageOrderAmount,
-                    AverageProcessingTime = averageProcessingTime,
-                    StatusStats = statusStats,
-                    CancellationReasons = new List<CancellationReasonDto>() // Пустой список, так как причины отмен не хранятся
-                };
-            }
-            catch (Exception ex)
+            return new OrdersAnalyticsDto
             {
-                _logger.LogError(ex, "Ошибка при анализе заказов");
-                throw;
-            }
+                Period = GetPeriodString(startDate, endDate),
+                OrdersCount = ordersCount,
+                AverageOrderAmount = averageOrderAmount,
+                AverageProcessingTime = averageProcessingTime,
+                StatusStats = statusStats,
+                CancellationReasons = cancellationReasons
+            };
         }
 
-        public async Task<ReportDto> GenerateReportAsync(ReportType type, ReportFormat format, DateTime? startDate = null, DateTime? endDate = null)
+        public async Task<ExtendedSalesAnalyticsDto> GetExtendedAnalyticsAsync(DateTime? startDate = null, DateTime? endDate = null)
         {
+            ValidateDateRange(startDate, endDate);
+
+            var conversionRate = await _saleRepository.GetSalesConversionRateAsync(startDate, endDate);
+            var grossProfit = await _saleRepository.GetGrossProfitAsync(startDate, endDate);
+            var profitMargin = await _saleRepository.GetProfitMarginAsync(startDate, endDate);
+            var averageOrderProcessingTime = await _saleRepository.GetAverageOrderProcessingTimeAsync(startDate, endDate);
+            var stockEfficiency = await _saleRepository.GetStockEfficiencyAsync(startDate, endDate);
+            var seasonality = await _saleRepository.GetSeasonalityAsync();
+            var salesForecast = await _saleRepository.GetSalesForecastAsync();
+
+            return new ExtendedSalesAnalyticsDto
+            {
+                ConversionRate = conversionRate,
+                GrossProfit = grossProfit,
+                ProfitMargin = profitMargin,
+                AverageOrderProcessingTime = averageOrderProcessingTime,
+                StockEfficiency = stockEfficiency.ToList(),
+                Seasonality = seasonality.ToList(),
+                SalesForecast = salesForecast.ToList()
+            };
+        }
+
+        public async Task<KpiDto> GetKpiAsync(DateTime? startDate = null, DateTime? endDate = null)
+        {
+            ValidateDateRange(startDate, endDate);
+            return await _saleRepository.GetKpiAsync(startDate, endDate);
+        }
+
+        public async Task<ReportDto> GenerateReportAsync(
+            ReportType type,
+            ReportFormat format,
+            DateTime? startDate = null,
+            DateTime? endDate = null,
+            ReportFormattingSettings? formattingSettings = null,
+            string? userId = null,
+            string? userName = null)
+        {
+            ValidateDateRange(startDate, endDate);
+
             var report = new ReportDto
             {
                 Type = type,
                 Format = format,
-                Period = $"{startDate?.ToString("dd.MM.yyyy") ?? "Начало"} - {endDate?.ToString("dd.MM.yyyy") ?? "Конец"}"
+                Period = GetPeriodString(startDate, endDate),
+                CreatedAt = DateTime.UtcNow,
+                CreatedBy = userName ?? "System",
+                Version = "1.0",
+                FormattingSettings = formattingSettings ?? new ReportFormattingSettings(),
+                Data = new ReportDataDto()
             };
 
             switch (type)
             {
                 case ReportType.Sales:
                     var salesAnalytics = await GetSalesAnalyticsAsync(startDate, endDate);
-                    report.Data = salesAnalytics;
+                    report.Data.Metrics = new Dictionary<string, decimal>
+                    {
+                        { "Выручка", salesAnalytics.Revenue },
+                        { "Количество продаж", salesAnalytics.SalesCount },
+                        { "Средний чек", salesAnalytics.AverageSaleAmount }
+                    };
+                    report.Data.Tables = new List<ReportTableDto>
+                    {
+                        new ReportTableDto
+                        {
+                            Title = "Продажи по категориям",
+                            Headers = new List<string> { "Категория", "Количество", "Выручка", "Доля" },
+                            Rows = salesAnalytics.CategorySales.Select(cs => new List<object>
+                            {
+                                cs.Category,
+                                cs.SalesCount,
+                                cs.Revenue,
+                                cs.Share
+                            }).ToList()
+                        }
+                    };
+                    report.Data.Charts = new List<ReportChartDto>
+                    {
+                        new ReportChartDto
+                        {
+                            Title = "Динамика продаж",
+                            Type = ChartType.Line,
+                            Data = new Dictionary<string, List<decimal>>
+                            {
+                                { "Выручка", salesAnalytics.SalesTrend.Select(st => st.Revenue).ToList() }
+                            },
+                            Labels = salesAnalytics.SalesTrend.Select(st => st.Date.ToString("dd.MM.yyyy")).ToList()
+                        }
+                    };
                     break;
 
                 case ReportType.Orders:
                     var ordersAnalytics = await GetOrdersAnalyticsAsync(startDate, endDate);
-                    report.Data = ordersAnalytics;
+                    report.Data.Metrics = new Dictionary<string, decimal>
+                    {
+                        { "Количество заказов", ordersAnalytics.OrdersCount },
+                        { "Средний чек", ordersAnalytics.AverageOrderAmount },
+                        { "Среднее время обработки", (decimal)ordersAnalytics.AverageProcessingTime.TotalHours }
+                    };
+                    report.Data.Tables = new List<ReportTableDto>
+                    {
+                        new ReportTableDto
+                        {
+                            Title = "Статистика по статусам",
+                            Headers = new List<string> { "Статус", "Количество", "Доля" },
+                            Rows = new List<List<object>>
+                            {
+                                new List<object> { "Новые", ordersAnalytics.StatusStats.NewCount, 
+                                    ordersAnalytics.OrdersCount > 0 ? (decimal)ordersAnalytics.StatusStats.NewCount / ordersAnalytics.OrdersCount : 0 },
+                                new List<object> { "В обработке", ordersAnalytics.StatusStats.ProcessingCount,
+                                    ordersAnalytics.OrdersCount > 0 ? (decimal)ordersAnalytics.StatusStats.ProcessingCount / ordersAnalytics.OrdersCount : 0 },
+                                new List<object> { "Завершенные", ordersAnalytics.StatusStats.CompletedCount,
+                                    ordersAnalytics.OrdersCount > 0 ? (decimal)ordersAnalytics.StatusStats.CompletedCount / ordersAnalytics.OrdersCount : 0 },
+                                new List<object> { "Отмененные", ordersAnalytics.StatusStats.CancelledCount,
+                                    ordersAnalytics.OrdersCount > 0 ? (decimal)ordersAnalytics.StatusStats.CancelledCount / ordersAnalytics.OrdersCount : 0 }
+                            }
+                        }
+                    };
                     break;
 
                 case ReportType.KPI:
-                    var dashboardAnalytics = await GetDashboardAnalyticsAsync(startDate, endDate);
-                    report.Data = dashboardAnalytics;
+                    var kpi = await GetKpiAsync(startDate, endDate);
+                    report.Data.Metrics = new Dictionary<string, decimal>
+                    {
+                        { "Конверсия продаж", kpi.SalesConversion },
+                        { "Выручка", kpi.Revenue },
+                        { "Объем продаж", kpi.SalesVolume },
+                        { "Маржинальная прибыль", kpi.GrossProfit },
+                        { "Средний чек", kpi.AverageCheck },
+                        { "Рентабельность", kpi.ProfitMargin },
+                        { "Оборачиваемость склада", kpi.StockTurnover }
+                    };
                     break;
 
                 default:
-                    throw new BusinessException($"Неподдерживаемый тип отчета: {type}");
+                    throw new InvalidAnalyticsParametersException("Неподдерживаемый тип отчета");
             }
 
             return report;
+        }
+
+        public async Task<ReportDto> GenerateExtendedReportAsync(
+            ReportType type,
+            ReportFormat format,
+            DateTime? startDate = null,
+            DateTime? endDate = null,
+            ReportFormattingSettings? formattingSettings = null,
+            string? userId = null,
+            string? userName = null)
+        {
+            var report = await GenerateReportAsync(type, format, startDate, endDate, formattingSettings, userId, userName);
+
+            var extendedAnalytics = await GetExtendedAnalyticsAsync(startDate, endDate);
+            
+            report.Data.Metrics.Add("Конверсия продаж", extendedAnalytics.ConversionRate);
+            report.Data.Metrics.Add("Маржинальная прибыль", extendedAnalytics.GrossProfit);
+            report.Data.Metrics.Add("Рентабельность", extendedAnalytics.ProfitMargin);
+
+            report.Data.Tables.Add(new ReportTableDto
+            {
+                Title = "Эффективность складов",
+                Headers = new List<string> { "Склад", "Оборот", "Коэффициент оборачиваемости" },
+                Rows = extendedAnalytics.StockEfficiency.Select(se => new List<object>
+                {
+                    se.StockName,
+                    se.Turnover,
+                    se.TurnoverRatio
+                }).ToList()
+            });
+
+            report.Data.Charts.Add(new ReportChartDto
+            {
+                Title = "Сезонность продаж",
+                Type = ChartType.Bar,
+                Data = new Dictionary<string, List<decimal>>
+                {
+                    { "Средний объем продаж", extendedAnalytics.Seasonality.Select(s => s.AverageSales).ToList() }
+                },
+                Labels = extendedAnalytics.Seasonality.Select(s => s.Period).ToList()
+            });
+
+            return report;
+        }
+
+        public async Task<IEnumerable<CategoryForecastDto>> GetCategoryForecastAsync(
+            int days = 30,
+            DateTime? startDate = null,
+            DateTime? endDate = null)
+        {
+            if (days <= 0)
+                throw new InvalidAnalyticsParametersException("Количество дней должно быть больше 0");
+
+            ValidateDateRange(startDate, endDate);
+            return await _saleRepository.GetCategoryForecastAsync(days, startDate, endDate);
+        }
+
+        public async Task<IEnumerable<DemandForecastDto>> GetDemandForecastAsync(
+            int days = 30,
+            DateTime? startDate = null,
+            DateTime? endDate = null)
+        {
+            if (days <= 0)
+                throw new InvalidAnalyticsParametersException("Количество дней должно быть больше 0");
+
+            ValidateDateRange(startDate, endDate);
+            return await _saleRepository.GetDemandForecastAsync(days, startDate, endDate);
+        }
+
+        public async Task<IEnumerable<SeasonalityImpactDto>> GetSeasonalityImpactAsync(
+            int years = 3,
+            DateTime? startDate = null,
+            DateTime? endDate = null)
+        {
+            if (years <= 0)
+                throw new InvalidAnalyticsParametersException("Количество лет должно быть больше 0");
+
+            ValidateDateRange(startDate, endDate);
+            return await _saleRepository.GetSeasonalityImpactAsync(years, startDate, endDate);
+        }
+
+        private void ValidateDateRange(DateTime? startDate, DateTime? endDate)
+        {
+            if (startDate.HasValue && endDate.HasValue && startDate > endDate)
+                throw new InvalidDateRangeException("Дата начала не может быть позже даты окончания");
+        }
+
+        private string GetPeriodString(DateTime? startDate, DateTime? endDate)
+        {
+            if (!startDate.HasValue && !endDate.HasValue)
+                return "За все время";
+            if (!startDate.HasValue)
+                return $"До {endDate.Value:dd.MM.yyyy}";
+            if (!endDate.HasValue)
+                return $"С {startDate.Value:dd.MM.yyyy}";
+            return $"{startDate.Value:dd.MM.yyyy} - {endDate.Value:dd.MM.yyyy}";
         }
     }
 }

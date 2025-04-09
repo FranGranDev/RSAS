@@ -33,6 +33,8 @@ namespace Application.Models
         public DateTime ChangeDate { get; set; }
         public DateTime OrderDate { get; set; }
         public States State { get; set; }
+        
+        public string CancellationReason { get; set; }
 
         public virtual AppUser User { get; set; }
         public virtual Delivery Delivery { get; set; }

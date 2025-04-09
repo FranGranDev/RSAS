@@ -1,3 +1,4 @@
+using Application.DTOs;
 using Server.Models;
 
 namespace Server.Services.Repository
@@ -20,19 +21,49 @@ namespace Server.Services.Repository
         Task<decimal> GetTotalCostAsync(DateTime? startDate = null, DateTime? endDate = null);
         Task<int> GetTotalSalesCountAsync(DateTime? startDate = null, DateTime? endDate = null);
         Task<decimal> GetAverageSaleAmountAsync(DateTime? startDate = null, DateTime? endDate = null);
-        Task<IEnumerable<(string ProductName, int SalesCount, decimal Revenue)>> GetTopProductsAsync(
+        Task<IEnumerable<TopProductResultDto>> GetTopProductsAsync(
             int count = 10,
             DateTime? startDate = null,
             DateTime? endDate = null);
-        Task<IEnumerable<(string Category, int SalesCount, decimal Revenue, decimal Share)>> GetCategorySalesAsync(
+        Task<IEnumerable<CategorySalesResultDto>> GetCategorySalesAsync(
             DateTime? startDate = null,
             DateTime? endDate = null);
-        Task<IEnumerable<(DateTime Date, int SalesCount, decimal Revenue)>> GetSalesTrendAsync(
+        Task<IEnumerable<SalesTrendResultDto>> GetSalesTrendAsync(
             DateTime startDate,
             DateTime endDate,
             TimeSpan interval);
 
         // Проверки
         Task<bool> ExistsByOrderIdAsync(int orderId);
+
+        // Расширенная аналитика
+        Task<decimal> GetSalesConversionRateAsync(DateTime? startDate = null, DateTime? endDate = null);
+        Task<decimal> GetGrossProfitAsync(DateTime? startDate = null, DateTime? endDate = null);
+        Task<decimal> GetProfitMarginAsync(DateTime? startDate = null, DateTime? endDate = null);
+        Task<TimeSpan> GetAverageOrderProcessingTimeAsync(DateTime? startDate = null, DateTime? endDate = null);
+        Task<IEnumerable<StockEfficiencyResultDto>> GetStockEfficiencyAsync(
+            DateTime? startDate = null,
+            DateTime? endDate = null);
+        Task<IEnumerable<SeasonalityResultDto>> GetSeasonalityAsync(
+            int years = 3);
+        Task<IEnumerable<SalesForecastResultDto>> GetSalesForecastAsync(
+            int days = 30);
+        Task<KpiDto> GetKpiAsync(DateTime? startDate = null, DateTime? endDate = null);
+
+        // Прогнозирование
+        Task<IEnumerable<CategoryForecastDto>> GetCategoryForecastAsync(
+            int days = 30,
+            DateTime? startDate = null,
+            DateTime? endDate = null);
+            
+        Task<IEnumerable<DemandForecastDto>> GetDemandForecastAsync(
+            int days = 30,
+            DateTime? startDate = null,
+            DateTime? endDate = null);
+            
+        Task<IEnumerable<SeasonalityImpactDto>> GetSeasonalityImpactAsync(
+            int years = 3,
+            DateTime? startDate = null,
+            DateTime? endDate = null);
     }
 }

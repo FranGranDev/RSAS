@@ -70,4 +70,40 @@ namespace Application.Exceptions
         {
         }
     }
+
+    public class InvalidDateRangeException : BusinessException
+    {
+        public InvalidDateRangeException(string message) : base(message)
+        {
+        }
+    }
+
+    public class InvalidAnalyticsParametersException : BusinessException
+    {
+        public InvalidAnalyticsParametersException(string message) : base(message)
+        {
+        }
+    }
+
+    public class ReportGenerationException : BusinessException
+    {
+        public ReportGenerationException(string message) : base(message)
+        {
+        }
+    }
+
+    public class AnalyticsDataNotFoundException : BusinessException
+    {
+        public AnalyticsDataNotFoundException(string message) : base(message)
+        {
+        }
+    }
+
+    public class SaleNotFoundException : BusinessException
+    {
+        public SaleNotFoundException(int saleId)
+            : base($"Продажа с ID {saleId} не найдена")
+        {
+        }
+    }
 }

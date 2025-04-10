@@ -1,46 +1,45 @@
+using Frontend.Models.Auth;
+using Frontend.Services.Auth;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using System.ComponentModel.DataAnnotations;
 
-namespace Frontend.Pages.Account
+namespace Frontend.Pages.Account;
+
+public class LoginModel : PageModel
 {
-    public class LoginModel : PageModel
+    private readonly IAuthService _authService;
+
+    public LoginModel(IAuthService authService)
     {
-        [BindProperty]
-        public InputModel Input { get; set; }
+        _authService = authService;
+    }
 
-        public class InputModel
+    [BindProperty]
+    public LoginViewModel Input { get; set; }
+
+    public IActionResult OnGet()
+    {
+        if (User.Identity.IsAuthenticated)
         {
-            [Required(ErrorMessage = "Email обязателен")]
-            [EmailAddress(ErrorMessage = "Некорректный формат email")]
-            public string Email { get; set; }
-
-            [Required(ErrorMessage = "Пароль обязателен")]
-            [DataType(DataType.Password)]
-            public string Password { get; set; }
-
-            [Display(Name = "Запомнить меня")]
-            public bool RememberMe { get; set; }
+            return RedirectToPage("/Index");
         }
+        return Page();
+    }
 
-        public IActionResult OnGet()
+    public async Task<IActionResult> OnPostAsync()
+    {
+        if (!ModelState.IsValid)
         {
-            if (User.Identity.IsAuthenticated)
-            {
-                return RedirectToPage("/Index");
-            }
             return Page();
         }
 
-        public async Task<IActionResult> OnPostAsync()
+        var result = await _authService.LoginAsync(Input);
+        if (result.Success)
         {
-            if (!ModelState.IsValid)
-            {
-                return Page();
-            }
-
-            // TODO: Реализовать логику входа
             return RedirectToPage("/Index");
         }
+
+        ModelState.AddModelError(string.Empty, result.Message);
+        return Page();
     }
 } 

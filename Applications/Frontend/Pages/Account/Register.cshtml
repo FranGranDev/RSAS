@@ -1,64 +1,63 @@
 @page
-@model Frontend.Pages.Account.RegisterModel
+@model RegisterModel
 @{
     ViewData["Title"] = "Регистрация";
 }
 
-<div class="container mt-5">
-    <div class="row justify-content-center">
-        <div class="col-md-6">
-            <div class="card">
-                <div class="card-header">
-                    <h3 class="text-center">Регистрация</h3>
-                </div>
-                <div class="card-body">
-                    <form method="post">
-                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-                        
-                        <div class="form-group mb-3">
-                            <label asp-for="Input.Email" class="form-label">Email</label>
-                            <input asp-for="Input.Email" class="form-control" />
-                            <span asp-validation-for="Input.Email" class="text-danger"></span>
-                        </div>
-
-                        <div class="form-group mb-3">
-                            <label asp-for="Input.Password" class="form-label">Пароль</label>
-                            <input asp-for="Input.Password" class="form-control" />
-                            <span asp-validation-for="Input.Password" class="text-danger"></span>
-                        </div>
-
-                        <div class="form-group mb-3">
-                            <label asp-for="Input.ConfirmPassword" class="form-label">Подтверждение пароля</label>
-                            <input asp-for="Input.ConfirmPassword" class="form-control" />
-                            <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
-                        </div>
-
-                        <div class="form-group mb-3">
-                            <label asp-for="Input.FirstName" class="form-label">Имя</label>
-                            <input asp-for="Input.FirstName" class="form-control" />
-                            <span asp-validation-for="Input.FirstName" class="text-danger"></span>
-                        </div>
-
-                        <div class="form-group mb-3">
-                            <label asp-for="Input.LastName" class="form-label">Фамилия</label>
-                            <input asp-for="Input.LastName" class="form-control" />
-                            <span asp-validation-for="Input.LastName" class="text-danger"></span>
-                        </div>
-
-                        <div class="form-group mb-3">
-                            <label asp-for="Input.Phone" class="form-label">Телефон</label>
-                            <input asp-for="Input.Phone" class="form-control" />
-                            <span asp-validation-for="Input.Phone" class="text-danger"></span>
-                        </div>
-
-                        <div class="form-group mb-3">
-                            <button type="submit" class="btn btn-primary w-100">Зарегистрироваться</button>
-                        </div>
-                    </form>
-                </div>
-                <div class="card-footer text-center">
+<div class="row justify-content-center">
+    <div class="col-md-6 col-lg-5">
+        <div class="card shadow-sm">
+            <div class="card-body p-4">
+                <h2 class="text-center mb-4">
+                    <i class="mdi mdi-account-plus me-2"></i>
+                    @ViewData["Title"]
+                </h2>
+                
+                <form method="post">
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+                    
+                    <div class="mb-3">
+                        <label asp-for="Input.Email" class="form-label">
+                            <i class="mdi mdi-email me-1"></i>
+                            Email
+                        </label>
+                        <input asp-for="Input.Email" class="form-control" autocomplete="username" aria-required="true"/>
+                        <span asp-validation-for="Input.Email" class="text-danger"></span>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label asp-for="Input.Password" class="form-label">
+                            <i class="mdi mdi-lock me-1"></i>
+                            Пароль
+                        </label>
+                        <input asp-for="Input.Password" class="form-control" autocomplete="new-password" aria-required="true"/>
+                        <span asp-validation-for="Input.Password" class="text-danger"></span>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label asp-for="Input.ConfirmPassword" class="form-label">
+                            <i class="mdi mdi-lock-check me-1"></i>
+                            Подтверждение пароля
+                        </label>
+                        <input asp-for="Input.ConfirmPassword" class="form-control" autocomplete="new-password" aria-required="true"/>
+                        <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
+                    </div>
+                    
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="mdi mdi-account-plus me-1"></i>
+                            Зарегистрироваться
+                        </button>
+                    </div>
+                </form>
+                
+                <div class="text-center mt-3">
                     <p class="mb-0">
-                        Уже есть аккаунт? <a asp-page="./Login">Войти</a>
+                        Уже есть аккаунт? 
+                        <a asp-page="./Login" class="text-decoration-none">
+                            <i class="mdi mdi-login me-1"></i>
+                            Войти
+                        </a>
                     </p>
                 </div>
             </div>

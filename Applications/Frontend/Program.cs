@@ -1,5 +1,6 @@
 using Frontend.Models;
-using Frontend.Services;
+using Frontend.Services.Api;
+using Frontend.Services.Auth;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -8,12 +9,12 @@ builder.Services.AddRazorPages();
 builder.Services.AddHttpClient();
 builder.Services.AddHttpContextAccessor();
 
+// Configure API settings
+builder.Services.Configure<ApiSettings>(builder.Configuration.GetSection("ApiSettings"));
+
 // Register services
 builder.Services.AddScoped<IApiService, ApiService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
-
-// Configure API settings
-builder.Services.Configure<ApiSettings>(builder.Configuration.GetSection("ApiSettings"));
 
 var app = builder.Build();
 
@@ -30,6 +31,7 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapRazorPages();

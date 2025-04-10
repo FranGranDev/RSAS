@@ -1,47 +1,59 @@
 @page
-@model Frontend.Pages.Account.LoginModel
+@model LoginModel
 @{
     ViewData["Title"] = "Вход";
 }
 
-<div class="container mt-5">
-    <div class="row justify-content-center">
-        <div class="col-md-6">
-            <div class="card">
-                <div class="card-header">
-                    <h3 class="text-center">Вход в систему</h3>
-                </div>
-                <div class="card-body">
-                    <form method="post">
-                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-                        
-                        <div class="form-group mb-3">
-                            <label asp-for="Input.Email" class="form-label">Email</label>
-                            <input asp-for="Input.Email" class="form-control" />
-                            <span asp-validation-for="Input.Email" class="text-danger"></span>
-                        </div>
-
-                        <div class="form-group mb-3">
-                            <label asp-for="Input.Password" class="form-label">Пароль</label>
-                            <input asp-for="Input.Password" class="form-control" />
-                            <span asp-validation-for="Input.Password" class="text-danger"></span>
-                        </div>
-
-                        <div class="form-group mb-3">
-                            <div class="form-check">
-                                <input asp-for="Input.RememberMe" class="form-check-input" />
-                                <label asp-for="Input.RememberMe" class="form-check-label">Запомнить меня</label>
-                            </div>
-                        </div>
-
-                        <div class="form-group mb-3">
-                            <button type="submit" class="btn btn-primary w-100">Войти</button>
-                        </div>
-                    </form>
-                </div>
-                <div class="card-footer text-center">
+<div class="row justify-content-center">
+    <div class="col-md-6 col-lg-5">
+        <div class="card shadow-sm">
+            <div class="card-body p-4">
+                <h2 class="text-center mb-4">
+                    <i class="mdi mdi-login me-2"></i>
+                    @ViewData["Title"]
+                </h2>
+                
+                <form method="post">
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+                    
+                    <div class="mb-3">
+                        <label asp-for="Input.Email" class="form-label">
+                            <i class="mdi mdi-email me-1"></i>
+                            Email
+                        </label>
+                        <input asp-for="Input.Email" class="form-control" autocomplete="username" aria-required="true"/>
+                        <span asp-validation-for="Input.Email" class="text-danger"></span>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label asp-for="Input.Password" class="form-label">
+                            <i class="mdi mdi-lock me-1"></i>
+                            Пароль
+                        </label>
+                        <input asp-for="Input.Password" class="form-control" autocomplete="current-password" aria-required="true"/>
+                        <span asp-validation-for="Input.Password" class="text-danger"></span>
+                    </div>
+                    
+                    <div class="mb-3 form-check">
+                        <input class="form-check-input" asp-for="Input.RememberMe"/>
+                        <label class="form-check-label" asp-for="Input.RememberMe"></label>
+                    </div>
+                    
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="mdi mdi-login me-1"></i>
+                            Войти
+                        </button>
+                    </div>
+                </form>
+                
+                <div class="text-center mt-3">
                     <p class="mb-0">
-                        Нет аккаунта? <a asp-page="./Register">Зарегистрироваться</a>
+                        Нет аккаунта? 
+                        <a asp-page="./Register" class="text-decoration-none">
+                            <i class="mdi mdi-account-plus me-1"></i>
+                            Зарегистрироваться
+                        </a>
                     </p>
                 </div>
             </div>

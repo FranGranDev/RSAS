@@ -1,7 +1,6 @@
-namespace Frontend.Models
+namespace Frontend.Models;
+
+public class ApiSettings
 {
-    public class ApiSettings
-    {
-        public string BaseUrl { get; set; }
-    }
+    public string BaseUrl { get; set; }
 } 

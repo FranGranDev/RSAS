@@ -1,0 +1,40 @@
+﻿@using Frontend.Services.Auth
+@using Frontend.Models.Auth
+
+@inject IAuthService AuthService
+
+<ul class="navbar-nav">
+@if (User.Identity?.IsAuthenticated == true)
+{
+    var user = await AuthService.GetCurrentUserAsync();
+    <li class="nav-item">
+        <a id="manage" class="nav-link d-flex align-items-center" asp-page="/Account/Profile" title="Manage">
+            <i class="mdi mdi-account me-1"></i>
+            <span>@user.Email</span>
+        </a>
+    </li>
+    <li class="nav-item">
+        <form id="logoutForm" class="form-inline" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Page("/Index", new { area = "" })">
+            <button id="logout" type="submit" class="nav-link btn btn-link d-flex align-items-center">
+                <i class="mdi mdi-logout me-1"></i>
+                <span>Выйти</span>
+            </button>
+        </form>
+    </li>
+}
+else
+{
+    <li class="nav-item">
+        <a class="nav-link d-flex align-items-center" id="register" asp-page="/Account/Register">
+            <i class="mdi mdi-account-plus me-1"></i>
+            <span>Регистрация</span>
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link d-flex align-items-center" id="login" asp-page="/Account/Login">
+            <i class="mdi mdi-login me-1"></i>
+            <span>Войти</span>
+        </a>
+    </li>
+}
+</ul>

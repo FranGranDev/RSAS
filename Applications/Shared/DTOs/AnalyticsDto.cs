@@ -83,33 +83,48 @@ namespace Application.DTOs
         public int Id { get; set; }
 
         [Display(Name = "Тип отчета")]
+        [Required(ErrorMessage = "Тип отчета обязателен")]
         public ReportType Type { get; set; }
 
         [Display(Name = "Название отчета")]
+        [Required(ErrorMessage = "Название отчета обязательно")]
+        [StringLength(100, ErrorMessage = "Название отчета не должно превышать 100 символов")]
         public string Title { get; set; } = string.Empty;
 
         [Display(Name = "Описание")]
+        [StringLength(500, ErrorMessage = "Описание не должно превышать 500 символов")]
         public string Description { get; set; } = string.Empty;
 
         [Display(Name = "Период")]
+        [Required(ErrorMessage = "Период обязателен")]
+        [StringLength(50, ErrorMessage = "Период не должен превышать 50 символов")]
         public string Period { get; set; } = string.Empty;
 
         [Display(Name = "Дата создания")]
+        [Required(ErrorMessage = "Дата создания обязательна")]
+        [DataType(DataType.DateTime)]
         public DateTime CreatedAt { get; set; }
 
         [Display(Name = "Создатель")]
+        [Required(ErrorMessage = "Создатель обязателен")]
+        [StringLength(100, ErrorMessage = "Имя создателя не должно превышать 100 символов")]
         public string CreatedBy { get; set; } = string.Empty;
 
         [Display(Name = "Версия")]
+        [Required(ErrorMessage = "Версия обязательна")]
+        [StringLength(20, ErrorMessage = "Версия не должна превышать 20 символов")]
         public string Version { get; set; } = string.Empty;
 
         [Display(Name = "Формат")]
+        [Required(ErrorMessage = "Формат обязателен")]
         public ReportFormat Format { get; set; }
 
         [Display(Name = "Настройки форматирования")]
+        [Required(ErrorMessage = "Настройки форматирования обязательны")]
         public ReportFormattingSettings FormattingSettings { get; set; } = new();
 
         [Display(Name = "Данные отчета")]
+        [Required(ErrorMessage = "Данные отчета обязательны")]
         public ReportDataDto Data { get; set; } = new();
     }
 

@@ -19,7 +19,6 @@ public class AuthControllerTests(ITestOutputHelper output) : TestBase(output)
             Email = "test@example.com",
             Password = "Test123!",
             ConfirmPassword = "Test123!",
-            UserName = "testuser"
         };
 
         // Act
@@ -39,7 +38,6 @@ public class AuthControllerTests(ITestOutputHelper output) : TestBase(output)
         result.Token.Should().NotBeNullOrEmpty();
         result.User.Should().NotBeNull();
         result.User.Email.Should().Be(registerDto.Email);
-        result.User.UserName.Should().Be(registerDto.UserName);
     }
 
     [Fact]
@@ -124,6 +122,5 @@ public class AuthControllerTests(ITestOutputHelper output) : TestBase(output)
         response.StatusCode.Should().Be(HttpStatusCode.OK);
         result.Should().NotBeNull();
         result!.Email.Should().Be(user.Email);
-        result.UserName.Should().Be(user.UserName);
     }
 }

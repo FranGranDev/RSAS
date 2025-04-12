@@ -121,5 +121,11 @@ namespace Application.Services
         {
             return await _clientRepository.ExistsByPhoneAsync(phone);
         }
+
+        public async Task<bool> ExistsByUserIdAsync(string userId)
+        {
+            var client = await _clientRepository.GetWithUserAsync(userId);
+            return client != null;
+        }
     }
 }

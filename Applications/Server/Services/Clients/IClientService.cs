@@ -12,5 +12,6 @@ namespace Application.Services
         Task<ClientDto> GetClientByPhoneAsync(string phone);
         Task<ClientDto> GetClientByNameAsync(string firstName, string lastName);
         Task<bool> ExistsByPhoneAsync(string phone);
+        Task<bool> ExistsByUserIdAsync(string userId);
     }
 }

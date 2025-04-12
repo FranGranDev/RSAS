@@ -26,9 +26,6 @@ namespace Application.DTOs
         [Required(ErrorMessage = "Подтверждение пароля обязательно")]
         [Compare("Password", ErrorMessage = "Пароли не совпадают")]
         public string ConfirmPassword { get; set; }
-
-        [Required(ErrorMessage = "Имя пользователя обязательно")]
-        public string UserName { get; set; }
     }
 
     public class AuthResponseDto
@@ -42,7 +39,6 @@ namespace Application.DTOs
     public class UserDto
     {
         public string Id { get; set; }
-        public string UserName { get; set; }
         public string Email { get; set; }
         public IList<string> Roles { get; set; }
     }

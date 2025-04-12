@@ -7,5 +7,10 @@
             public const string Client = "Client";
             public const string Manager = "Manager";
         }
+        
+        public static class Password
+        {
+            public const string DefaultPassword = "Qwerty123";
+        }
     }
 }

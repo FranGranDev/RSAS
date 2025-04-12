@@ -13,37 +13,56 @@
                     <h3 class="card-title">Профиль пользователя</h3>
                 </div>
                 <div class="card-body">
-                    @if (Model.CurrentUser != null)
-                    {
-                        <div class="mb-3">
-                            <label class="form-label fw-bold">Имя пользователя:</label>
-                            <p class="form-control-static">@Model.CurrentUser.UserName</p>
-                        </div>
+                    <form method="post">
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+                        
                         <div class="mb-3">
                             <label class="form-label fw-bold">Email:</label>
-                            <p class="form-control-static">@Model.CurrentUser.Email</p>
+                            <p class="form-control-static">@Model.CurrentUser?.Email</p>
                         </div>
+                        
                         <div class="mb-3">
                             <label class="form-label fw-bold">Роли:</label>
                             <p class="form-control-static">
-                                @foreach (var role in Model.CurrentUser.Roles)
+                                @if (Model.CurrentUser?.Roles != null)
                                 {
-                                    <span class="badge bg-primary me-1">@role</span>
+                                    @foreach (var role in Model.CurrentUser.Roles)
+                                    {
+                                        <span class="badge bg-primary me-1">@role</span>
+                                    }
                                 }
                             </p>
                         </div>
-                    }
-                    else
-                    {
-                        <div class="alert alert-warning">
-                            Информация о пользователе недоступна
+
+                        <div class="mb-3">
+                            <label asp-for="ClientData.Phone" class="form-label">Номер телефона</label>
+                            <input asp-for="ClientData.Phone" class="form-control" />
+                            <span asp-validation-for="ClientData.Phone" class="text-danger"></span>
                         </div>
-                    }
-                </div>
-                <div class="card-footer">
-                    <a asp-page="/Index" class="btn btn-secondary">На главную</a>
+
+                        <div class="mb-3">
+                            <label asp-for="ClientData.FirstName" class="form-label">Имя</label>
+                            <input asp-for="ClientData.FirstName" class="form-control" />
+                            <span asp-validation-for="ClientData.FirstName" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="ClientData.LastName" class="form-label">Фамилия</label>
+                            <input asp-for="ClientData.LastName" class="form-control" />
+                            <span asp-validation-for="ClientData.LastName" class="text-danger"></span>
+                        </div>
+
+                        <div class="card-footer">
+                            <button type="submit" class="btn btn-primary">Применить изменения</button>
+                            <a asp-page="/Index" class="btn btn-secondary">На главную</a>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
     </div>
-</div> 
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+} 

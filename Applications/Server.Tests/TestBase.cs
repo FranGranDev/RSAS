@@ -114,7 +114,7 @@ public class TestBase : IDisposable
         return (result.Token, manager.Id);
     }
 
-    protected async Task<(string token, string userId)> LoginAsUser()
+    protected async Task<(string token, string userId)> LoginAsClient()
     {
         // Создаем обычного пользователя
         var user = new AppUser

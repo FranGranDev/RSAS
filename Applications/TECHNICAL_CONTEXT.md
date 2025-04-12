@@ -225,24 +225,25 @@ Frontend/
 │   │   ├── Login.cshtml
 │   │   ├── Register.cshtml
 │   │   └── Profile.cshtml
-│   ├── Clients/
-│   │   ├── Index.cshtml (список клиентов)
-│   │   ├── Create.cshtml
-│   │   ├── Edit.cshtml
-│   │   └── Details.cshtml
 │   └── Shared/
 │       ├── _Layout.cshtml
 │       ├── _LoginPartial.cshtml
 │       └── _ValidationScriptsPartial.cshtml
 ├── Services/
-│   ├── ApiService.cs
-│   ├── AuthService.cs
-│   └── ClientService.cs
+│   ├── Api/
+│   │   ├── IApiService.cs
+│   │   └── ApiService.cs
+│   ├── Auth/
+│   │   ├── IAuthService.cs
+│   │   └── AuthService.cs
+│   └── Account/
+│       ├── IClientService.cs
+│       └── ClientService.cs
 ├── Models/
 │   └── ViewModels/
 │       ├── LoginViewModel.cs
 │       ├── RegisterViewModel.cs
-│       └── ClientViewModel.cs
+│       └── ProfileFormDto.cs
 └── wwwroot/
     ├── css/
     │   └── site.css
@@ -251,7 +252,7 @@ Frontend/
     └── lib/
         ├── bootstrap/
         ├── jquery/
-        └── jquery-validation/
+        └── toastr/
 ```
 
 ### Функциональные требования
@@ -317,35 +318,33 @@ public class Client
 
 #### DTO [API]
 ```csharp
-// ClientDto
+// ProfileFormDto (Frontend)
+public class ProfileFormDto
+{
+    [Display(Name = "Имя")]
+    [Required(ErrorMessage = "Имя клиента обязательно")]
+    [StringLength(50, ErrorMessage = "Имя не должно превышать 50 символов")]
+    public string FirstName { get; set; }
+
+    [Display(Name = "Фамилия")]
+    [Required(ErrorMessage = "Фамилия клиента обязательна")]
+    [StringLength(50, ErrorMessage = "Фамилия не должна превышать 50 символов")]
+    public string LastName { get; set; }
+
+    [Display(Name = "Телефон")]
+    [Required(ErrorMessage = "Телефон клиента обязателен")]
+    [Phone(ErrorMessage = "Некорректный формат телефона")]
+    public string Phone { get; set; }
+}
+
+// ClientDto (Backend)
 public class ClientDto
 {
     public string Id { get; set; }
     public string FirstName { get; set; }
     public string LastName { get; set; }
-    public string Email { get; set; }
     public string Phone { get; set; }
     public string FullName => $"{FirstName} {LastName}";
-}
-
-// CreateClientDto
-public class CreateClientDto
-{
-    [Required(ErrorMessage = "Имя клиента обязательно")]
-    [StringLength(50, ErrorMessage = "Имя не должно превышать 50 символов")]
-    public string FirstName { get; set; }
-
-    [Required(ErrorMessage = "Фамилия клиента обязательна")]
-    [StringLength(50, ErrorMessage = "Фамилия не должна превышать 50 символов")]
-    public string LastName { get; set; }
-
-    [Required(ErrorMessage = "Email клиента обязателен")]
-    [EmailAddress(ErrorMessage = "Некорректный формат email")]
-    public string Email { get; set; }
-
-    [Required(ErrorMessage = "Телефон клиента обязателен")]
-    [Phone(ErrorMessage = "Некорректный формат телефона")]
-    public string Phone { get; set; }
 }
 ```
 
@@ -358,13 +357,10 @@ Auth
 └── POST /api/auth/reset-password
 
 Clients
-├── GET /api/clients (только для менеджеров)
-├── GET /api/clients/{id}
-├── POST /api/clients
-├── PUT /api/clients/{id}
-├── DELETE /api/clients/{id}
-├── GET /api/clients/by-phone/{phone}
-└── GET /api/clients/by-name?firstName={firstName}&lastName={lastName}
+├── GET /api/clients/current
+├── POST /api/clients/create-for-current
+├── PUT /api/clients/update-self
+└── GET /api/clients/exists
 ```
 
 ### Валидация [Безопасность]

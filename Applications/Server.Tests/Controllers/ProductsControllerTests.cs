@@ -28,7 +28,7 @@ public class ProductsControllerTests(ITestOutputHelper output) : TestBase(output
     public async Task GetProducts_WithoutManagerRole_ShouldReturnForbidden()
     {
         // Arrange
-        await LoginAsUser();
+        await LoginAsClient();
 
         // Act
         var response = await Client.GetAsync("/api/products");

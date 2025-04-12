@@ -36,8 +36,7 @@ namespace Application.Services
 
             // Clients
             CreateMap<Client, ClientDto>()
-                .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.UserId))
-                .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.User.Email));
+                .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.UserId));
             CreateMap<CreateClientDto, Client>();
             CreateMap<UpdateClientDto, Client>();
 

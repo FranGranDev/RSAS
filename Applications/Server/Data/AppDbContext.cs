@@ -27,7 +27,6 @@ namespace Application.Data
 
         //Clients
         public DbSet<Client> Clients { get; set; }
-        public DbSet<Company> Companies { get; set; }
         public DbSet<Employee> Employees { get; set; }
 
 
@@ -65,12 +64,6 @@ namespace Application.Data
                 .HasOne(u => u.User)
                 .WithOne(x => x.Employee)
                 .HasForeignKey<Employee>(x => x.UserId);
-
-            builder.Entity<Company>()
-                .HasOne(u => u.User)
-                .WithOne(x => x.Company)
-                .HasForeignKey<Company>(x => x.UserId);
-
 
             //Orders
             builder.Entity<OrderProduct>()

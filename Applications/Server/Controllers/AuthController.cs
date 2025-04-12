@@ -61,7 +61,6 @@ namespace Application.Controllers
                 User = new UserDto
                 {
                     Id = user.Id,
-                    UserName = user.UserName,
                     Email = user.Email,
                     Roles = roles.ToList()
                 }
@@ -73,7 +72,7 @@ namespace Application.Controllers
         {
             var user = new AppUser
             {
-                UserName = registerDto.UserName,
+                UserName = registerDto.Email,
                 Email = registerDto.Email
             };
 
@@ -101,7 +100,6 @@ namespace Application.Controllers
                 User = new UserDto
                 {
                     Id = user.Id,
-                    UserName = user.UserName,
                     Email = user.Email,
                     Roles = roles.ToList()
                 }
@@ -124,7 +122,6 @@ namespace Application.Controllers
             return Ok(new UserDto
             {
                 Id = user.Id,
-                UserName = user.UserName,
                 Email = user.Email,
                 Roles = roles.ToList()
             });

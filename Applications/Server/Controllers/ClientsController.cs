@@ -144,55 +144,75 @@ namespace Application.Controllers
         }
 
         /// <summary>
-        ///     Создать нового клиента
+        ///     Проверить существование клиента для текущего пользователя
+        /// </summary>
+        /// <returns>Результат проверки</returns>
+        [HttpGet("exists")]
+        [Authorize]
+        public async Task<ActionResult<bool>> ExistsForCurrentUser()
+        {
+            try
+            {
+                var userId = _userManager.GetUserId(User);
+                var exists = await _clientService.ExistsByUserIdAsync(userId);
+                return Ok(exists);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { error = $"Ошибка при проверке существования клиента: {ex.Message}" });
+            }
+        }
+
+        /// <summary>
+        ///     Создать нового клиента для текущего пользователя
         /// </summary>
         /// <param name="createClientDto">Данные для создания клиента</param>
         /// <returns>Созданный клиент</returns>
         /// <response code="400">Некорректные входные данные</response>
-        [HttpPost]
-        [Authorize(Policy = "RequireManagerRole")]
-        public async Task<ActionResult<ClientDto>> CreateClient(CreateClientDto createClientDto)
+        [HttpPost("create-for-current")]
+        [Authorize]
+        public async Task<ActionResult<ClientDto>> CreateForCurrentUser(CreateClientDto createClientDto)
         {
-            if (!ModelState.IsValid)
+            try
             {
-                return BadRequest(new
-                    { errors = ModelState.Values.SelectMany(v => v.Errors.Select(e => e.ErrorMessage)) });
+                var userId = _userManager.GetUserId(User);
+                var client = await _clientService.CreateClientAsync(createClientDto, userId);
+                return CreatedAtAction(nameof(GetClient), new { id = client.Id }, client);
             }
-
-            if (string.IsNullOrEmpty(createClientDto.FirstName))
+            catch (BusinessException ex)
             {
-                return BadRequest(new { error = "Имя клиента обязательно для заполнения" });
+                return BadRequest(new { error = ex.Message });
             }
-
-            if (string.IsNullOrEmpty(createClientDto.LastName))
+            catch (Exception ex)
             {
-                return BadRequest(new { error = "Фамилия клиента обязательна для заполнения" });
+                return BadRequest(new { error = $"Ошибка при создании клиента: {ex.Message}" });
             }
+        }
 
-            if (string.IsNullOrEmpty(createClientDto.Phone))
-            {
-                return BadRequest(new { error = "Телефон клиента обязателен для заполнения" });
-            }
-
-            if (string.IsNullOrEmpty(createClientDto.Email))
-            {
-                return BadRequest(new { error = "Email клиента обязателен для заполнения" });
-            }
-
+        /// <summary>
+        ///     Создать полного пользователя (AppUser + Client)
+        /// </summary>
+        /// <param name="createFullUserDto">Данные для создания пользователя</param>
+        /// <returns>Созданный пользователь и стандартный пароль</returns>
+        /// <response code="400">Некорректные входные данные</response>
+        [HttpPost("create-full")]
+        [Authorize(Policy = "RequireManagerRole")]
+        public async Task<ActionResult<CreateFullUserResponseDto>> CreateFullUser(CreateFullUserDto createFullUserDto)
+        {
             try
             {
                 // Создаем нового пользователя
                 var user = new AppUser
                 {
-                    UserName = createClientDto.Email,
-                    Email = createClientDto.Email,
+                    UserName = createFullUserDto.Email,
+                    Email = createFullUserDto.Email,
                     EmailConfirmed = true,
-                    PhoneNumber = createClientDto.Phone,
-                    PhoneNumberConfirmed = true,
-                    LockoutEnabled = false
+                    PhoneNumber = createFullUserDto.Phone,
+                    PhoneNumberConfirmed = true
                 };
 
-                var result = await _userManager.CreateAsync(user);
+                var defaultPassword = AppConst.Password.DefaultPassword;
+                var result = await _userManager.CreateAsync(user, defaultPassword);
                 if (!result.Succeeded)
                 {
                     return BadRequest(new { errors = result.Errors.Select(e => e.Description) });
@@ -202,68 +222,56 @@ namespace Application.Controllers
                 await _userManager.AddToRoleAsync(user, AppConst.Roles.Client);
 
                 // Создаем клиента
+                var createClientDto = new CreateClientDto
+                {
+                    FirstName = createFullUserDto.FirstName,
+                    LastName = createFullUserDto.LastName,
+                    Phone = createFullUserDto.Phone
+                };
+
                 var client = await _clientService.CreateClientAsync(createClientDto, user.Id);
-                return CreatedAtAction(nameof(GetClient), new { id = client.Id }, client);
+
+                return Ok(new CreateFullUserResponseDto
+                {
+                    Email = user.Email,
+                    DefaultPassword = defaultPassword,
+                    Client = client
+                });
+            }
+            catch (BusinessException ex)
+            {
+                return BadRequest(new { error = ex.Message });
             }
             catch (Exception ex)
             {
-                return BadRequest(new { error = $"Ошибка при создании клиента: {ex.Message}" });
+                return BadRequest(new { error = $"Ошибка при создании пользователя: {ex.Message}" });
             }
         }
 
         /// <summary>
-        ///     Обновить существующего клиента
+        ///     Обновить данные текущего пользователя
         /// </summary>
-        /// <param name="id">ID клиента</param>
-        /// <param name="updateClientDto">Данные для обновления клиента</param>
+        /// <param name="updateClientDto">Данные для обновления</param>
         /// <returns>Обновленный клиент</returns>
         /// <response code="400">Некорректные входные данные</response>
         /// <response code="404">Клиент не найден</response>
-        [HttpPut("{id}")]
-        [Authorize(Policy = "RequireManagerRole")]
-        public async Task<ActionResult<ClientDto>> UpdateClient(string id, UpdateClientDto updateClientDto)
+        [HttpPut("update-self")]
+        [Authorize]
+        public async Task<ActionResult<ClientDto>> UpdateSelf(UpdateClientDto updateClientDto)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(new
-                    { errors = ModelState.Values.SelectMany(v => v.Errors.Select(e => e.ErrorMessage)) });
-            }
-
             try
             {
-                // Получаем текущего клиента
-                var currentClient = await _clientService.GetClientByIdAsync(id);
-                if (currentClient == null)
-                {
-                    return NotFound(new { error = $"Клиент с ID {id} не найден" });
-                }
-
-                // Получаем пользователя
-                var user = await _userManager.FindByIdAsync(id);
-                if (user == null)
-                {
-                    return NotFound(new { error = $"Пользователь с ID {id} не найден" });
-                }
-
-                // Обновляем email пользователя, если он изменился
-                if (user.Email != updateClientDto.Email)
-                {
-                    user.Email = updateClientDto.Email;
-                    user.UserName = updateClientDto.Email;
-                    var result = await _userManager.UpdateAsync(user);
-                    if (!result.Succeeded)
-                    {
-                        return BadRequest(new { errors = result.Errors.Select(e => e.Description) });
-                    }
-                }
-
-                // Обновляем клиента
-                var updatedClient = await _clientService.UpdateClientAsync(id, updateClientDto);
-                return Ok(updatedClient);
+                var userId = _userManager.GetUserId(User);
+                var client = await _clientService.UpdateClientAsync(userId, updateClientDto);
+                return Ok(client);
             }
             catch (ClientNotFoundException)
             {
-                return NotFound(new { error = $"Клиент с ID {id} не найден" });
+                return NotFound(new { error = "Клиент не найден" });
+            }
+            catch (BusinessException ex)
+            {
+                return BadRequest(new { error = ex.Message });
             }
             catch (Exception ex)
             {
@@ -284,30 +292,7 @@ namespace Application.Controllers
         {
             try
             {
-                // Получаем клиента
-                var client = await _clientService.GetClientByIdAsync(id);
-                if (client == null)
-                {
-                    return NotFound(new { error = $"Клиент с ID {id} не найден" });
-                }
-
-                // Получаем пользователя
-                var user = await _userManager.FindByIdAsync(id);
-                if (user == null)
-                {
-                    return NotFound(new { error = $"Пользователь с ID {id} не найден" });
-                }
-
-                // Удаляем клиента
                 await _clientService.DeleteClientAsync(id);
-
-                // Удаляем пользователя
-                var result = await _userManager.DeleteAsync(user);
-                if (!result.Succeeded)
-                {
-                    return BadRequest(new { errors = result.Errors.Select(e => e.Description) });
-                }
-
                 return NoContent();
             }
             catch (BusinessException ex)
@@ -317,6 +302,31 @@ namespace Application.Controllers
             catch (Exception ex)
             {
                 return BadRequest(new { error = $"Ошибка при удалении клиента: {ex.Message}" });
+            }
+        }
+
+        /// <summary>
+        ///     Получить данные текущего клиента
+        /// </summary>
+        /// <returns>Данные клиента</returns>
+        /// <response code="404">Клиент не найден</response>
+        [HttpGet("current")]
+        [Authorize]
+        public async Task<ActionResult<ClientDto>> GetCurrentClient()
+        {
+            try
+            {
+                var userId = _userManager.GetUserId(User);
+                var client = await _clientService.GetClientByIdAsync(userId);
+                return Ok(client);
+            }
+            catch (ClientNotFoundException)
+            {
+                return NotFound(new { error = "Клиент не найден" });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { error = $"Ошибка при получении данных клиента: {ex.Message}" });
             }
         }
     }

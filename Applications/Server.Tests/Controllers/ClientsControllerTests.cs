@@ -31,23 +31,7 @@ public class ClientsControllerTests(ITestOutputHelper output) : TestBase(output)
     public async Task GetClients_WithoutManagerRole_ShouldReturnForbidden()
     {
         // Arrange
-        var user = new AppUser
-        {
-            UserName = "user@test.com",
-            Email = "user@test.com"
-        };
-        await UserManager.CreateAsync(user, "Test123!");
-        await UserManager.AddToRoleAsync(user, AppConst.Roles.Client);
-
-        var loginDto = new LoginDto
-        {
-            Email = "user@test.com",
-            Password = "Test123!"
-        };
-
-        var loginResponse = await Client.PostAsJsonAsync("/api/auth/login", loginDto);
-        var loginResult = await loginResponse.Content.ReadFromJsonAsync<AuthResponseDto>();
-        Client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", loginResult!.Token);
+        await LoginAsClient();
 
         // Act
         var response = await Client.GetAsync("/api/clients");
@@ -57,317 +41,272 @@ public class ClientsControllerTests(ITestOutputHelper output) : TestBase(output)
     }
 
     [Fact]
-    public async Task CreateClient_WithValidData_ShouldCreateClient()
+    public async Task ExistsForCurrentUser_AsClient_ShouldReturnTrue()
     {
         // Arrange
-        await LoginAsManager();
-
-        // Создаем клиента с уникальным email
-        var uniqueEmail = $"client{DateTime.Now.Ticks}@test.com";
+        await LoginAsClient();
+        
+        // Создаем клиента для текущего пользователя
         var createClientDto = new CreateClientDto
         {
             FirstName = "Test",
             LastName = "User",
-            Email = uniqueEmail,
-            Phone = "+375291234567"
+            Phone = $"+37529{DateTime.Now.Ticks % 1000000:D6}"
         };
+        await Client.PostAsJsonAsync("/api/clients/create-for-current", createClientDto);
 
         // Act
-        var response = await Client.PostAsJsonAsync("/api/clients", createClientDto);
-        var responseContent = await response.Content.ReadAsStringAsync();
-        _output.WriteLine($"Response Status: {response.StatusCode}");
-        _output.WriteLine($"Response Content: {responseContent}");
-
-        // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Created);
-
-        if (response.StatusCode == HttpStatusCode.Created)
-        {
-            var options = new JsonSerializerOptions
-            {
-                PropertyNameCaseInsensitive = true
-            };
-            var client = JsonSerializer.Deserialize<ClientDto>(responseContent, options);
-            client.Should().NotBeNull();
-            client!.FirstName.Should().Be(createClientDto.FirstName);
-            client.LastName.Should().Be(createClientDto.LastName);
-            client.Email.Should().Be(createClientDto.Email);
-            client.Phone.Should().Be(createClientDto.Phone);
-        }
-    }
-
-    [Fact]
-    public async Task CreateClient_WithInvalidData_ShouldReturnBadRequest()
-    {
-        // Arrange
-        await LoginAsManager();
-        var createClientDto = new CreateClientDto
-        {
-            FirstName = "", // Пустое имя
-            LastName = "User",
-            Email = "invalid-email", // Неверный формат email
-            Phone = "123" // Неверный формат телефона
-        };
-
-        // Act
-        var response = await Client.PostAsJsonAsync("/api/clients", createClientDto);
-        var responseContent = await response.Content.ReadAsStringAsync();
-
-        // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
-        responseContent.Should().NotBeNullOrEmpty();
-    }
-
-    [Fact]
-    public async Task CreateClient_WithDuplicatePhone_ShouldReturnBadRequest()
-    {
-        // Arrange
-        await LoginAsManager();
-        var createClientDto1 = new CreateClientDto
-        {
-            FirstName = "Test1",
-            LastName = "User1",
-            Email = "test1@example.com",
-            Phone = "+375291234567"
-        };
-
-        var createClientDto2 = new CreateClientDto
-        {
-            FirstName = "Test2",
-            LastName = "User2",
-            Email = "test2@example.com",
-            Phone = "+375291234567" // Тот же телефон
-        };
-
-        // Act
-        await Client.PostAsJsonAsync("/api/clients", createClientDto1);
-        var response = await Client.PostAsJsonAsync("/api/clients", createClientDto2);
-        var responseContent = await response.Content.ReadAsStringAsync();
-
-        // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
-        responseContent.Should().NotBeNullOrEmpty();
-    }
-
-    [Fact]
-    public async Task GetClient_WithValidId_ShouldReturnClient()
-    {
-        // Arrange
-        await LoginAsManager();
-        var createClientDto = new CreateClientDto
-        {
-            FirstName = "Test",
-            LastName = "User",
-            Email = "test@example.com",
-            Phone = "+375291234567"
-        };
-
-        var createResponse = await Client.PostAsJsonAsync("/api/clients", createClientDto);
-        var createdClient = await createResponse.Content.ReadFromJsonAsync<ClientDto>();
-
-        // Act
-        var response = await Client.GetAsync($"/api/clients/{createdClient!.Id}");
-        var client = await response.Content.ReadFromJsonAsync<ClientDto>();
+        var response = await Client.GetAsync("/api/clients/exists");
+        var exists = await response.Content.ReadFromJsonAsync<bool>();
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.OK);
+        exists.Should().BeTrue();
+    }
+
+    [Fact]
+    public async Task CreateForCurrentUser_AsClient_ShouldCreateClient()
+    {
+        // Arrange
+        await LoginAsClient();
+        var createClientDto = new CreateClientDto
+        {
+            FirstName = "Test",
+            LastName = "User",
+            Phone = "+375291234567"
+        };
+
+        // Act
+        var response = await Client.PostAsJsonAsync("/api/clients/create-for-current", createClientDto);
+        var client = await response.Content.ReadFromJsonAsync<ClientDto>();
+
+        // Assert
+        response.StatusCode.Should().Be(HttpStatusCode.Created);
         client.Should().NotBeNull();
         client!.FirstName.Should().Be(createClientDto.FirstName);
         client.LastName.Should().Be(createClientDto.LastName);
-        client.Email.Should().Be(createClientDto.Email);
         client.Phone.Should().Be(createClientDto.Phone);
     }
 
     [Fact]
-    public async Task GetClient_WithInvalidId_ShouldReturnNotFound()
+    public async Task CreateForCurrentUser_WithDuplicatePhone_ShouldReturnBadRequest()
     {
         // Arrange
-        await LoginAsManager();
-
-        // Act
-        var response = await Client.GetAsync("/api/clients/invalid-id");
-
-        // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
-    }
-
-    [Fact]
-    public async Task GetClientByPhone_WithValidPhone_ShouldReturnClient()
-    {
-        // Arrange
-        await LoginAsManager();
+        await LoginAsClient();
         var createClientDto = new CreateClientDto
         {
             FirstName = "Test",
             LastName = "User",
-            Email = "test@example.com",
             Phone = "+375291234567"
         };
 
-        await Client.PostAsJsonAsync("/api/clients", createClientDto);
-
         // Act
-        var response = await Client.GetAsync($"/api/clients/by-phone/{createClientDto.Phone}");
-        var client = await response.Content.ReadFromJsonAsync<ClientDto>();
+        await Client.PostAsJsonAsync("/api/clients/create-for-current", createClientDto);
+        var response = await Client.PostAsJsonAsync("/api/clients/create-for-current", createClientDto);
+        var responseContent = await response.Content.ReadAsStringAsync();
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
-        client.Should().NotBeNull();
-        client!.Phone.Should().Be(createClientDto.Phone);
+        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        responseContent.Should().NotBeNullOrEmpty();
     }
 
     [Fact]
-    public async Task GetClientByName_WithValidName_ShouldReturnClient()
+    public async Task CreateFullUser_AsManager_ShouldCreateUserAndClient()
     {
         // Arrange
         await LoginAsManager();
-        var createClientDto = new CreateClientDto
+        var createFullUserDto = new CreateFullUserDto
         {
+            Email = $"test{DateTime.Now.Ticks}@example.com",
             FirstName = "Test",
             LastName = "User",
+            Phone = $"+37529{DateTime.Now.Ticks % 1000000:D6}"
+        };
+
+        // Act
+        var response = await Client.PostAsJsonAsync("/api/clients/create-full", createFullUserDto);
+        var result = await response.Content.ReadFromJsonAsync<CreateFullUserResponseDto>();
+
+        // Assert
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        result.Should().NotBeNull();
+        result!.Email.Should().Be(createFullUserDto.Email);
+        result.DefaultPassword.Should().Be(AppConst.Password.DefaultPassword);
+        result.Client.Should().NotBeNull();
+        result.Client.FirstName.Should().Be(createFullUserDto.FirstName);
+        result.Client.LastName.Should().Be(createFullUserDto.LastName);
+        result.Client.Phone.Should().Be(createFullUserDto.Phone);
+    }
+
+    [Fact]
+    public async Task CreateFullUser_WithoutManagerRole_ShouldReturnForbidden()
+    {
+        // Arrange
+        await LoginAsClient();
+        var createFullUserDto = new CreateFullUserDto
+        {
             Email = "test@example.com",
+            FirstName = "Test",
+            LastName = "User",
             Phone = "+375291234567"
         };
 
-        await Client.PostAsJsonAsync("/api/clients", createClientDto);
-
         // Act
-        var response =
-            await Client.GetAsync(
-                $"/api/clients/by-name?firstName={createClientDto.FirstName}&lastName={createClientDto.LastName}");
-        var client = await response.Content.ReadFromJsonAsync<ClientDto>();
+        var response = await Client.PostAsJsonAsync("/api/clients/create-full", createFullUserDto);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
-        client.Should().NotBeNull();
-        client!.FirstName.Should().Be(createClientDto.FirstName);
-        client.LastName.Should().Be(createClientDto.LastName);
+        response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
     }
 
     [Fact]
-    public async Task UpdateClient_WithValidData_ShouldUpdateClient()
+    public async Task UpdateSelf_AsClient_ShouldUpdateClient()
     {
         // Arrange
-        await LoginAsManager();
-
-        // Создаем клиента напрямую через сервис
-        var uniqueEmail = $"test{DateTime.Now.Ticks}@example.com";
-        var uniquePhone = $"+37529{DateTime.Now.Ticks % 1000000:D6}";
-
+        await LoginAsClient();
+        
+        // Создаем клиента для текущего пользователя
         var createClientDto = new CreateClientDto
         {
             FirstName = "Test",
             LastName = "User",
-            Email = uniqueEmail,
-            Phone = uniquePhone
+            Phone = $"+37529{DateTime.Now.Ticks % 1000000:D6}"
         };
+        await Client.PostAsJsonAsync("/api/clients/create-for-current", createClientDto);
 
-        // Создаем клиента
-        var createResponse = await Client.PostAsJsonAsync("/api/clients", createClientDto);
-        var responseContent = await createResponse.Content.ReadAsStringAsync();
-        _output.WriteLine($"Create Response Status: {createResponse.StatusCode}");
-        _output.WriteLine($"Create Response Content: {responseContent}");
-
-        if (createResponse.StatusCode == HttpStatusCode.BadRequest)
-        {
-            _output.WriteLine($"Bad Request Details: {responseContent}");
-            throw new Exception($"Failed to create client: {responseContent}");
-        }
-
-        createResponse.StatusCode.Should().Be(HttpStatusCode.Created, "Клиент должен быть успешно создан");
-
-        var createdClient = await createResponse.Content.ReadFromJsonAsync<ClientDto>();
-        _output.WriteLine($"Created Client ID: {createdClient!.Id}");
-
+        // Подготавливаем данные для обновления
         var updateClientDto = new UpdateClientDto
         {
             FirstName = "Updated",
             LastName = "User",
-            Email = $"updated{DateTime.Now.Ticks}@example.com",
             Phone = $"+37529{(DateTime.Now.Ticks + 1) % 1000000:D6}"
         };
 
         // Act
-        var response = await Client.PutAsJsonAsync($"/api/clients/{createdClient.Id}", updateClientDto);
-        _output.WriteLine($"Update Response Status: {response.StatusCode}");
-        var updateResponseContent = await response.Content.ReadAsStringAsync();
-        _output.WriteLine($"Update Response Content: {updateResponseContent}");
+        var response = await Client.PutAsJsonAsync("/api/clients/update-self", updateClientDto);
+        var client = await response.Content.ReadFromJsonAsync<ClientDto>();
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK, "Обновление клиента должно вернуть 200 OK");
-
-        var updatedClient = await response.Content.ReadFromJsonAsync<ClientDto>();
-        _output.WriteLine($"Updated Client: {JsonSerializer.Serialize(updatedClient)}");
-
-        updatedClient.Should().NotBeNull();
-        updatedClient!.FirstName.Should().Be(updateClientDto.FirstName);
-        updatedClient.LastName.Should().Be(updateClientDto.LastName);
-        updatedClient.Email.Should().Be(updateClientDto.Email);
-        updatedClient.Phone.Should().Be(updateClientDto.Phone);
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        client.Should().NotBeNull();
+        client!.FirstName.Should().Be(updateClientDto.FirstName);
+        client.LastName.Should().Be(updateClientDto.LastName);
+        client.Phone.Should().Be(updateClientDto.Phone);
     }
 
     [Fact]
-    public async Task DeleteClient_WithValidId_ShouldDeleteClient()
+    public async Task UpdateSelf_WithDuplicatePhone_ShouldReturnBadRequest()
+    {
+        // Arrange
+        await LoginAsClient();
+        var phone = $"+37529{DateTime.Now.Ticks % 1000000:D6}";
+        
+        // Создаем второго клиента с тем же телефоном
+        await LoginAsManager();
+        var createFullUserDto = new CreateFullUserDto
+        {
+            Email = $"test{DateTime.Now.Ticks}@example.com",
+            FirstName = "Test",
+            LastName = "User",
+            Phone = phone
+        };
+        await Client.PostAsJsonAsync("/api/clients/create-full", createFullUserDto);
+
+        // Пытаемся обновить телефон первого клиента
+        await LoginAsClient();
+        var updateClientDto = new UpdateClientDto
+        {
+            FirstName = "Updated",
+            LastName = "User",
+            Phone = phone
+        };
+
+        // Act
+        var response = await Client.PutAsJsonAsync("/api/clients/update-self", updateClientDto);
+        var responseContent = await response.Content.ReadAsStringAsync();
+
+        // Assert
+        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        responseContent.Should().NotBeNullOrEmpty();
+    }
+
+    [Fact]
+    public async Task GetClient_AsManager_ShouldReturnClient()
     {
         // Arrange
         await LoginAsManager();
-
-        // Создаем клиента напрямую через сервис
-        var uniqueEmail = $"test{DateTime.Now.Ticks}@example.com";
-        var uniquePhone = $"+37529{DateTime.Now.Ticks % 1000000:D6}";
-
-        var createClientDto = new CreateClientDto
+        var createFullUserDto = new CreateFullUserDto
         {
+            Email = $"test{DateTime.Now.Ticks}@example.com",
             FirstName = "Test",
             LastName = "User",
-            Email = uniqueEmail,
-            Phone = uniquePhone
+            Phone = $"+37529{DateTime.Now.Ticks % 1000000:D6}"
         };
 
-        // Создаем клиента
-        var createResponse = await Client.PostAsJsonAsync("/api/clients", createClientDto);
-        var responseContent = await createResponse.Content.ReadAsStringAsync();
-        _output.WriteLine($"Create Response Status: {createResponse.StatusCode}");
-        _output.WriteLine($"Create Response Content: {responseContent}");
-
-        if (createResponse.StatusCode == HttpStatusCode.BadRequest)
-        {
-            _output.WriteLine($"Bad Request Details: {responseContent}");
-            throw new Exception($"Failed to create client: {responseContent}");
-        }
-
-        createResponse.StatusCode.Should().Be(HttpStatusCode.Created, "Клиент должен быть успешно создан");
-
-        var createdClient = await createResponse.Content.ReadFromJsonAsync<ClientDto>();
-        _output.WriteLine($"Created Client ID: {createdClient!.Id}");
-
-        // Проверяем, что клиент существует
-        var getResponse = await Client.GetAsync($"/api/clients/{createdClient.Id}");
-        _output.WriteLine($"Get Response Status: {getResponse.StatusCode}");
-        var getResponseContent = await getResponse.Content.ReadAsStringAsync();
-        _output.WriteLine($"Get Response Content: {getResponseContent}");
-        getResponse.StatusCode.Should().Be(HttpStatusCode.OK, "Клиент должен существовать перед удалением");
+        var createResponse = await Client.PostAsJsonAsync("/api/clients/create-full", createFullUserDto);
+        var createdUser = await createResponse.Content.ReadFromJsonAsync<CreateFullUserResponseDto>();
 
         // Act
-        var response = await Client.DeleteAsync($"/api/clients/{createdClient.Id}");
-        _output.WriteLine($"Delete Response Status: {response.StatusCode}");
-        var deleteResponseContent = await response.Content.ReadAsStringAsync();
-        _output.WriteLine($"Delete Response Content: {deleteResponseContent}");
+        var response = await Client.GetAsync($"/api/clients/{createdUser!.Client.Id}");
+        var client = await response.Content.ReadFromJsonAsync<ClientDto>();
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.NoContent, "Удаление клиента должно вернуть 204 No Content");
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        client.Should().NotBeNull();
+        client!.FirstName.Should().Be(createFullUserDto.FirstName);
+        client.LastName.Should().Be(createFullUserDto.LastName);
+        client.Phone.Should().Be(createFullUserDto.Phone);
+    }
+
+    [Fact]
+    public async Task GetClient_WithoutManagerRole_ShouldReturnForbidden()
+    {
+        // Arrange
+        await LoginAsClient();
+
+        // Act
+        var response = await Client.GetAsync("/api/clients/some-id");
+
+        // Assert
+        response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+    }
+
+    [Fact]
+    public async Task DeleteClient_AsManager_ShouldDeleteClient()
+    {
+        // Arrange
+        await LoginAsManager();
+        var createFullUserDto = new CreateFullUserDto
+        {
+            Email = $"test{DateTime.Now.Ticks}@example.com",
+            FirstName = "Test",
+            LastName = "User",
+            Phone = $"+37529{DateTime.Now.Ticks % 1000000:D6}"
+        };
+
+        var createResponse = await Client.PostAsJsonAsync("/api/clients/create-full", createFullUserDto);
+        var createdUser = await createResponse.Content.ReadFromJsonAsync<CreateFullUserResponseDto>();
+
+        // Act
+        var response = await Client.DeleteAsync($"/api/clients/{createdUser!.Client.Id}");
+
+        // Assert
+        response.StatusCode.Should().Be(HttpStatusCode.NoContent);
 
         // Verify client is deleted
-        var getDeletedResponse = await Client.GetAsync($"/api/clients/{createdClient.Id}");
-        _output.WriteLine($"Get Deleted Response Status: {getDeletedResponse.StatusCode}");
-        var getDeletedResponseContent = await getDeletedResponse.Content.ReadAsStringAsync();
-        _output.WriteLine($"Get Deleted Response Content: {getDeletedResponseContent}");
+        var getResponse = await Client.GetAsync($"/api/clients/{createdUser.Client.Id}");
+        getResponse.StatusCode.Should().Be(HttpStatusCode.NotFound);
+    }
 
-        // Проверяем, что ID в правильном формате
-        _output.WriteLine($"Checking ID format: {createdClient.Id}");
-        Guid.TryParse(createdClient.Id, out var _).Should().BeTrue("ID клиента должен быть в формате GUID");
+    [Fact]
+    public async Task DeleteClient_WithoutManagerRole_ShouldReturnForbidden()
+    {
+        // Arrange
+        await LoginAsClient();
 
-        getDeletedResponse.StatusCode.Should()
-            .Be(HttpStatusCode.NotFound, "После удаления клиент не должен существовать");
+        // Act
+        var response = await Client.DeleteAsync("/api/clients/some-id");
+
+        // Assert
+        response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
     }
 }

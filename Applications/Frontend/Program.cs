@@ -1,5 +1,6 @@
 using Application.Data;
 using Frontend.Models;
+using Frontend.Services.Account;
 using Frontend.Services.Api;
 using Frontend.Services.Auth;
 using Microsoft.AspNetCore.Authentication;
@@ -26,6 +27,7 @@ builder.Services.AddScoped<IApiService, ApiService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IClaimsService, ClaimsService>();
 builder.Services.AddScoped<IAuthStateService, AuthStateService>();
+builder.Services.AddScoped<IClientService, ClientService>();
 
 // Configure authentication
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)

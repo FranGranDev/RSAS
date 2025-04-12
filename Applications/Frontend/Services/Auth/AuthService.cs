@@ -25,7 +25,7 @@ public class AuthService : IAuthService
 
     public async Task<AuthResponseDto> LoginAsync(LoginDto model)
     {
-        var response = await _apiService.PostAsync<AuthResponseDto>("api/auth/login", model);
+        var response = await _apiService.PostAsync<AuthResponseDto, LoginDto>("api/auth/login", model);
         if (response.Success)
         {
             await SignInAsync(response.User, response.Token);
@@ -35,7 +35,7 @@ public class AuthService : IAuthService
 
     public async Task<AuthResponseDto> RegisterAsync(RegisterDto model)
     {
-        var response = await _apiService.PostAsync<AuthResponseDto>("api/auth/register", model);
+        var response = await _apiService.PostAsync<AuthResponseDto, RegisterDto>("api/auth/register", model);
         if (response.Success)
         {
             await SignInAsync(response.User, response.Token);

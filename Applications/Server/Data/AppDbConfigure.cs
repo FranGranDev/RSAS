@@ -8,7 +8,7 @@ namespace Application.Data
     {
         public static async Task SeedRoles(RoleManager<IdentityRole> roleManager)
         {
-            string[] roles = { "Client", "Manager" };
+            string[] roles = { AppConst.Roles.Manager, AppConst.Roles.Client };
 
             foreach (var roleName in roles)
             {

@@ -1,11 +1,11 @@
-using Frontend.Models.Auth;
+using Application.DTOs;
 
 namespace Frontend.Services.Auth;
 
 public interface IAuthService
 {
-    Task<AuthResponseViewModel> LoginAsync(LoginViewModel model);
-    Task<AuthResponseViewModel> RegisterAsync(RegisterViewModel viewModel);
+    Task<AuthResponseDto> LoginAsync(LoginDto model);
+    Task<AuthResponseDto> RegisterAsync(RegisterDto model);
     Task LogoutAsync();
-    Task<UserViewModel> GetCurrentUserAsync();
+    Task<UserDto> GetCurrentUserAsync();
 } 

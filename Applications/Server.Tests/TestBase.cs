@@ -83,7 +83,7 @@ public class TestBase : IDisposable
     private async Task InitializeRoles()
     {
         // Создаем роли, если они не существуют
-        string[] roles = { "Manager", "User" };
+        string[] roles = { AppConst.Roles.Manager, AppConst.Roles.Client };
         foreach (var role in roles)
             if (!await RoleManager.RoleExistsAsync(role))
                 await RoleManager.CreateAsync(new IdentityRole(role));
@@ -125,7 +125,7 @@ public class TestBase : IDisposable
             PhoneNumberConfirmed = true
         };
         await UserManager.CreateAsync(user, "Test123!");
-        await UserManager.AddToRoleAsync(user, "User");
+        await UserManager.AddToRoleAsync(user, AppConst.Roles.Client);
 
         // Выполняем вход как пользователь
         var loginDto = new LoginDto

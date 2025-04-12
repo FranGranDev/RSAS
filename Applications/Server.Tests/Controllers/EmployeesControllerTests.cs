@@ -2,6 +2,7 @@ using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Text.Json;
+using Application.Data;
 using Application.DTOs;
 using Application.Models;
 using FluentAssertions;
@@ -76,7 +77,7 @@ public class EmployeesControllerTests(ITestOutputHelper output) : TestBase(outpu
             Email = "user@test.com"
         };
         await UserManager.CreateAsync(user, "Test123!");
-        await UserManager.AddToRoleAsync(user, "User");
+        await UserManager.AddToRoleAsync(user, AppConst.Roles.Client);
 
         var loginDto = new LoginDto
         {
@@ -145,7 +146,7 @@ public class EmployeesControllerTests(ITestOutputHelper output) : TestBase(outpu
             Email = "user@test.com"
         };
         await UserManager.CreateAsync(user, "Test123!");
-        await UserManager.AddToRoleAsync(user, "User");
+        await UserManager.AddToRoleAsync(user, AppConst.Roles.Client);
 
         var loginDto = new LoginDto
         {

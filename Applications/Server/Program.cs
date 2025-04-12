@@ -32,11 +32,16 @@ namespace Application
             // Identity
             builder.Services.Configure<IdentityOptions>(options =>
             {
+                // Password settings
                 options.Password.RequiredLength = 8;
                 options.Password.RequireUppercase = true;
                 options.Password.RequireLowercase = true;
                 options.Password.RequireDigit = true;
                 options.Password.RequireNonAlphanumeric = false;
+
+                // User settings
+                options.User.AllowedUserNameCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789абвгдеёжзийклмнопрстуфхцчшщъыьэюяАБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ-._@+";
+                options.User.RequireUniqueEmail = true;
             });
 
             builder.Services.AddIdentity<AppUser, IdentityRole>()
@@ -67,8 +72,8 @@ namespace Application
             // Authorization Policies
             builder.Services.AddAuthorization(options =>
             {
-                options.AddPolicy("RequireManagerRole", policy => policy.RequireRole("Manager"));
-                options.AddPolicy("RequireClientRole", policy => policy.RequireRole("Client"));
+                options.AddPolicy("RequireManagerRole", policy => policy.RequireRole(AppConst.Roles.Manager));
+                options.AddPolicy("RequireClientRole", policy => policy.RequireRole(AppConst.Roles.Client));
             });
 
             // AutoMapper

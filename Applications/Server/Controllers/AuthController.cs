@@ -1,4 +1,5 @@
 using System.Security.Claims;
+using Application.Data;
 using Application.DTOs;
 using Application.Models;
 using Application.Services;
@@ -87,7 +88,7 @@ namespace Application.Controllers
             }
 
             // Добавляем роль по умолчанию
-            await _userManager.AddToRoleAsync(user, "User");
+            await _userManager.AddToRoleAsync(user, AppConst.Roles.Client);
 
             var token = await _jwtService.GenerateJwtToken(user);
             var roles = await _userManager.GetRolesAsync(user);

@@ -1,34 +1,36 @@
 using System.Net.Http.Headers;
 using System.Text.Json;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 using Frontend.Models;
+using System.Security.Claims;
 
 namespace Frontend.Services.Api;
 
 public class ApiService : IApiService
 {
     private readonly HttpClient _httpClient;
-    private readonly ApiSettings _settings;
     private readonly IHttpContextAccessor _httpContextAccessor;
 
-    public ApiService(HttpClient httpClient, IOptions<ApiSettings> settings, IHttpContextAccessor httpContextAccessor)
+    public ApiService(IHttpClientFactory httpClientFactory, IHttpContextAccessor httpContextAccessor)
     {
-        _httpClient = httpClient;
-        _settings = settings.Value;
+        _httpClient = httpClientFactory.CreateClient("ApiClient");
         _httpContextAccessor = httpContextAccessor;
 
-        _httpClient.BaseAddress = new Uri(_settings.BaseUrl);
         _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
     }
 
     public async Task<T> GetAsync<T>(string endpoint)
     {
+        await SetAuthHeader();
         var response = await _httpClient.GetAsync(endpoint);
         return await HandleResponse<T>(response);
     }
 
     public async Task<T> PostAsync<T>(string endpoint, object data)
     {
+        await SetAuthHeader();
         var content = new StringContent(JsonSerializer.Serialize(data), System.Text.Encoding.UTF8, "application/json");
         var response = await _httpClient.PostAsync(endpoint, content);
         return await HandleResponse<T>(response);
@@ -36,6 +38,7 @@ public class ApiService : IApiService
 
     public async Task<T> PutAsync<T>(string endpoint, object data)
     {
+        await SetAuthHeader();
         var content = new StringContent(JsonSerializer.Serialize(data), System.Text.Encoding.UTF8, "application/json");
         var response = await _httpClient.PutAsync(endpoint, content);
         return await HandleResponse<T>(response);
@@ -43,6 +46,7 @@ public class ApiService : IApiService
 
     public async Task<bool> DeleteAsync(string endpoint)
     {
+        await SetAuthHeader();
         var response = await _httpClient.DeleteAsync(endpoint);
         return response.IsSuccessStatusCode;
     }
@@ -65,18 +69,34 @@ public class ApiService : IApiService
         _httpContextAccessor.HttpContext?.Response.Cookies.Delete("auth_token");
     }
 
+    private async Task SetAuthHeader()
+    {
+        var token = await _httpContextAccessor.HttpContext?.GetTokenAsync("Token");
+        if (!string.IsNullOrEmpty(token))
+        {
+            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+        }
+    }
+
     private async Task<T> HandleResponse<T>(HttpResponseMessage response)
     {
+        var content = await response.Content.ReadAsStringAsync();
+        
         if (!response.IsSuccessStatusCode)
         {
-            var error = await response.Content.ReadAsStringAsync();
-            throw new HttpRequestException($"API request failed: {error}");
+            throw new HttpRequestException($"API request failed with status code {response.StatusCode}. Response: {content}");
         }
 
-        var content = await response.Content.ReadAsStringAsync();
-        return JsonSerializer.Deserialize<T>(content, new JsonSerializerOptions
+        try
         {
-            PropertyNameCaseInsensitive = true
-        });
+            return JsonSerializer.Deserialize<T>(content, new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
+            });
+        }
+        catch (JsonException ex)
+        {
+            throw new HttpRequestException($"Failed to deserialize response: {content}. Error: {ex.Message}");
+        }
     }
 }  

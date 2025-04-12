@@ -1,3 +1,4 @@
+using Application.Data;
 using Application.DTOs;
 using Application.Exceptions;
 using Application.Models;
@@ -198,7 +199,7 @@ namespace Application.Controllers
                 }
 
                 // Добавляем роль клиента
-                await _userManager.AddToRoleAsync(user, "User");
+                await _userManager.AddToRoleAsync(user, AppConst.Roles.Client);
 
                 // Создаем клиента
                 var client = await _clientService.CreateClientAsync(createClientDto, user.Id);

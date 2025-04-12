@@ -1,5 +1,6 @@
 using System.Net;
 using System.Net.Http.Json;
+using Application.Data;
 using Application.DTOs;
 using Application.Models;
 using FluentAssertions;
@@ -51,7 +52,7 @@ public class AuthControllerTests(ITestOutputHelper output) : TestBase(output)
             Email = "test@example.com"
         };
         await UserManager.CreateAsync(user, "Test123!");
-        await UserManager.AddToRoleAsync(user, "User");
+        await UserManager.AddToRoleAsync(user, AppConst.Roles.Client);
 
         var loginDto = new LoginDto
         {
@@ -103,7 +104,7 @@ public class AuthControllerTests(ITestOutputHelper output) : TestBase(output)
             Email = "test@example.com"
         };
         await UserManager.CreateAsync(user, "Test123!");
-        await UserManager.AddToRoleAsync(user, "User");
+        await UserManager.AddToRoleAsync(user, AppConst.Roles.Client);
 
         var loginDto = new LoginDto
         {

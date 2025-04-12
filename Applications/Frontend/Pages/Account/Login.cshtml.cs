@@ -1,4 +1,4 @@
-using Frontend.Models.Auth;
+using Application.DTOs;
 using Frontend.Services.Auth;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -15,31 +15,32 @@ public class LoginModel : PageModel
     }
 
     [BindProperty]
-    public LoginViewModel Input { get; set; }
+    public LoginDto Input { get; set; }
 
-    public IActionResult OnGet()
+    public string ReturnUrl { get; set; }
+
+    public void OnGet(string returnUrl = null)
     {
-        if (User.Identity.IsAuthenticated)
-        {
-            return RedirectToPage("/Index");
-        }
-        return Page();
+        ReturnUrl = returnUrl ?? Url.Content("~/");
     }
 
-    public async Task<IActionResult> OnPostAsync()
+    public async Task<IActionResult> OnPostAsync(string returnUrl = null)
     {
-        if (!ModelState.IsValid)
+        returnUrl ??= Url.Content("~/");
+
+        if (ModelState.IsValid)
         {
-            return Page();
+            var result = await _authService.LoginAsync(Input);
+            if (result.Success)
+            {
+                return LocalRedirect(returnUrl);
+            }
+            else
+            {
+                ModelState.AddModelError(string.Empty, result.Message);
+            }
         }
 
-        var result = await _authService.LoginAsync(Input);
-        if (result.Success)
-        {
-            return RedirectToPage("/Index");
-        }
-
-        ModelState.AddModelError(string.Empty, result.Message);
         return Page();
     }
 } 

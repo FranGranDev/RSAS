@@ -1,5 +1,6 @@
 using System.Security.Claims;
 using Application.Controllers;
+using Application.Data;
 using Application.DTOs;
 using Application.Exceptions;
 using Application.Models;
@@ -182,7 +183,7 @@ public class OrdersControllerTests
         var user = new ClaimsPrincipal(new ClaimsIdentity(new Claim[]
         {
             new(ClaimTypes.NameIdentifier, "test-user-id"),
-            new(ClaimTypes.Role, "User")
+            new(ClaimTypes.Role, AppConst.Roles.Client)
         }, "mock"));
 
         _controller.ControllerContext = new ControllerContext
@@ -445,7 +446,7 @@ public class OrdersControllerTests
         var user = new ClaimsPrincipal(new ClaimsIdentity(new Claim[]
         {
             new(ClaimTypes.NameIdentifier, "test-user-id"),
-            new(ClaimTypes.Role, "User")
+            new(ClaimTypes.Role, AppConst.Roles.Client)
         }, "mock"));
 
         _controller.ControllerContext = new ControllerContext
@@ -467,7 +468,7 @@ public class OrdersControllerTests
         var user = new ClaimsPrincipal(new ClaimsIdentity(new Claim[]
         {
             new(ClaimTypes.NameIdentifier, "test-user-id"),
-            new(ClaimTypes.Role, "User")
+            new(ClaimTypes.Role, AppConst.Roles.Client)
         }, "mock"));
 
         _controller.ControllerContext = new ControllerContext
@@ -489,7 +490,7 @@ public class OrdersControllerTests
         var user = new ClaimsPrincipal(new ClaimsIdentity(new Claim[]
         {
             new(ClaimTypes.NameIdentifier, "test-user-id"),
-            new(ClaimTypes.Role, "User")
+            new(ClaimTypes.Role, AppConst.Roles.Client)
         }, "mock"));
 
         _controller.ControllerContext = new ControllerContext

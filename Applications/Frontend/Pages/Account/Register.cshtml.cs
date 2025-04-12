@@ -1,60 +1,46 @@
+using Application.DTOs;
+using Frontend.Services.Auth;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using System.ComponentModel.DataAnnotations;
 
-namespace Frontend.Pages.Account
+namespace Frontend.Pages.Account;
+
+public class RegisterModel : PageModel
 {
-    public class RegisterModel : PageModel
+    private readonly IAuthService _authService;
+
+    public RegisterModel(IAuthService authService)
     {
-        [BindProperty]
-        public InputModel Input { get; set; }
+        _authService = authService;
+    }
 
-        public class InputModel
+    [BindProperty]
+    public RegisterDto Input { get; set; }
+
+    public string ReturnUrl { get; set; }
+
+    public void OnGet(string returnUrl = null)
+    {
+        ReturnUrl = returnUrl ?? Url.Content("~/");
+    }
+
+    public async Task<IActionResult> OnPostAsync(string returnUrl = null)
+    {
+        returnUrl ??= Url.Content("~/");
+
+        if (ModelState.IsValid)
         {
-            [Required(ErrorMessage = "Email обязателен")]
-            [EmailAddress(ErrorMessage = "Некорректный формат email")]
-            public string Email { get; set; }
-
-            [Required(ErrorMessage = "Пароль обязателен")]
-            [StringLength(100, ErrorMessage = "Пароль должен быть не менее {2} и не более {1} символов", MinimumLength = 6)]
-            [DataType(DataType.Password)]
-            public string Password { get; set; }
-
-            [DataType(DataType.Password)]
-            [Compare("Password", ErrorMessage = "Пароли не совпадают")]
-            public string ConfirmPassword { get; set; }
-
-            [Required(ErrorMessage = "Имя обязательно")]
-            [StringLength(50, ErrorMessage = "Имя не должно превышать 50 символов")]
-            public string FirstName { get; set; }
-
-            [Required(ErrorMessage = "Фамилия обязательна")]
-            [StringLength(50, ErrorMessage = "Фамилия не должна превышать 50 символов")]
-            public string LastName { get; set; }
-
-            [Required(ErrorMessage = "Телефон обязателен")]
-            [Phone(ErrorMessage = "Некорректный формат телефона")]
-            public string Phone { get; set; }
-        }
-
-        public IActionResult OnGet()
-        {
-            if (User.Identity.IsAuthenticated)
+            var result = await _authService.RegisterAsync(Input);
+            if (result.Success)
             {
-                return RedirectToPage("/Index");
+                return LocalRedirect(returnUrl);
             }
-            return Page();
-        }
-
-        public async Task<IActionResult> OnPostAsync()
-        {
-            if (!ModelState.IsValid)
+            else
             {
-                return Page();
+                ModelState.AddModelError(string.Empty, result.Message);
             }
-
-            // TODO: Реализовать логику регистрации
-            return RedirectToPage("/Account/Login");
         }
+
+        return Page();
     }
 } 

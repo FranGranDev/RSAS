@@ -1,6 +1,7 @@
 using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
+using Application.Data;
 using Application.DTOs;
 using Application.Models;
 using FluentAssertions;
@@ -35,7 +36,7 @@ public class StocksControllerTests(ITestOutputHelper output) : TestBase(output)
             Email = "user@test.com"
         };
         await UserManager.CreateAsync(user, "Test123!");
-        await UserManager.AddToRoleAsync(user, "User");
+        await UserManager.AddToRoleAsync(user, AppConst.Roles.Client);
 
         var loginDto = new LoginDto
         {

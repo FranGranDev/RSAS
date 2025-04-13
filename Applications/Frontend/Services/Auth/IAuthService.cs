@@ -6,6 +6,8 @@ public interface IAuthService
 {
     Task<AuthResponseDto> LoginAsync(LoginDto model);
     Task<AuthResponseDto> RegisterAsync(RegisterDto model);
-    Task LogoutAsync();
     Task<UserDto> GetCurrentUserAsync();
+    Task<bool> IsInRoleAsync(string role);
+    Task<bool> IsAuthenticatedAsync();
+    Task LogoutAsync();
 } 

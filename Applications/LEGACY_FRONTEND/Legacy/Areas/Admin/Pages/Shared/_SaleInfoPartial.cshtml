@@ -1,0 +1,209 @@
+﻿@using Microsoft.AspNetCore.Mvc.TagHelpers
+@using Application.Services
+@model Application.ViewModel.Sales.SaleViewModel
+
+
+<div class="container-fluid mb-5">
+    <div>
+        <div class="card">
+            <div class="card-header" style="background-color: #FFFFE0">
+                <div class="row">
+                    <div class="col-md-5">
+                        <label asp-for="OrderView.OrderDate"></label>
+                        <label asp-for="OrderView.OrderDate">@Model.OrderView.OrderDate.ToString("dd.MM.yyyy HH.mm")</label>
+                        <br/>
+                        <label asp-for="SaleDate"></label>
+                        <label asp-for="SaleDate">@Model.SaleDate.ToString("dd.MM.yyyy HH.mm")</label>
+                    </div>
+                    <div class="col-md-5">
+                        <label asp-for="SaleType"></label>
+                        <label asp-for="SaleType">: @Model.SaleType.GetDisplayName()</label>
+                        <br/>
+                        <label asp-for="OrderView.PaymentType"></label>
+                        <label asp-for="OrderView.PaymentType">: @Model.OrderView.PaymentType.GetDisplayName()</label>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="text-end">
+                            <a id="close-info" class="btn btn-secondary btn-lg">
+                                <i class="bi bi-x-lg"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+                <h4>Заказчик</h4>
+
+                <div id="contact-partial" class="container-fluid">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-floating mt-2">
+                                <input asp-for="ClientInfo.FullName" class="form-control" aria-required="true" disabled/>
+                                <label asp-for="ClientInfo.FullName"></label>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-floating mt-2">
+                                <input asp-for="ClientInfo.Phone" class="form-control" aria-required="true" disabled/>
+                                <label asp-for="ClientInfo.Phone"></label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                @if (Model.CompanyInfo != null)
+                {
+                    <br/>
+                    <h4>Компания</h4>
+                    <div id="company-partial" class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-floating">
+                                    <input asp-for="CompanyInfo.Name" class="form-control" aria-required="true" disabled/>
+                                    <label asp-for="CompanyInfo.Name"></label>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-floating">
+                                    <input asp-for="CompanyInfo.Inn" class="form-control" aria-required="true" disabled/>
+                                    <label asp-for="CompanyInfo.Inn"></label>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-floating">
+                                    <input asp-for="CompanyInfo.Kpp" class="form-control" aria-required="true" disabled/>
+                                    <label asp-for="CompanyInfo.Kpp"></label>
+                                </div>
+                            </div>
+                        </div>
+                        <hr/>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-floating">
+                                    <input asp-for="CompanyInfo.BankName" class="form-control" aria-required="true" disabled/>
+                                    <label asp-for="CompanyInfo.BankName"></label>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-floating">
+                                    <input asp-for="CompanyInfo.BankBic" class="form-control" aria-required="true" disabled/>
+                                    <label asp-for="CompanyInfo.BankBic"></label>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-floating">
+                                    <input asp-for="CompanyInfo.BankAccount" class="form-control" aria-required="true" disabled/>
+                                    <label asp-for="CompanyInfo.BankAccount"></label>
+                                </div>
+                            </div>
+                        </div>
+                        <hr/>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <input asp-for="CompanyInfo.Email" class="form-control" aria-required="true" disabled/>
+                                    <label asp-for="CompanyInfo.Email"></label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <input asp-for="CompanyInfo.Phone" class="form-control" aria-required="true" disabled/>
+                                    <label asp-for="CompanyInfo.Phone"></label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+            <hr/>
+            <div class="card-body">
+                <h4>Доставка</h4>
+                <div id="delivery-partial" class="container-fluid">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-floating mt-2">
+                                <input asp-for="DeliveryView.City" class="form-control" aria-required="true" disabled/>
+                                <label asp-for="DeliveryView.City"></label>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-floating mt-2">
+                                <input asp-for="DeliveryView.Street" class="form-control" aria-required="true" disabled/>
+                                <label asp-for="DeliveryView.Street"></label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-floating mt-2">
+                                <input asp-for="DeliveryView.House" class="form-control" aria-required="true" disabled/>
+                                <label asp-for="DeliveryView.House"></label>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-floating mt-2">
+                                <input asp-for="DeliveryView.Flat" class="form-control" aria-required="true" disabled/>
+                                <label asp-for="DeliveryView.Flat"></label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-floating mt-2">
+                                <input asp-for="DeliveryView.PostalCode" class="form-control" aria-required="true" disabled/>
+                                <label asp-for="DeliveryView.PostalCode"></label>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label asp-for="DeliveryView.DeliveryDate" class="control-label"></label>
+                                <input asp-for="DeliveryView.DeliveryDate" class="form-control" disabled/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <hr/>
+            <div class="card-body">
+                <h4>Товары заявки</h4>
+                <hr/>
+                <table class="table table-bordered">
+                    <thead class="thead-dark text-center align-middle">
+                    <tr>
+                        <th>Название</th>
+                        <th>Описание</th>
+                        <th>Количество</th>
+                        <th>Итоговая Цена</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    @{
+                        var count = 0;
+                        decimal price = 0;
+                        foreach (var product in Model.Products)
+                        {
+                            <tr>
+                                <td>@product.ProductName</td>
+                                <td>@product.ProductDescription</td>
+                                <td>@product.Quantity</td>
+                                <td>@(product.Quantity * product.ProductPrice) @CurrencySettings.Symbol</td>
+                            </tr>
+
+                            count += product.Quantity;
+                            price += product.Quantity * product.ProductPrice;
+                        }
+
+                        <tr class="fw-bold fs-4" style="background-color: #F5DEB3">
+                            <td>Итого</td>
+                            <td></td>
+                            <td>@count</td>
+                            <td>@price @CurrencySettings.Symbol</td>
+                        </tr>
+                    }
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

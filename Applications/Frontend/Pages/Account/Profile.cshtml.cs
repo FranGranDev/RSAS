@@ -11,12 +11,12 @@ namespace Frontend.Pages.Account;
 [Authorize]
 public class ProfileModel : PageModel
 {
-    private readonly IAuthStateService _authStateService;
+    private readonly IAuthService _authService;
     private readonly IClientService _clientService;
 
-    public ProfileModel(IAuthStateService authStateService, IClientService clientService)
+    public ProfileModel(IAuthService authService, IClientService clientService)
     {
-        _authStateService = authStateService;
+        _authService = authService;
         _clientService = clientService;
     }
 
@@ -24,11 +24,14 @@ public class ProfileModel : PageModel
     [BindProperty]
     public ProfileFormDto ClientData { get; set; }
 
+    [BindProperty]
+    public ChangePasswordDto ChangePasswordData { get; set; }
+
     public async Task<IActionResult> OnGetAsync()
     {
         try
         {
-            CurrentUser = await _authStateService.GetCurrentUserAsync();
+            CurrentUser = await _authService.GetCurrentUserAsync();
             if (CurrentUser == null)
             {
                 return RedirectToPage("/Account/Login");
@@ -64,8 +67,12 @@ public class ProfileModel : PageModel
         }
     }
 
-    public async Task<IActionResult> OnPostAsync()
+    public async Task<IActionResult> OnPostUpdateProfileAsync()
     {
+        // Очищаем ModelState и проверяем только поля профиля
+        ModelState.Clear();
+        TryValidateModel(ClientData);
+
         if (!ModelState.IsValid)
         {
             return Page();
@@ -73,7 +80,7 @@ public class ProfileModel : PageModel
 
         try
         {
-            CurrentUser = await _authStateService.GetCurrentUserAsync();
+            CurrentUser = await _authService.GetCurrentUserAsync();
             if (CurrentUser == null)
             {
                 return RedirectToPage("/Account/Login");
@@ -107,6 +114,37 @@ public class ProfileModel : PageModel
         catch (Exception ex)
         {
             ModelState.AddModelError("", ex.Message);
+            return Page();
+        }
+    }
+
+    public async Task<IActionResult> OnPostChangePasswordAsync()
+    {
+        // Очищаем ModelState и проверяем только поля пароля
+        ModelState.Clear();
+        TryValidateModel(ChangePasswordData);
+
+        if (!ModelState.IsValid)
+        {
+            return Page();
+        }
+
+        try
+        {
+            var response = await _clientService.ChangePasswordAsync(ChangePasswordData);
+            if (response.Success)
+            {
+                TempData["success"] = response.Message;
+            }
+            else
+            {
+                TempData["error"] = response.Message;
+            }
+            return RedirectToPage();
+        }
+        catch (Exception ex)
+        {
+            TempData["error"] = "Произошла ошибка при смене пароля";
             return Page();
         }
     }

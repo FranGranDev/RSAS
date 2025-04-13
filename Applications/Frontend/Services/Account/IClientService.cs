@@ -8,4 +8,5 @@ public interface IClientService
     Task<bool> ExistsForCurrentUserAsync();
     Task<ClientDto> CreateForCurrentUserAsync(CreateClientDto createClientDto);
     Task<ClientDto> UpdateSelfAsync(UpdateClientDto updateClientDto);
+    Task<AuthResponseDto> ChangePasswordAsync(ChangePasswordDto dto);
 } 

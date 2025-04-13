@@ -36,7 +36,7 @@ namespace Application.Services
             return _mapper.Map<ProductDto>(product);
         }
 
-        public async Task<ProductDto> CreateProductAsync(CreateProductDto createProductDto)
+        public async Task<ProductDto> CreateProductAsync(ProductDto createProductDto)
         {
             // Проверяем, не существует ли уже товар с таким названием
             if (await _productRepository.ExistsByNameAsync(createProductDto.Name))
@@ -55,7 +55,7 @@ namespace Application.Services
             return _mapper.Map<ProductDto>(product);
         }
 
-        public async Task<ProductDto> UpdateProductAsync(int id, UpdateProductDto updateProductDto)
+        public async Task<ProductDto> UpdateProductAsync(int id, ProductDto updateProductDto)
         {
             var product = await _productRepository.GetWithStockProductsAsync(id);
             if (product == null)

@@ -1,0 +1,59 @@
+﻿@page
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@using Application.Services
+@model OrdersModel
+
+@{
+    ViewData["Title"] = "Заказы";
+}
+
+
+<div class="mx-auto col-md-12">
+    <h1>@ViewData["Title"]</h1>
+
+    @if (Model.Orders.Count() > 0)
+    {
+        <table class="table table-bordered shadow">
+            <thead class="thead-dark text-center align-middle align-content-center">
+            <tr>
+                <th style="width: 10%;">
+                    <button class="btn btn-link" data-sort="name">Состояние</button>
+                </th>
+                <th style="width: 10%;">
+                    <button class="btn btn-link" data-sort="name">Дата заказа</button>
+                </th>
+                <th style="width: 10%;">
+                    <button class="btn btn-link" data-sort="description">Цена</button>
+                </th>
+                <th style="max-width: 30%;">
+                    <button class="btn btn-link" data-sort="retail-price">Описание</button>
+                </th>
+                <th style="width: 15%;"></th>
+            </tr>
+            </thead>
+            <tbody>
+            @foreach (var order in Model.Orders)
+            {
+                <tr>
+                    <td style="background-color: @(order.StateBgColor); color: @(order.TextColor)">@order.State.GetDisplayName()</td>
+                    <td>@order.OrderDate</td>
+                    <td>@order.Amount.ToString(".00") @CurrencySettings.Symbol</td>
+                    <td>@order.Description</td>
+                    <td>
+                        <div class="text-center">
+                            <a asp-page="OrderInfo" asp-route-orderId="@order.Id" class="details btn btn-outline-primary col-12">
+                                Подробнее &ensp;<i class="bi bi-info-circle"></i>
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <hr/>
+        <h3>Заказов еще нет</h3>
+    }
+</div>

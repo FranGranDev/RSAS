@@ -1,4 +1,4 @@
-﻿@if (TempData["success"] != null || TempData["error"] != null || !ViewData.ModelState.IsValid)
+﻿@if (TempData["success"] != null || TempData["error"] != null || TempData["warning"] != null || TempData["info"] != null || !ViewData.ModelState.IsValid)
 {
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <link href="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet" />
@@ -36,6 +36,22 @@
         {
             <text>
             toastr.error('@TempData["error"]');
+            </text>
+        }
+
+        // Показываем предупреждение
+        @if (TempData["warning"] != null)
+        {
+            <text>
+            toastr.warning('@TempData["warning"]');
+            </text>
+        }
+
+        // Показываем информационное сообщение
+        @if (TempData["info"] != null)
+        {
+            <text>
+            toastr.info('@TempData["info"]');
             </text>
         }
 

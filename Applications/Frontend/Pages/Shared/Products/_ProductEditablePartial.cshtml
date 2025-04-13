@@ -1,0 +1,43 @@
+@model Application.DTOs.ProductDto
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-12">
+            <input type="text" class="form-control form-control-lg mb-3" asp-for="@Model.Name" placeholder="Название товара" style="font-size: 1.5rem; font-weight: 500;">
+            <span asp-validation-for="@Model.Name" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <h4 class="text-muted">
+                <input type="text" class="form-control" asp-for="@Model.Category" placeholder="Категория">
+                <span asp-validation-for="@Model.Category" class="text-danger"></span>
+            </h4>
+            <hr/>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <h5>Описание</h5>
+            <textarea class="form-control" asp-for="@Model.Description" rows="3" placeholder="Описание товара"></textarea>
+            <span asp-validation-for="@Model.Description" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="row mt-4">
+        <div class="col-md-12">
+            <h5>Детали товара</h5>
+            <div class="d-flex justify-content-between align-items-center mt-2">
+                <div class="d-flex align-items-center">
+                    <span class="me-2">Штрих-код:</span>
+                    <input type="text" class="form-control" asp-for="@Model.Barcode" placeholder="Штрих-код">
+                    <span asp-validation-for="@Model.Barcode" class="text-danger ms-2"></span>
+                </div>
+                <div class="d-flex align-items-center">
+                    <span class="me-2">Цена:</span>
+                    <input type="number" class="form-control" asp-for="@Model.Price" placeholder="Цена" step="0.01">
+                    <span asp-validation-for="@Model.Price" class="text-danger ms-2"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div> 

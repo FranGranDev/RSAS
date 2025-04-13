@@ -1,0 +1,42 @@
+﻿@using Microsoft.AspNetCore.Mvc.TagHelpers
+<div>
+    <ul class="navbar-nav flex-grow-1">
+
+        <li if-role="Client" class="nav-item">
+            <a class="nav-link text-dark" asp-page="/User/Catalog">Каталог</a>
+        </li>
+        <li if-role="Client" class="nav-item">
+            <a class="nav-link text-dark" asp-page="/User/Ordering">Корзина</a>
+        </li>
+        <li if-role="Client" class="nav-item">
+            <a class="nav-link text-dark" asp-page="/Orders">Заказы</a>
+        </li>
+
+
+        <li if-role="Company" class="nav-item">
+            <a class="nav-link text-dark" asp-page="/Companies/Catalog">Каталог</a>
+        </li>
+        <li if-role="Company" class="nav-item">
+            <a class="nav-link text-dark" asp-page="/Companies/Ordering">Корзина</a>
+        </li>
+        <li if-role="Company" class="nav-item">
+            <a class="nav-link text-dark" asp-page="/Orders">Заказы</a>
+        </li>
+
+
+        <li if-role="Manager" class="nav-item">
+            <a class="nav-link text-dark" asp-area="Manager" asp-page="/Orders/Index">Управление заказами</a>
+        </li>
+
+
+        <li if-role="Admin" class="nav-item">
+            <a class="nav-link text-dark" asp-area="Admin" asp-page="/Employees/Index">Сотрудники</a>
+        </li>
+        <li if-role="Admin" class="nav-item">
+            <a class="nav-link text-dark" asp-area="Admin" asp-page="/Stores/Index">Склады</a>
+        </li>
+        <li if-role="Admin" class="nav-item">
+            <a class="nav-link text-dark" asp-area="Admin" asp-page="/Products/Index">Товары</a>
+        </li>
+    </ul>
+</div>

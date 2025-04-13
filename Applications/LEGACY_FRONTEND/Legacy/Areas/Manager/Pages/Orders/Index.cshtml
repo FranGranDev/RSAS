@@ -1,0 +1,147 @@
+﻿@page
+@using Application.Extensions;
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@using static Application.Model.Orders.Order;
+@model Application.Areas.Manager.IndexModel
+
+@{
+    ViewData["Title"] = "Заказы клиентов";
+}
+
+<div class="container-fluid">
+    <div class="row mt-5">
+        <div class="col-md-6">
+            <h1>@ViewData["Title"]</h1>
+        </div>
+        <div class="col-md-4 text-start">
+            <form id="searchForm">
+                <div class="input-group">
+                    @Html.AntiForgeryToken()
+                    <input id="searchString" type="text" class="form-control form-check-inline" placeholder="Искать по заказчику">
+                    <div class="input-group-append">
+                        <button type="submit" class="btn btn-outline-secondary">Искать</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-9">
+            <div id="orders" class="sort-asc" style="height: 60vh; overflow-x:hidden;">
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card shadow">
+                <div class="card-header"><h4>Фильтр</h4></div>
+                <div class="card-body">
+                    <form id="filterForm">
+                        @foreach (var filter in Model.Filters)
+                        {
+                            <div class="form-check d-flex align-items-center">
+                                <input class="form-check-input" type="checkbox" value="@filter.Value" id="@filter.Value" @(filter.Selected ? "checked" : "")>
+                                <label class="form-check-label mx-2 fs-5" for="@filter.Value">@filter.Text</label>
+                            </div>
+                            <hr />
+                        }
+                        <button type="submit" class="btn btn-primary btn-lg col-12">Применить</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+@section scripts {
+    <script type="text/javascript">
+        $.ajaxSetup({
+            headers: {
+                'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
+            }
+        });
+
+        $(document).ready(function () {
+            $.ajax({
+                type: "GET",
+                url: "/Manager/Orders/Index?handler=Orders",
+                success: function (data) {
+
+                    $("#orders").html(data);
+                }
+            });
+        });
+
+        $(document).on('click', 'table .sort-btn', function () {
+
+            var $orders = $('#orders');
+
+            var sortBy = $(this).data('sort');
+            var sortOrder = $orders.hasClass('sort-asc') ? 'desc' : 'asc';
+
+            $.ajax({
+                url: "/Manager/Orders/Index?handler=Sort",
+                type: "POST",
+                data: {
+                    sortBy: sortBy,
+                    sortOrder: sortOrder
+                },
+                success: function (result) {
+                    $('#orders').html(result);
+                    $orders.toggleClass('sort-asc sort-desc');
+                }
+            });
+        });
+
+        $('#filterForm').submit(function (event) {
+            event.preventDefault();
+
+            var submitBtn = $(this).find('button[type="submit"]');
+            submitBtn.prop('disabled', true);
+
+            $.ajax({
+                type: 'POST',
+                url: '/Manager/Orders/Index?handler=Filter',
+                data: {
+                    selectedStates: $('input:checkbox:checked').map(function () {
+                        return $(this).val();
+                    }).get()
+                },
+                success: function (result) {
+                    $('#orders').html(result);
+                },
+                complete: function () {
+                    submitBtn.prop('disabled', false);
+                },
+                error: function (xhr, status, error) {
+                    alert(xhr.responseText);
+                }
+            });
+        });
+
+        $("#searchForm").submit(function (e) {
+            e.preventDefault();
+            var submitBtn = $(this).find('button[type="submit"]');
+            var value = $("#searchString").val();
+
+            submitBtn.prop('disabled', true).addClass('btn-loading');
+
+            $.ajax({
+                type: "POST",
+                url: "/Manager/Orders/Index?handler=Search",
+                data: { searchString: value },
+                success: function (result) {
+                    $('#orders').html(result);
+                },
+                complete: function () {
+                    submitBtn.prop('disabled', false);
+                },
+                error: function (xhr, status, error) {
+                    alert(xhr.responseText);
+                }
+
+            });
+        });
+
+    </script>
+}

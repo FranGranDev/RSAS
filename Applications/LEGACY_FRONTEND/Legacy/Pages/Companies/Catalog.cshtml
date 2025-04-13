@@ -1,0 +1,102 @@
+﻿@page
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@model CatalogModel
+
+@{
+    ViewData["Title"] = "Каталог";
+}
+
+
+<div class="container-fluid">
+
+    <div class="row mt-5">
+        <div class="col-md-9">
+            <div class="row">
+                <div class="col-2">
+                    <h2>@ViewData["Title"]</h2>
+                </div>
+                <div class="col-5">
+                    <form id="searchForm">
+                        <div class="input-group">
+                            @Html.AntiForgeryToken()
+                            <input id="searchString" type="text" class="form-control form-check-inline" placeholder="Искать по названию">
+                            <div class="input-group-append">
+                                <button type="submit" class="btn btn-outline-secondary">Искать</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="col-5">
+                    <form id="clearForm">
+                        @Html.AntiForgeryToken()
+                        <button type="submit" class="btn btn-outline-danger">
+                            Отчистить карзину &ensp; <i class="bi bi-trash"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <hr/>
+    <div class="row">
+        <div class="col-md-9">
+            <div id="catalog" class="sort-asc" style="height: 60vh; overflow-x:hidden;">
+
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-body">
+                    <div id="cart">
+
+                    </div>
+                    <hr/>
+                    <form method="post" asp-page-handler="Order">
+                        <button type="submit" class="btn btn-primary btn-lg col-12">
+                            Сделать заказ &ensp; <i class="bi bi-bag"></i>
+                        </button>
+                        <br/>
+                        <div asp-validation-summary="All" class="text-danger"></div>
+                    </form>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+@section scripts {
+    <script>
+        $(document).on('input', '.quantity', function () {
+            var productId = $(this).data('product-id');
+            var quantity = $(this).val();
+            var $input = $('input[data-product-id="' + productId + '"]');
+
+
+            $.ajax({
+                type: 'POST',
+                url: "/Companies/Catalog?handler=Quantity",
+                dataType: 'json',
+                data: { productId: productId, quantity: quantity },
+                success: function (result) {
+                    $input.val(result.quantity).trigger('change')
+                },
+                error: function (error) {
+                    console.log(error)
+                },
+                complete: function () {
+                    $.ajax({
+                        type: "GET",
+                        url: "/Companies/Catalog?handler=CartInfo",
+                        success: function (data) {
+                            $("#cart").html(data);
+                        }
+                    });
+                }
+            });
+        });
+    </script>
+    <script src="~/js/catalog.js"></script>
+}

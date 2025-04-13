@@ -26,7 +26,6 @@ builder.Services.AddHttpClient("ApiClient", client =>
 builder.Services.AddScoped<IApiService, ApiService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IClaimsService, ClaimsService>();
-builder.Services.AddScoped<IAuthStateService, AuthStateService>();
 builder.Services.AddScoped<IClientService, ClientService>();
 
 // Configure authentication

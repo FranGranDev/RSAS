@@ -17,30 +17,40 @@ public class LoginModel : PageModel
     [BindProperty]
     public LoginDto Input { get; set; }
 
-    public string ReturnUrl { get; set; }
-
-    public void OnGet(string returnUrl = null)
+    public async Task<IActionResult> OnGetAsync()
     {
-        ReturnUrl = returnUrl ?? Url.Content("~/");
-    }
-
-    public async Task<IActionResult> OnPostAsync(string returnUrl = null)
-    {
-        returnUrl ??= Url.Content("~/");
-
-        if (ModelState.IsValid)
+        if (await _authService.IsAuthenticatedAsync())
         {
-            var result = await _authService.LoginAsync(Input);
-            if (result.Success)
-            {
-                return LocalRedirect(returnUrl);
-            }
-            else
-            {
-                ModelState.AddModelError(string.Empty, result.Message);
-            }
+            return RedirectToPage("/Index");
         }
 
         return Page();
+    }
+
+    public async Task<IActionResult> OnPostAsync()
+    {
+        if (!ModelState.IsValid)
+        {
+            return Page();
+        }
+
+        try
+        {
+            var response = await _authService.LoginAsync(Input);
+            if (response.Success)
+            {
+                return RedirectToPage("/Index");
+            }
+            else
+            {
+                ModelState.AddModelError(string.Empty, response.Message);
+                return Page();
+            }
+        }
+        catch (Exception ex)
+        {
+            ModelState.AddModelError(string.Empty, "Неверный email или пароль");
+            return Page();
+        }
     }
 } 

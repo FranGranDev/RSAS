@@ -1,0 +1,81 @@
+﻿@page
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@using Application.Services
+@model Application.Areas.Admin.Pages.Products.IndexModel
+@{
+    ViewData["Title"] = "Товары";
+}
+
+
+<div class="container-fluid">
+
+    <div class="row mt-5">
+        <div class="col-3">
+            <h1>@ViewData["Title"]</h1>
+        </div>
+        <div class="col-5">
+            <form method="post">
+                <div class="input-group">
+                    <input asp-for="@Model.SearchString" type="text" class="form-control form-check-inline" placeholder="Фильтровать по имени">
+                    <div class="input-group-append">
+                        <button asp-page-handler="Search" class="btn btn-secondary" type="submit">Применить</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="col-4 text-end">
+            <a asp-page="Create" class="btn btn-primary  col-10">
+                Создать новый &ensp; <i class="bi bi-plus-circle"></i>
+            </a>
+        </div>
+    </div>
+    <hr/>
+    <div class="overflow-auto" style="height: 60vh">
+        <table class="table table-bordered shadow">
+            <thead class="thead-dark text-center align-middle">
+            <tr>
+                <th style="width: 15%;">
+                    <a asp-route-sortOrder="@Model.GetSortOrder("Name")" class="btn btn-link">Название</a>
+                </th>
+                <th style="width: 25%;">
+                    <a asp-route-sortOrder="@Model.GetSortOrder("Description")" class="btn btn-link">Описание</a>
+                </th>
+                <th style="width: 10%;">
+                    <a asp-route-sortOrder="@Model.GetSortOrder("WholesalePrice")" class="btn btn-link">Оптовая<br/>Цена @CurrencySettings.Symbol</a>
+                </th>
+                <th style="width: 10%;">
+                    <a asp-route-sortOrder="@Model.GetSortOrder("RetailPrice")" class="btn btn-link">Розничная<br/>Цена @CurrencySettings.Symbol</a>
+                </th>
+                <th style="width: 10%;">
+                    <a asp-route-sortOrder="@Model.GetSortOrder("Quantity")" class="btn btn-link">Общее<br/>Количество</a>
+                </th>
+            </tr>
+            </thead>
+            <tbody>
+            <form method="post">
+                @foreach (var product in Model.Products)
+                {
+                    <tr>
+                        <td>@product.Name</td>
+                        <td>@product.Description</td>
+                        <td>@product.WholesalePrice</td>
+                        <td>@product.RetailPrice</td>
+                        <td>@product.Quantity</td>
+                        <td>
+                            <button asp-page-handler="Edit" asp-route-id="@product.Id" class="btn btn-primary col-12">
+                                Изменить &nbsp <i class="bi bi-pencil-square"></i>&nbsp
+                            </button>
+                        </td>
+                        <td>
+                            <button asp-page-handler="Delete" asp-route-id="@product.Id" class="btn btn-danger col-12" type="submit">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                }
+            </form>
+            </tbody>
+        </table>
+    </div>
+
+</div>

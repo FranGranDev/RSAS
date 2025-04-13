@@ -1,0 +1,40 @@
+﻿@using Application.Services;
+@using Application.Extensions;
+@using Application.ViewModel.Orders;
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@model IEnumerable<OrderViewModel>
+
+
+<table class="table table-bordered shadow">
+    <thead class="thead-dark text-center align-middle align-content-center">
+        <tr>
+            <th style="width: 8%;"><button class="sort-btn btn btn-link" data-sort="type">Состояние</button></th>
+            <th style="width: 8%;"><button class="sort-btn btn btn-link" data-sort="state">Тип заказа</button></th>
+            <th style="width: 10%;"><button class="sort-btn btn btn-link" data-sort="date">Дата заказа</button></th>
+            <th style="width: 12%;"><button class="sort-btn btn btn-link" data-sort="date">Заказчик</button></th>
+            <th style="width: 10%;"><button class="sort-btn btn btn-link" data-sort="price">Цена</button></th>
+            <th style="max-width: 30%;"><button class="sort-btn btn btn-link" data-sort="quantity">Описание</button></th>
+            <th style="width: 18%;"></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var order in Model)
+        {
+            <tr>
+                <td style="background-color: @(order.StateBgColor); color: @(order.TextColor)">@order.State.GetDisplayName()</td>
+                <td>@order.Type.GetDisplayName()</td>
+                <td>@order.OrderDate</td>
+                <td>@order.ClientName</td>
+                <td>@order.Amount.ToString(".00") @CurrencySettings.Symbol</td>
+                <td>@order.Description</td>
+                <td>
+                    <div class="text-center">
+                        <a asp-page="OrderInfo" asp-route-orderId="@order.Id" class="details btn btn-outline-primary col-12">
+                            Подробнее &ensp;<i class="bi bi-info-circle"></i>
+                        </a>
+                    </div>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

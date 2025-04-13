@@ -69,7 +69,7 @@ namespace Application.Controllers
         /// <response code="403">Недостаточно прав для создания товара</response>
         [HttpPost]
         [Authorize(Policy = "RequireManagerRole")]
-        public async Task<ActionResult<ProductDto>> CreateProduct(CreateProductDto createProductDto)
+        public async Task<ActionResult<ProductDto>> CreateProduct(ProductDto createProductDto)
         {
             if (!ModelState.IsValid)
             {
@@ -98,7 +98,7 @@ namespace Application.Controllers
         /// <response code="404">Товар не найден</response>
         [HttpPut("{id}")]
         [Authorize(Policy = "RequireManagerRole")]
-        public async Task<ActionResult<ProductDto>> UpdateProduct(int id, UpdateProductDto updateProductDto)
+        public async Task<ActionResult<ProductDto>> UpdateProduct(int id, ProductDto updateProductDto)
         {
             if (!ModelState.IsValid)
             {

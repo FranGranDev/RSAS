@@ -9,6 +9,9 @@ namespace Frontend.Services.Auth;
 
 public class AuthService : IAuthService
 {
+    private UserDto _currentUser;
+    private bool _isInitialized;
+    
     private readonly IApiService _apiService;
     private readonly IClaimsService _claimsService;
     private readonly IHttpContextAccessor _httpContextAccessor;
@@ -73,5 +76,40 @@ public class AuthService : IAuthService
             CookieAuthenticationDefaults.AuthenticationScheme,
             principal,
             authProperties);
+    }
+
+    public async Task<bool> IsAuthenticatedAsync()
+    {
+        if (!_isInitialized)
+        {
+            await InitializeAsync();
+        }
+        return _currentUser != null;
+    }
+
+    public async Task<bool> IsInRoleAsync(string role)
+    {
+        if (!_isInitialized)
+        {
+            await InitializeAsync();
+        }
+        return _currentUser?.Roles.Contains(role) ?? false;
+    }
+
+    private async Task InitializeAsync()
+    {
+        var token = await _httpContextAccessor.HttpContext?.GetTokenAsync("Token");
+        if (!string.IsNullOrEmpty(token))
+        {
+            try
+            {
+                _currentUser = await GetCurrentUserAsync();
+                _isInitialized = true;
+            }
+            catch
+            {
+                _currentUser = null;
+            }
+        }
     }
 } 

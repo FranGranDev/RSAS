@@ -1,0 +1,33 @@
+@page
+@model Frontend.Pages.Manager.Products.CreateModel
+@{
+    ViewData["Title"] = "Создание товара";
+}
+
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>@ViewData["Title"]</h1>
+    </div>
+
+    <form method="post">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <partial name="Shared/Products/_ProductEditablePartial" model="Model.Product" />
+            </div>
+            <div class="card-footer">
+                <div class="d-flex justify-content-between">
+                    <a asp-page="./Index" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left"></i> Назад
+                    </a>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i> Сохранить
+                    </button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+} 

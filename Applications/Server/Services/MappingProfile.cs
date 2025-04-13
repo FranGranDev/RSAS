@@ -11,8 +11,7 @@ namespace Application.Services
         {
             // Products
             CreateMap<Product, ProductDto>();
-            CreateMap<CreateProductDto, Product>();
-            CreateMap<UpdateProductDto, Product>();
+            CreateMap<ProductDto, Product>();
 
             // Orders
             CreateMap<Order, OrderDto>();

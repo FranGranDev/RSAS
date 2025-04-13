@@ -126,5 +126,66 @@ namespace Application.Controllers
                 Roles = roles.ToList()
             });
         }
+
+        [HttpPost("change-password")]
+        [Authorize]
+        public async Task<ActionResult<AuthResponseDto>> ChangePassword(ChangePasswordDto changePasswordDto)
+        {
+            if (!ModelState.IsValid)
+            {
+                var errors = ModelState.Values
+                    .SelectMany(v => v.Errors)
+                    .Select(e => e.ErrorMessage)
+                    .FirstOrDefault();
+
+                return BadRequest(new AuthResponseDto
+                {
+                    Success = false,
+                    Message = errors
+                });
+            }
+
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var user = await _userManager.FindByIdAsync(userId);
+            
+            if (user == null)
+            {
+                return NotFound(new AuthResponseDto
+                {
+                    Success = false,
+                    Message = "Пользователь не найден"
+                });
+            }
+
+            // Проверяем текущий пароль
+            var result = await _signInManager.CheckPasswordSignInAsync(user, changePasswordDto.CurrentPassword, false);
+            if (!result.Succeeded)
+            {
+                return BadRequest(new AuthResponseDto
+                {
+                    Success = false,
+                    Message = "Неверный текущий пароль"
+                });
+            }
+
+            // Меняем пароль
+            var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+            var changeResult = await _userManager.ResetPasswordAsync(user, token, changePasswordDto.NewPassword);
+
+            if (!changeResult.Succeeded)
+            {
+                return BadRequest(new AuthResponseDto
+                {
+                    Success = false,
+                    Message = string.Join(", ", changeResult.Errors.Select(e => e.Description))
+                });
+            }
+
+            return Ok(new AuthResponseDto
+            {
+                Success = true,
+                Message = "Пароль успешно изменен"
+            });
+        }
     }
 }

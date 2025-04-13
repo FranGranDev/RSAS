@@ -1,0 +1,62 @@
+﻿@page
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@model RegisterClientModel
+@{
+    ViewData["Title"] = "Регистриция пользователя";
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-6 mt-4 mx-auto text-center">
+            <div class="card">
+                <div class="card-body border-0 shadow">
+                    <form id="registerForm" asp-route-returnUrl="@Model.ReturnUrl" method="post">
+                        <h2 class="text-center">Создать новый аккаунт пользователя</h2>
+                        <hr />
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                        <div class="form-floating">
+                            <input asp-for="Client.FirstName" class="form-control" aria-required="true" />
+                            <label asp-for="Client.FirstName"></label>
+                            <span asp-validation-for="Client.FirstName" class="text-danger"></span>
+                        </div>
+                        <div class="form-floating mt-2">
+                            <input asp-for="Client.LastName" class="form-control" aria-required="true" />
+                            <label asp-for="Client.LastName"></label>
+                            <span asp-validation-for="Client.LastName" class="text-danger"></span>
+                        </div>
+                        <div class="form-floating mt-2">
+                            <input asp-for="Client.Email" class="form-control" aria-required="true" />
+                            <label asp-for="Client.Email"></label>
+                            <span asp-validation-for="Client.Email" class="text-danger"></span>
+                        </div>
+                        <div class="form-floating mt-2">
+                            <input asp-for="Client.Phone" class="form-control" aria-required="true" />
+                            <label asp-for="Client.Phone"></label>
+                            <span asp-validation-for="Client.Phone" class="text-danger"></span>
+                        </div>
+                        <div class="form-floating mt-2">
+                            <input asp-for="Password.Password" class="form-control" aria-required="true" />
+                            <label asp-for="Password.Password"></label>
+                            <span asp-validation-for="Password.Password" class="text-danger"></span>
+                        </div>
+                        <div class="form-floating mt-2">
+                            <input asp-for="Password.ConfirmPassword" class="form-control" aria-required="true" />
+                            <label asp-for="Password.ConfirmPassword"></label>
+                            <span asp-validation-for="Password.ConfirmPassword" class="text-danger"></span>
+                        </div>
+                        <hr />
+                        <div class="mt-2">
+                            <button id="registerSubmit" type="submit" class="w-100 btn btn-lg btn-primary">Зарегестрироваться</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

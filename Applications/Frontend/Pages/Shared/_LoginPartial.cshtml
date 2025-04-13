@@ -2,14 +2,14 @@
 @using Application.DTOs
 @using Microsoft.AspNetCore.Mvc.TagHelpers
 
-@inject IAuthStateService AuthStateService
+@inject IAuthService AuthService
 
 <ul class="navbar-nav">
 @{
-    var isAuthenticated = await AuthStateService.IsAuthenticatedAsync();
+    var isAuthenticated = await AuthService.IsAuthenticatedAsync();
     if (isAuthenticated)
     {
-        var user = await AuthStateService.GetCurrentUserAsync();
+        var user = await AuthService.GetCurrentUserAsync();
         <li class="nav-item">
             <a id="manage" class="nav-link d-flex align-items-center" asp-page="/Account/Profile" title="Manage">
                 <i class="bi bi-person me-1"></i>

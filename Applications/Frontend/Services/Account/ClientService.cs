@@ -31,4 +31,9 @@ public class ClientService : IClientService
     {
         return await _apiService.PutAsync<ClientDto, UpdateClientDto>("/api/clients/update-self", updateClientDto);
     }
+
+    public async Task<AuthResponseDto> ChangePasswordAsync(ChangePasswordDto dto)
+    {
+        return await _apiService.PostAsync<AuthResponseDto, ChangePasswordDto>("api/auth/change-password", dto);
+    }
 } 

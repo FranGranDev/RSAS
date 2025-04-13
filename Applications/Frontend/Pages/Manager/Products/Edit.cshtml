@@ -1,0 +1,40 @@
+@page
+@model Frontend.Pages.Manager.Products.EditModel
+@{
+    ViewData["Title"] = "Редактирование товара";
+}
+
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>@ViewData["Title"]</h1>
+    </div>
+
+    <form method="post">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <partial name="Shared/Products/_ProductEditablePartial" model="Model.Product" />
+            </div>
+            <div class="card-footer">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <a asp-page="./Index" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left"></i> Назад
+                        </a>
+                    </div>
+                    <div>
+                        <button type="submit" asp-page-handler="Delete" asp-route-id="@Model.Product.Id" class="btn btn-danger" onclick="return confirm('Вы уверены, что хотите удалить этот товар?');">
+                            <i class="fas fa-trash"></i> Удалить
+                        </button>
+                        <button type="submit" class="btn btn-primary ms-2">
+                            <i class="fas fa-save"></i> Сохранить
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+} 

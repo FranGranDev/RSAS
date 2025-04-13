@@ -8,20 +8,72 @@
     border-radius: 15px;
 }
 
-    .btn-circle.btn-lg {
-        width: 50px;
-        height: 50px;
-        padding: 10px 16px;
-        font-size: 18px;
-        line-height: 1.33;
-        border-radius: 25px;
-    }
+.btn-circle.btn-lg {
+    width: 50px;
+    height: 50px;
+    padding: 10px 16px;
+    font-size: 18px;
+    line-height: 1.33;
+    border-radius: 25px;
+}
 
-    .btn-circle.btn-xl {
-        width: 70px;
-        height: 70px;
-        padding: 10px 16px;
-        font-size: 24px;
-        line-height: 1.33;
-        border-radius: 35px;
-    }
+.btn-circle.btn-xl {
+    width: 70px;
+    height: 70px;
+    padding: 10px 16px;
+    font-size: 24px;
+    line-height: 1.33;
+    border-radius: 35px;
+}
+
+:root {
+    /* Основные цвета темы Quartz */
+    --bs-primary: #fd7e14;
+    --bs-secondary: #6c757d;
+    --bs-success: #198754;
+    --bs-info: #0dcaf0;
+    --bs-warning: #ffc107;
+    --bs-danger: #fd7e14;
+    --bs-light: #f8f9fa;
+    --bs-dark: #212529;
+
+    /* Цвета для форм */
+    --bs-form-invalid-color: #fd7e14;
+    --bs-form-invalid-border-color: #fd7e14;
+    --bs-form-valid-color: #198754;
+    --bs-form-valid-border-color: #198754;
+
+    /* Цвета для кнопок */
+    --bs-btn-hover-bg: #e66a00;
+    --bs-btn-hover-border-color: #e66a00;
+    --bs-btn-active-bg: #cc5f00;
+    --bs-btn-active-border-color: #cc5f00;
+
+    /* Цвета для навигации */
+    --bs-navbar-active-color: #fd7e14;
+    --bs-navbar-hover-color: #e66a00;
+}
+
+/* Стили для ошибок валидации */
+.form-control.is-invalid {
+    border-color: var(--bs-form-invalid-border-color) !important;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12' width='12' height='12' fill='none' stroke='%23fd7e14'%3e%3ccircle cx='6' cy='6' r='4.5'/%3e%3cpath stroke-linejoin='round' d='M5.8 3.6h.4L6 6.5z'/%3e%3ccircle cx='6' cy='8.2' r='.6' fill='%23fd7e14' stroke='none'/%3e%3c/svg%3e") !important;
+    background-repeat: no-repeat !important;
+    background-position: right calc(0.375em + 0.1875rem) center !important;
+    background-size: calc(0.75em + 0.375rem) calc(0.75em + 0.375rem) !important;
+    padding-right: calc(1.5em + 0.75rem) !important;
+}
+
+.form-control.is-invalid:focus {
+    border-color: var(--bs-form-invalid-border-color) !important;
+    box-shadow: 0 0 0 0.25rem rgba(253, 126, 20, 0.25) !important;
+}
+
+.invalid-feedback {
+    display: block !important;
+    width: 100% !important;
+    margin-top: 0.25rem !important;
+    font-size: 0.875em !important;
+    color: var(--bs-form-invalid-color) !important;
+    font-weight: 600 !important;
+}

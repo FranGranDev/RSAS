@@ -1,0 +1,54 @@
+﻿@page
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@model Application.Areas.Admin.Pages.Stores.AddStockModel
+@{
+}
+
+@{
+    ViewData["Title"] = "Добавить склад";
+}
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-sm-12 col-md-6">
+            <div class="card border-0 shadow">
+                <div class="card-body m-2">
+                    <h2>@ViewData["Title"]</h2>
+                    <form method="post">
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                        <div class="form-check mt-2">
+                            <label asp-for="@Model.Stock.Name"></label>
+                            <input asp-for="@Model.Stock.Name" type="text" class="form-control"/>
+                        </div>
+                        <div class="form-check mt-2">
+                            <label asp-for="@Model.Stock.Location"></label>
+                            <input asp-for="@Model.Stock.Location" type="text" class="form-control"/>
+                        </div>
+                        <div class="form-check mt-2">
+                            <div class="form-group">
+                                <label asp-for="@Model.Stock.SaleType"></label>
+                                <select asp-for="@Model.Stock.SaleType" class="form-control" asp-items="@Model.Stock.GetEnumList()"></select>
+                            </div>
+                        </div>
+                        <hr/>
+                        <div class="container">
+                            <div class="float-start">
+                                <button type="submit" class="btn btn-primary">Добавить</button>
+                            </div>
+                            <div class="float-end">
+                                <a asp-page="Index" class="btn btn-secondary">Назад</a>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+@section scripts{
+
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+}

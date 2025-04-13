@@ -1,6 +1,17 @@
-﻿<div>
-    <ul class="navbar-nav flex-grow-1">        
+﻿@using Frontend.Services.Auth
+@inject IAuthService AuthService
 
+<div>
+    <ul class="navbar-nav flex-grow-1">
+        @if (await AuthService.IsInRoleAsync("Manager"))
+        {
+            <li class="nav-item">
+                <a class="nav-link d-flex align-items-center" asp-page="/Manager/Products/Index">
+                    <i class="bi bi-box me-1"></i>
+                    <span>Управление товарами</span>
+                </a>
+            </li>
+        }
     </ul>
 </div>
 

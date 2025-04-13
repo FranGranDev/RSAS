@@ -494,3 +494,76 @@ Frontend/
 ### Документация [Документация]
 - `ASSISTANT_CONTEXT.md` - общий контекст проекта
 - `TECHNICAL_CONTEXT.md` - технический контекст проекта
+
+## Последние технические изменения [13.04.2024]
+
+### Frontend Components [UI]
+```html
+<!-- _ProductPartial.cshtml -->
+<div class="card h-100 shadow-sm" style="max-height: 300px; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;" 
+     data-bs-toggle="modal" data-bs-target="#productPreviewModal-@Model.Product.Id"
+     onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='0 0.5rem 1rem rgba(0,0,0,0.15)'"
+     onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 0.125rem 0.25rem rgba(0,0,0,0.075)'">
+    <!-- ... -->
+</div>
+```
+
+### JavaScript Components [UI]
+```javascript
+// product-filter.js
+document.addEventListener('DOMContentLoaded', function() {
+    const productsGrid = document.getElementById('productsGrid');
+    const searchInput = document.getElementById('searchInput');
+    const categoryFilter = document.getElementById('categoryFilter');
+    const priceSort = document.getElementById('priceSort');
+    const itemsPerPageSelect = document.getElementById('itemsPerPage');
+    const pagination = document.getElementById('pagination');
+    
+    let itemsPerPage = parseInt(itemsPerPageSelect.value);
+    let currentPage = 1;
+    let filteredProducts = Array.from(document.querySelectorAll('.product-card'));
+    
+    // Функции фильтрации и пагинации
+    function filterProducts() { /* ... */ }
+    function showCurrentPage() { /* ... */ }
+    function updatePagination() { /* ... */ }
+});
+```
+
+### Общие DTOs [API][БД]
+```csharp
+// ProductDto (общий для Frontend и Backend)
+public class ProductDto
+{
+    public int Id { get; set; }
+    public string Name { get; set; }
+    public string Category { get; set; }
+    public string Description { get; set; }
+    public string Barcode { get; set; }
+    public decimal Price { get; set; }
+}
+
+// ProductCardViewModel (только для Frontend)
+public class ProductCardViewModel
+{
+    public ProductDto Product { get; set; }
+    public string EditAction { get; set; }
+}
+```
+
+### Важные замечания [Критично]
+1. **Общие DTOs**:
+   - Все DTOs определены в проекте `Application`
+   - Используются как в Backend, так и в Frontend
+   - Обеспечивают единообразие данных
+   - Должны быть синхронизированы между проектами
+
+2. **Frontend ViewModels**:
+   - Создаются только для специфичных нужд UI
+   - Не должны дублировать DTOs
+   - Должны содержать только UI-специфичные свойства
+
+3. **JavaScript компоненты**:
+   - Используют чистый JavaScript без jQuery
+   - Реализуют клиентскую фильтрацию и пагинацию
+   - Поддерживают динамическое обновление интерфейса

@@ -14,7 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Pages\Account\" />
+    <Folder Include="Models\Products\" />
     <Folder Include="Services\" />
   </ItemGroup>
 

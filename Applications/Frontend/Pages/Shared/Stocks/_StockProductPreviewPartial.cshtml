@@ -1,0 +1,159 @@
+@model Frontend.Models.Stocks.StockProductCardViewModel
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-12">
+            <h4 class="text-muted">@Model.Product.Category</h4>
+            <hr/>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <h5>Описание</h5>
+            <p class="fs-6">@Model.Product.Description</p>
+        </div>
+    </div>
+    <div class="row mt-4">
+        <div class="col-md-12">
+            <h5>Детали товара</h5>
+            <div class="d-flex justify-content-between align-items-center mt-2">
+                <div class="d-flex align-items-center">
+                    <span class="me-2">Штрих-код:</span>
+                    <span class="badge bg-primary rounded-pill fs-6">@Model.Product.Barcode</span>
+                </div>
+                <div class="d-flex align-items-center">
+                    <span class="me-2">Цена:</span>
+                    <span class="badge bg-success rounded-pill fs-6">@Model.Product.Price.ToString("C")</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row mt-4">
+        <div class="col-md-12">
+            <h5>Количество на складе</h5>
+            @if (Model.StockProduct != null)
+            {
+                <div class="d-flex align-items-center mt-2">
+                    <div class="input-group" style="max-width: 200px;">
+                        <button class="btn btn-outline-secondary" type="button" onclick="decreaseQuantity(@Model.Product.Id)">
+                            <i class="bi bi-dash"></i>
+                        </button>
+                        <input type="number" class="form-control text-center" id="quantity-@Model.Product.Id" 
+                               value="@Model.StockProduct.Quantity" min="0" step="1">
+                        <button class="btn btn-outline-secondary" type="button" onclick="increaseQuantity(@Model.Product.Id)">
+                            <i class="bi bi-plus"></i>
+                        </button>
+                    </div>
+                    <button class="btn btn-success ms-2" onclick="updateQuantity(@Model.Product.Id)">
+                        <i class="bi bi-check-lg"></i> Сохранить
+                    </button>
+                    <button class="btn btn-danger ms-2" onclick="removeProduct(@Model.Product.Id)">
+                        <i class="bi bi-trash"></i> Удалить
+                    </button>
+                </div>
+            }
+            else
+            {
+                <div class="d-flex align-items-center mt-2">
+                    <div class="input-group" style="max-width: 200px;">
+                        <input type="number" class="form-control" id="quantity-@Model.Product.Id" 
+                               value="0" min="0" step="1">
+                    </div>
+                    <button class="btn btn-success ms-2" onclick="addProduct(@Model.Product.Id)">
+                        <i class="bi bi-plus-lg"></i> Добавить
+                    </button>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<script>
+    function updateQuantity(productId) {
+        const quantity = document.getElementById(`quantity-${productId}`).value;
+        if (quantity < 0) {
+            toastr.error('Количество не может быть отрицательным');
+            return;
+        }
+        
+        showLoading();
+        $.ajax({
+            url: '@Model.UpdateAction',
+            type: 'PUT',
+            data: { quantity: quantity },
+            success: function(response) {
+                hideLoading();
+                toastr.success('Количество обновлено');
+                setTimeout(() => location.reload(), 1000);
+            },
+            error: function(xhr) {
+                hideLoading();
+                toastr.error(xhr.responseText || 'Ошибка при обновлении количества');
+            }
+        });
+    }
+
+    function addProduct(productId) {
+        const quantity = document.getElementById(`quantity-${productId}`).value;
+        if (quantity <= 0) {
+            toastr.error('Количество должно быть больше 0');
+            return;
+        }
+        
+        showLoading();
+        $.ajax({
+            url: '@Model.AddAction',
+            type: 'POST',
+            data: { quantity: quantity },
+            success: function(response) {
+                hideLoading();
+                toastr.success('Товар добавлен на склад');
+                setTimeout(() => location.reload(), 1000);
+            },
+            error: function(xhr) {
+                hideLoading();
+                toastr.error(xhr.responseText || 'Ошибка при добавлении товара');
+            }
+        });
+    }
+
+    function removeProduct(productId) {
+        if (!confirm('Вы уверены, что хотите удалить товар со склада?')) {
+            return;
+        }
+        
+        showLoading();
+        $.ajax({
+            url: '@Model.RemoveAction',
+            type: 'DELETE',
+            success: function(response) {
+                hideLoading();
+                toastr.success('Товар удален со склада');
+                setTimeout(() => location.reload(), 1000);
+            },
+            error: function(xhr) {
+                hideLoading();
+                toastr.error(xhr.responseText || 'Ошибка при удалении товара');
+            }
+        });
+    }
+
+    function increaseQuantity(productId) {
+        const input = document.getElementById(`quantity-${productId}`);
+        input.value = parseInt(input.value) + 1;
+    }
+
+    function decreaseQuantity(productId) {
+        const input = document.getElementById(`quantity-${productId}`);
+        const newValue = parseInt(input.value) - 1;
+        input.value = newValue >= 0 ? newValue : 0;
+    }
+
+    function showLoading() {
+        // Добавить индикатор загрузки
+    }
+
+    function hideLoading() {
+        // Скрыть индикатор загрузки
+    }
+</script> 

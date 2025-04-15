@@ -1,6 +1,7 @@
 @model Frontend.Models.Stocks.StockProductCardViewModel
 
 <div class="container-fluid">
+    @Html.AntiForgeryToken()
     <div class="row">
         <div class="col-md-12">
             <h4 class="text-muted">@Model.Product.Category</h4>
@@ -68,51 +69,62 @@
     </div>
 </div>
 
+@section Scripts {
+    <script src="~/js/notifications.js"></script>
+} 
+
 <script>
     function updateQuantity(productId) {
         const quantity = document.getElementById(`quantity-${productId}`).value;
         if (quantity < 0) {
-            toastr.error('Количество не может быть отрицательным');
+            notification.showError('Количество не может быть отрицательным');
             return;
         }
         
         showLoading();
         $.ajax({
-            url: '@Model.UpdateAction',
-            type: 'PUT',
-            data: { quantity: quantity },
+            url: `/Manager/Stocks/View/${@Model.StockId}?handler=UpdateQuantity&productId=${productId}&quantity=${quantity}`,
+            type: 'POST',
+            headers: {
+                'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
+            },
             success: function(response) {
                 hideLoading();
-                toastr.success('Количество обновлено');
-                setTimeout(() => location.reload(), 1000);
+                notification.showSuccess('Количество обновлено');
+                $(`#productPreviewModal-${productId}`).modal('hide');
+                $(`#product-card-${productId}`).replaceWith(response);
             },
             error: function(xhr) {
                 hideLoading();
-                toastr.error(xhr.responseText || 'Ошибка при обновлении количества');
+                notification.showError(xhr.responseText || 'Ошибка при обновлении количества');
             }
         });
     }
 
     function addProduct(productId) {
         const quantity = document.getElementById(`quantity-${productId}`).value;
+        
         if (quantity <= 0) {
-            toastr.error('Количество должно быть больше 0');
+            notification.showError('Количество должно быть больше 0');
             return;
         }
         
         showLoading();
         $.ajax({
-            url: '@Model.AddAction',
+            url: `/Manager/Stocks/View/${@Model.StockId}?handler=AddProduct&productId=${productId}&quantity=${quantity}`,
             type: 'POST',
-            data: { quantity: quantity },
+            headers: {
+                'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
+            },
             success: function(response) {
                 hideLoading();
-                toastr.success('Товар добавлен на склад');
-                setTimeout(() => location.reload(), 1000);
+                notification.showSuccess('Товар добавлен на склад');
+                $(`#productPreviewModal-${productId}`).modal('hide');
+                $(`#product-card-${productId}`).replaceWith(response);
             },
             error: function(xhr) {
                 hideLoading();
-                toastr.error(xhr.responseText || 'Ошибка при добавлении товара');
+                notification.showError(xhr.responseText || 'Ошибка при добавлении товара');
             }
         });
     }
@@ -124,16 +136,20 @@
         
         showLoading();
         $.ajax({
-            url: '@Model.RemoveAction',
-            type: 'DELETE',
+            url: `/Manager/Stocks/View/${@Model.StockId}?handler=RemoveProduct&productId=${productId}`,
+            type: 'POST',
+            headers: {
+                'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
+            },
             success: function(response) {
                 hideLoading();
-                toastr.success('Товар удален со склада');
-                setTimeout(() => location.reload(), 1000);
+                notification.showSuccess('Товар удален со склада');
+                $(`#productPreviewModal-${productId}`).modal('hide');
+                $(`#product-card-${productId}`).replaceWith(response);
             },
             error: function(xhr) {
                 hideLoading();
-                toastr.error(xhr.responseText || 'Ошибка при удалении товара');
+                notification.showError(xhr.responseText || 'Ошибка при удалении товара');
             }
         });
     }

@@ -30,7 +30,7 @@
                 <partial name="Shared/Stocks/_StockPartial" model="@(new Frontend.Models.Stocks.StockCardViewModel 
                                 { 
                                     Stock = stock,
-                                    ClickAction = Url.Page("/Manager/Stocks/Manage", new { id = stock.Id })
+                                    ClickAction = Url.Page("/Manager/Stocks/View", new { id = stock.Id })
                                 })" />
             </div>
         }

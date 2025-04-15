@@ -24,8 +24,11 @@
                     </span>
                 }
             </div>
-            <div class="d-flex align-items-center">
+            <div class="d-flex justify-content-between align-items-center">
                 <span class="badge bg-success">@Model.Product.Price.ToString("C")</span>
+                <a href="/Manager/Products/Edit?id=@Model.Product.Id&returnUrl=/Manager/Stocks/View/@Model.StockId" class="btn btn-outline-primary rounded-circle" style="width: 30px; height: 30px; padding: 0; display: flex; align-items: center; justify-content: center; font-size: 0.8rem;" onclick="event.stopPropagation();">
+                    <i class="bi bi-pencil"></i>
+                </a>
             </div>
         </div>
     </div>

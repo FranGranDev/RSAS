@@ -17,9 +17,18 @@
             <div class="card-footer">
                 <div class="d-flex justify-content-between">
                     <div>
-                        <a asp-page="./Index" class="btn btn-secondary">
-                            <i class="fas fa-arrow-left"></i> Назад
-                        </a>
+                        @if (!string.IsNullOrEmpty(Request.Query["returnUrl"]))
+                        {
+                            <a href="@Request.Query["returnUrl"]" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left"></i> Назад
+                            </a>
+                        }
+                        else
+                        {
+                            <a asp-page="./Index" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left"></i> Назад
+                            </a>
+                        }
                     </div>
                     <div>
                         <button type="submit" asp-page-handler="Delete" asp-route-id="@Model.Product.Id" class="btn btn-danger" onclick="return confirm('Вы уверены, что хотите удалить этот товар?');">

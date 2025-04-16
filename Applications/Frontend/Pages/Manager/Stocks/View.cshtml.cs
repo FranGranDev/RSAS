@@ -36,6 +36,63 @@ public class ViewModel : PageModel
         }
     }
 
+    public async Task<IActionResult> OnGetLoadStockInfoAsync(int id)
+    {
+        try
+        {
+            var stock = await _apiService.GetAsync<StockDto>($"api/stocks/{id}");
+            return Partial("Shared/Stocks/_StockInfoPartial", stock);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Ошибка при загрузке информации о складе {Id}", id);
+            return BadRequest();
+        }
+    }
+
+    public async Task<IActionResult> OnGetLoadEditableStockInfoAsync(int id)
+    {
+        try
+        {
+            var stock = await _apiService.GetAsync<StockDto>($"api/stocks/{id}");
+            return Partial("Shared/Stocks/_StockInfoEditablePartial", stock);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Ошибка при загрузке формы редактирования склада {Id}", id);
+            return BadRequest();
+        }
+    }
+
+    public async Task<IActionResult> OnPostUpdateStockInfoAsync(int id, [FromForm] UpdateStockDto updateStockDto)
+    {
+        try
+        {
+            var stock = await _apiService.PutAsync<StockDto, UpdateStockDto>($"api/stocks/{id}", updateStockDto);
+            return Partial("Shared/Stocks/_StockInfoPartial", stock);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Ошибка при обновлении информации о складе {Id}", id);
+            return BadRequest();
+        }
+    }
+
+    public async Task<IActionResult> OnPostDeleteStockAsync(int id)
+    {
+        try
+        {
+            await _apiService.DeleteAsync($"api/stocks/{id}");
+            TempData["success"] = "Склад успешно удален";
+            return new JsonResult(new { success = true });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Ошибка при удалении склада {Id}", id);
+            return BadRequest();
+        }
+    }
+
     public async Task<IActionResult> OnPostAddProductAsync(int productId, int quantity)
     {
         try

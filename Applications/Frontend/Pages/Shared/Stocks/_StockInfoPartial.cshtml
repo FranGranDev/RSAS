@@ -1,0 +1,55 @@
+@model Application.DTOs.StockDto
+
+<div class="card">
+    <div class="card-body">
+        <h2 class="card-title">@Model.Name</h2>
+        <div class="row">
+            <div class="col-md-6">
+                <p class="mb-1"><strong>Адрес:</strong> @Model.Address</p>
+                <p class="mb-1"><strong>Город:</strong> @Model.City</p>
+            </div>
+            <div class="col-md-6">
+                <p class="mb-1"><strong>Телефон:</strong> @Model.Phone</p>
+                <p class="mb-1"><strong>Email:</strong> @Model.Email</p>
+            </div>
+        </div>
+        <div class="position-absolute bottom-0 end-0 m-3">
+            <button class="btn btn-primary ms-2" onclick="loadEditableStockInfo(@Model.Id)">
+                <i class="bi bi-pencil"></i>
+            </button>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/notifications.js"></script>
+}
+
+<script>
+    function loadEditableStockInfo(stockId) {
+        showLoading();
+        $.ajax({
+            url: `/Manager/Stocks/View/${stockId}?handler=LoadEditableStockInfo`,
+            type: 'GET',
+            headers: {
+                'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
+            },
+            success: function(data) {
+                hideLoading();
+                $('#stockInfoContainer').html(data);
+            },
+            error: function(xhr) {
+                hideLoading();
+                notification.showError(xhr.responseText || 'Ошибка при загрузке формы редактирования');
+            }
+        });
+    }
+
+    function showLoading() {
+        // Добавить индикатор загрузки
+    }
+
+    function hideLoading() {
+        // Скрыть индикатор загрузки
+    }
+</script> 

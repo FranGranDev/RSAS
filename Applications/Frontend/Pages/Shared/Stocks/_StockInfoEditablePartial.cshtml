@@ -1,0 +1,127 @@
+@model Application.DTOs.StockDto
+
+<div class="card">
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="mb-3">
+                    <label for="name" class="form-label">Название</label>
+                    <input type="text" class="form-control" id="name" value="@Model.Name">
+                </div>
+                <div class="mb-3">
+                    <label for="address" class="form-label">Адрес</label>
+                    <input type="text" class="form-control" id="address" value="@Model.Address">
+                </div>
+                <div class="mb-3">
+                    <label for="city" class="form-label">Город</label>
+                    <input type="text" class="form-control" id="city" value="@Model.City">
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="mb-3">
+                    <label for="phone" class="form-label">Телефон</label>
+                    <input type="tel" class="form-control" id="phone" value="@Model.Phone">
+                </div>
+                <div class="mb-3">
+                    <label for="email" class="form-label">Email</label>
+                    <input type="email" class="form-control" id="email" value="@Model.Email">
+                </div>
+            </div>
+        </div>
+        <div class="position-absolute bottom-0 end-0 m-3">
+            <button class="btn btn-success ms-2" onclick="saveStockInfo(@Model.Id)">
+                <i class="bi bi-check-lg"></i>
+            </button>
+            <button class="btn btn-secondary ms-2" onclick="cancelEdit(@Model.Id)">
+                <i class="bi bi-x-lg"></i>
+            </button>
+            <button class="btn btn-danger ms-2" onclick="deleteStock(@Model.Id)">
+                <i class="bi bi-trash"></i>
+            </button>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/notifications.js"></script>
+}
+
+<script>
+    function saveStockInfo(stockId) {
+        const stockData = {
+            name: $('#name').val(),
+            address: $('#address').val(),
+            city: $('#city').val(),
+            phone: $('#phone').val(),
+            email: $('#email').val()
+        };
+
+        showLoading();
+        $.ajax({
+            url: `/Manager/Stocks/View/${stockId}?handler=UpdateStockInfo`,
+            type: 'POST',
+            data: stockData,
+            headers: {
+                'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
+            },
+            success: function(data) {
+                hideLoading();
+                $('#stockInfoContainer').html(data);
+                notification.showSuccess('Информация о складе успешно обновлена');
+            },
+            error: function(xhr) {
+                hideLoading();
+                notification.showError(xhr.responseText || 'Ошибка при обновлении информации о складе');
+            }
+        });
+    }
+
+    function deleteStock(stockId) {
+        if (confirm('Вы уверены, что хотите удалить этот склад?')) {
+            showLoading();
+            $.ajax({
+                url: `/Manager/Stocks/View/${stockId}?handler=DeleteStock`,
+                type: 'POST',
+                headers: {
+                    'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
+                },
+                success: function() {
+                    hideLoading();
+                    notification.showSuccess('Склад успешно удален');
+                    window.location.href = '/Manager/Stocks';
+                },
+                error: function(xhr) {
+                    hideLoading();
+                    notification.showError(xhr.responseText || 'Ошибка при удалении склада');
+                }
+            });
+        }
+    }
+
+    function cancelEdit(stockId) {
+        showLoading();
+        $.ajax({
+            url: `/Manager/Stocks/View/${stockId}?handler=LoadStockInfo`,
+            type: 'GET',
+            headers: {
+                'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
+            },
+            success: function(data) {
+                hideLoading();
+                $('#stockInfoContainer').html(data);
+            },
+            error: function(xhr) {
+                hideLoading();
+                notification.showError(xhr.responseText || 'Ошибка при загрузке информации о складе');
+            }
+        });
+    }
+
+    function showLoading() {
+        // Добавить индикатор загрузки
+    }
+
+    function hideLoading() {
+        // Скрыть индикатор загрузки
+    }
+</script>

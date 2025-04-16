@@ -7,20 +7,8 @@
 <div class="container-fluid">
     <div class="row mb-4">
         <div class="col-md-12">
-            <div class="card">
-                <div class="card-body">
-                    <h2 class="card-title">@Model.StockViewModel.Stock.Name</h2>
-                    <div class="row">
-                        <div class="col-md-6">
-                            <p class="mb-1"><strong>Адрес:</strong> @Model.StockViewModel.Stock.Address</p>
-                            <p class="mb-1"><strong>Город:</strong> @Model.StockViewModel.Stock.City</p>
-                        </div>
-                        <div class="col-md-6">
-                            <p class="mb-1"><strong>Телефон:</strong> @Model.StockViewModel.Stock.Phone</p>
-                            <p class="mb-1"><strong>Email:</strong> @Model.StockViewModel.Stock.Email</p>
-                        </div>
-                    </div>
-                </div>
+            <div id="stockInfoContainer">
+                <partial name="Shared/Stocks/_StockInfoPartial" model="Model.StockViewModel.Stock" />
             </div>
         </div>
     </div>

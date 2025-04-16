@@ -27,7 +27,7 @@ namespace Application.Controllers
         /// <returns>Список товаров</returns>
         /// <response code="403">Недостаточно прав для просмотра всех товаров</response>
         [HttpGet]
-        [Authorize(Policy = "RequireManagerRole")]
+        [Authorize]
         public async Task<ActionResult<IEnumerable<ProductDto>>> GetProducts()
         {
             var products = await _productService.GetAllProductsAsync();

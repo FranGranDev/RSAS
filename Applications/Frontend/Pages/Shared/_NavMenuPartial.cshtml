@@ -3,6 +3,15 @@
 
 <div>
     <ul class="navbar-nav flex-grow-1">
+        @if (await AuthService.IsInRoleAsync("Client"))
+        {
+            <li class="nav-item">
+                <a class="nav-link d-flex align-items-center" asp-page="/Client/Catalog/Index">
+                    <i class="bi bi-shop me-1"></i>
+                    <span>Каталог</span>
+                </a>
+            </li>
+        }
         @if (await AuthService.IsInRoleAsync("Manager"))
         {
             <li class="nav-item">

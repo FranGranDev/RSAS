@@ -1,0 +1,41 @@
+@model Frontend.Models.Catalog.CatalogProductViewModel
+
+<div class="modal fade" id="productPreviewModal-@Model.Id" tabindex="-1" aria-labelledby="productPreviewModalLabel-@Model.Id" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title" id="productPreviewModalLabel-@Model.Id">@Model.Name</h2>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <p><strong>Категория:</strong> @Model.Category</p>
+                        <p><strong>Штрих-код:</strong> @Model.Barcode</p>
+                        <p><strong>Цена:</strong> @Model.Price.ToString("C")</p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>Описание:</strong></p>
+                        <p>@Model.Description</p>
+                    </div>
+                </div>
+                <div class="mt-4 d-flex justify-content-end align-items-center">
+                    <div class="d-flex align-items-center">
+                        <button class="btn btn-outline-primary btn-sm" onclick="event.stopPropagation(); decreaseQuantity(@Model.Id)">
+                            <i class="bi bi-dash"></i>
+                        </button>
+                        <input type="number" class="form-control form-control-sm mx-2" 
+                               style="width: 50px;" 
+                               id="quantity-@Model.Id" 
+                               value="@Model.Quantity" 
+                               min="0"
+                               onchange="event.stopPropagation(); updateQuantity(@Model.Id, this.value)">
+                        <button class="btn btn-outline-primary btn-sm" onclick="event.stopPropagation(); increaseQuantity(@Model.Id)">
+                            <i class="bi bi-plus"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div> 

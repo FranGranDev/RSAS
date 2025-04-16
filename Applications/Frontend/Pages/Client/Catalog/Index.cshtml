@@ -1,0 +1,64 @@
+@page
+@model Frontend.Pages.Client.Catalog.IndexModel
+@{
+    ViewData["Title"] = "Каталог товаров";
+}
+
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>@ViewData["Title"]</h1>
+        <partial name="Shared/Catalog/_CartPartial" model="Model.Catalog.Cart" />
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="input-group">
+                <input type="text" class="form-control" id="searchInput" placeholder="Поиск по названию...">
+                <button class="btn btn-outline-secondary" type="button" id="searchButton">
+                    <i class="bi bi-search"></i>
+                </button>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <select class="form-select" id="categoryFilter">
+                <option value="">Все категории</option>
+                @foreach (var category in Model.Catalog.Categories)
+                {
+                    <option value="@category">@category</option>
+                }
+            </select>
+        </div>
+        <div class="col-md-3">
+            <select class="form-select" id="priceSort">
+                <option value="">Сортировка по цене</option>
+                <option value="asc">По возрастанию</option>
+                <option value="desc">По убыванию</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="row" id="productsGrid">
+        @foreach (var product in Model.Catalog.Products)
+        {
+            <div class="col-md-4 col-lg-3 mb-4 product-card"
+                 data-name="@product.Name"
+                 data-category="@product.Category"
+                 data-price="@product.Price">
+                <partial name="Shared/Catalog/_CatalogProductPartial" model="product" />
+            </div>
+        }
+    </div>
+
+    <div class="d-flex justify-content-center mt-4">
+        <nav aria-label="Page navigation">
+            <ul class="pagination" id="pagination">
+                <!-- Пагинация будет добавлена через JavaScript -->
+            </ul>
+        </nav>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/product-filter.js"></script>
+    <script src="~/js/cart.js"></script>
+} 

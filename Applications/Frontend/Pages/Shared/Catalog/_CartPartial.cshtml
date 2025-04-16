@@ -1,0 +1,19 @@
+@model Frontend.Models.Catalog.CartViewModel
+
+<div class="d-flex align-items-center">
+    <div class="me-3">
+        <i class="bi bi-cart3 fs-4"></i>
+        <span class="badge bg-primary">@Model.TotalQuantity</span>
+    </div>
+    <div class="me-3">
+        <span class="fw-bold">@Model.TotalPrice.ToString("C")</span>
+    </div>
+    <div class="btn-group">
+        <button class="btn btn-outline-danger btn-sm" onclick="clearCart()">
+            <i class="bi bi-trash"></i>
+        </button>
+        <a href="/Client/Order/Create" class="btn btn-primary btn-sm @(Model.TotalQuantity == 0 ? "disabled" : "")">
+            Оформить заказ
+        </a>
+    </div>
+</div> 

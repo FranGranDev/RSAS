@@ -1,6 +1,7 @@
 using System.Net;
 using System.Net.Http.Json;
 using Application.DTOs;
+using Application.Models;
 using FluentAssertions;
 using Xunit.Abstractions;
 
@@ -46,7 +47,7 @@ public class ProductsControllerTests(ITestOutputHelper output) : TestBase(output
         // Arrange
         await LoginAsManager();
 
-        var createProductDto = new CreateProductDto
+        var createProductDto = new ProductDto
         {
             Name = $"Test Product {DateTime.Now.Ticks}",
             Price = 100.00m,
@@ -78,7 +79,7 @@ public class ProductsControllerTests(ITestOutputHelper output) : TestBase(output
         // Arrange
         await LoginAsManager();
 
-        var createProductDto = new CreateProductDto
+        var createProductDto = new ProductDto
         {
             Name = "", // Невалидное имя
             Price = -1, // Невалидная цена
@@ -103,7 +104,7 @@ public class ProductsControllerTests(ITestOutputHelper output) : TestBase(output
         // Arrange
         await LoginAsManager();
 
-        var createProductDto = new CreateProductDto
+        var createProductDto = new ProductDto
         {
             Name = $"Test Product {DateTime.Now.Ticks}",
             Price = 100.00m,
@@ -132,7 +133,7 @@ public class ProductsControllerTests(ITestOutputHelper output) : TestBase(output
         // Arrange
         await LoginAsManager();
 
-        var createProductDto = new CreateProductDto
+        var createProductDto = new ProductDto
         {
             Name = $"Test Product {DateTime.Now.Ticks}",
             Price = 100.00m,
@@ -184,7 +185,7 @@ public class ProductsControllerTests(ITestOutputHelper output) : TestBase(output
         // Arrange
         await LoginAsManager();
 
-        var createProductDto = new CreateProductDto
+        var createProductDto = new ProductDto()
         {
             Name = $"Test Product {DateTime.Now.Ticks}",
             Price = 100.00m,
@@ -196,7 +197,7 @@ public class ProductsControllerTests(ITestOutputHelper output) : TestBase(output
         var createResponse = await Client.PostAsJsonAsync("/api/products", createProductDto);
         var createdProduct = await createResponse.Content.ReadFromJsonAsync<ProductDto>();
 
-        var updateProductDto = new UpdateProductDto
+        var updateProductDto = new ProductDto
         {
             Name = $"Updated Product {DateTime.Now.Ticks}",
             Price = 200.00m,
@@ -229,7 +230,7 @@ public class ProductsControllerTests(ITestOutputHelper output) : TestBase(output
         // Arrange
         await LoginAsManager();
 
-        var createProductDto = new CreateProductDto
+        var createProductDto = new ProductDto
         {
             Name = $"Test Product {DateTime.Now.Ticks}",
             Price = 100.00m,
@@ -261,7 +262,7 @@ public class ProductsControllerTests(ITestOutputHelper output) : TestBase(output
         // Arrange
         await LoginAsManager();
 
-        var createProductDto = new CreateProductDto
+        var createProductDto = new ProductDto
         {
             Name = $"Test Product {DateTime.Now.Ticks}",
             Price = 100.00m,
@@ -297,7 +298,7 @@ public class ProductsControllerTests(ITestOutputHelper output) : TestBase(output
         // Arrange
         await LoginAsManager();
 
-        var createProductDto = new CreateProductDto
+        var createProductDto = new ProductDto
         {
             Name = $"Test Product {DateTime.Now.Ticks}",
             Price = 100.00m,
@@ -335,7 +336,7 @@ public class ProductsControllerTests(ITestOutputHelper output) : TestBase(output
 
         var category = $"Test Category {DateTime.Now.Ticks}";
 
-        var createProductDto1 = new CreateProductDto
+        var createProductDto1 = new ProductDto
         {
             Name = $"Test Product 1 {DateTime.Now.Ticks}",
             Price = 100.00m,
@@ -344,7 +345,7 @@ public class ProductsControllerTests(ITestOutputHelper output) : TestBase(output
             Category = category
         };
 
-        var createProductDto2 = new CreateProductDto
+        var createProductDto2 = new ProductDto
         {
             Name = $"Test Product 2 {DateTime.Now.Ticks}",
             Price = 200.00m,
@@ -376,7 +377,7 @@ public class ProductsControllerTests(ITestOutputHelper output) : TestBase(output
         // Arrange
         await LoginAsManager();
 
-        var createProductDto1 = new CreateProductDto
+        var createProductDto1 = new ProductDto
         {
             Name = $"Test Product 1 {DateTime.Now.Ticks}",
             Price = 100.00m,
@@ -385,7 +386,7 @@ public class ProductsControllerTests(ITestOutputHelper output) : TestBase(output
             Category = "Test Category"
         };
 
-        var createProductDto2 = new CreateProductDto
+        var createProductDto2 = new ProductDto
         {
             Name = $"Test Product 2 {DateTime.Now.Ticks}",
             Price = 200.00m,

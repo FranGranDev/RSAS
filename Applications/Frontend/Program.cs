@@ -1,5 +1,6 @@
 using Application.Data;
 using Frontend.Models;
+using Frontend.Services;
 using Frontend.Services.Account;
 using Frontend.Services.Api;
 using Frontend.Services.Auth;
@@ -27,6 +28,8 @@ builder.Services.AddScoped<IApiService, ApiService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IClaimsService, ClaimsService>();
 builder.Services.AddScoped<IClientService, ClientService>();
+builder.Services.AddMemoryCache();
+builder.Services.AddScoped<ICartService, CartService>();
 
 // Configure authentication
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)

@@ -1,0 +1,57 @@
+@model Frontend.Models.Orders.DeliveryViewModel
+
+<div class="card mb-4">
+    <div class="card-header">
+        <h3 class="card-title">Доставка</h3>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group mb-3">
+                    <label asp-for="City" class="form-label"></label>
+                    <input asp-for="City" class="form-control" disabled="@(!Model.Editable)" />
+                    <span asp-validation-for="City" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group mb-3">
+                    <label asp-for="Street" class="form-label"></label>
+                    <input asp-for="Street" class="form-control" disabled="@(!Model.Editable)" />
+                    <span asp-validation-for="Street" class="text-danger"></span>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-4">
+                <div class="form-group mb-3">
+                    <label asp-for="House" class="form-label"></label>
+                    <input asp-for="House" class="form-control" disabled="@(!Model.Editable)" />
+                    <span asp-validation-for="House" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group mb-3">
+                    <label asp-for="Flat" class="form-label"></label>
+                    <input asp-for="Flat" class="form-control" disabled="@(!Model.Editable)" />
+                    <span asp-validation-for="Flat" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group mb-3">
+                    <label asp-for="PostalCode" class="form-label"></label>
+                    <input asp-for="PostalCode" class="form-control" disabled="@(!Model.Editable)" />
+                    <span asp-validation-for="PostalCode" class="text-danger"></span>
+                </div>
+            </div>
+        </div>
+        <div class="form-group mb-3">
+                <label asp-for="DeliveryDate" class="control-label"></label>
+                <input asp-for="DeliveryDate" class="form-control" />
+                <span asp-validation-for="DeliveryDate" class="text-danger"></span>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/delivery-date.js"></script>
+} 

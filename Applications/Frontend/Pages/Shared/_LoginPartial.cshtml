@@ -1,8 +1,10 @@
 ﻿@using Frontend.Services.Auth
 @using Application.DTOs
 @using Microsoft.AspNetCore.Mvc.TagHelpers
+@using Frontend.Services
 
 @inject IAuthService AuthService
+@inject ICartService CartService
 
 <ul class="navbar-nav">
 @{
@@ -10,6 +12,18 @@
     if (isAuthenticated)
     {
         var user = await AuthService.GetCurrentUserAsync();
+        var isClient = await AuthService.IsInRoleAsync("Client");
+        
+        @if (isClient)
+        {
+            <li class="nav-item me-2">
+                @{
+                    var cart = CartService.GetOrCreateCart(user.Id);
+                }
+                <partial name="Shared/Catalog/_CartMiniPartial" model="cart" />
+            </li>
+        }
+        
         <li class="nav-item">
             <a id="manage" class="nav-link d-flex align-items-center" asp-page="/Account/Profile" title="Manage">
                 <i class="bi bi-person me-1"></i>

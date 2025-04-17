@@ -1,0 +1,34 @@
+@using Frontend.Models
+@model Frontend.Models.Catalog.CartViewModel
+
+<div class="table-responsive">
+    <table class="table table-hover table-bordered table-secondary rounded-3 overflow-hidden">
+        <thead>
+            <tr>
+                <th class="text-center fs-5">Товар</th>
+                <th class="text-center fs-5">Цена</th>
+                <th class="text-center fs-5">Количество</th>
+                <th class="text-center fs-5">Сумма</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.Items)
+            {
+                <tr>
+                    <td class="text-start">@item.Name</td>
+                    <td class="text-start">@item.Price.ToString(CurrencySettings.Format) @CurrencySettings.Symbol</td>
+                    <td class="text-start">@item.Quantity</td>
+                    <td class="text-start">@((item.Price * item.Quantity).ToString(CurrencySettings.Format)) @CurrencySettings.Symbol</td>
+                </tr>
+            }
+        </tbody>
+        <tfoot>
+            <tr class="table-success">
+                <td class="text-start"><strong>Итого:</strong></td>
+                <td></td>
+                <td class="text-start"><strong>@Model.Items.Sum(x => x.Quantity)</strong></td>
+                <td class="text-start"><strong>@Model.TotalPrice.ToString(CurrencySettings.Format) @CurrencySettings.Symbol</strong></td>
+            </tr>
+        </tfoot>
+    </table>
+</div> 

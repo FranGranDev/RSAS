@@ -18,6 +18,15 @@ function updateQuantity(productId, quantity) {
             
             // Обновляем состояние кнопки "Оформить заказ"
             $('#create-order-btn').toggleClass('disabled', result.totalQuantity === 0);
+
+            // Генерируем событие обновления корзины
+            const event = new CustomEvent('cartUpdated', {
+                detail: {
+                    totalQuantity: result.totalQuantity,
+                    totalPrice: result.totalPrice
+                }
+            });
+            document.dispatchEvent(event);
         },
         error: function (error) {
             console.error('Ошибка при обновлении корзины:', error);
@@ -59,6 +68,15 @@ function clearCart() {
             
             // Обновляем состояние кнопки "Оформить заказ"
             $('#create-order-btn').toggleClass('disabled', result.totalQuantity === 0);
+
+            // Генерируем событие обновления корзины
+            const event = new CustomEvent('cartUpdated', {
+                detail: {
+                    totalQuantity: result.totalQuantity,
+                    totalPrice: result.totalPrice
+                }
+            });
+            document.dispatchEvent(event);
         },
         error: function (error) {
             console.error('Ошибка при очистке корзины:', error);

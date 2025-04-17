@@ -1,0 +1,15 @@
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@model Frontend.Models.Catalog.CartViewModel
+
+<div class="position-relative">
+    <a href="@(Model.TotalQuantity > 0 ? "/Client/Order/Create" : "#")" 
+       class="nav-link d-flex align-items-center @(Model.TotalQuantity == 0 ? "disabled" : "")">
+        <i class="bi bi-cart3"></i>
+        @if (Model.TotalQuantity > 0)
+        {
+            <span id="cart-mini-total-quantity" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-primary">
+                @Model.TotalQuantity
+            </span>
+        }
+    </a>
+</div> 

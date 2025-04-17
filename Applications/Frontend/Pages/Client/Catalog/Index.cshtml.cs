@@ -29,7 +29,10 @@ public class IndexModel : PageModel
         // Получаем список товаров из API
         var products = await _apiService.GetAsync<List<ProductDto>>("api/products");
         
-        // Преобразуем DTO в ViewModel
+        // Получаем корзину пользователя
+        var cart = GetOrCreateCart();
+        
+        // Преобразуем DTO в ViewModel и устанавливаем количество из корзины
         var productViewModels = products.Select(p => new CatalogProductViewModel
         {
             Id = p.Id,
@@ -38,7 +41,7 @@ public class IndexModel : PageModel
             Description = p.Description,
             Barcode = p.Barcode,
             Price = p.Price,
-            Quantity = 0 // Начальное количество в корзине
+            Quantity = cart.Items.FirstOrDefault(x => x.ProductId == p.Id)?.Quantity ?? 0
         }).ToList();
 
         // Получаем уникальные категории
@@ -51,7 +54,7 @@ public class IndexModel : PageModel
         {
             Products = productViewModels,
             Categories = categories,
-            Cart = GetOrCreateCart()
+            Cart = cart
         };
     }
 

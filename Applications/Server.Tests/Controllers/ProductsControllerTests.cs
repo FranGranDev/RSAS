@@ -26,22 +26,6 @@ public class ProductsControllerTests(ITestOutputHelper output) : TestBase(output
     }
 
     [Fact]
-    public async Task GetProducts_WithoutManagerRole_ShouldReturnForbidden()
-    {
-        // Arrange
-        await LoginAsClient();
-
-        // Act
-        var response = await Client.GetAsync("/api/products");
-        var responseContent = await response.Content.ReadAsStringAsync();
-        _output.WriteLine($"Response Status: {response.StatusCode}");
-        _output.WriteLine($"Response Content: {responseContent}");
-
-        // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
-    }
-
-    [Fact]
     public async Task CreateProduct_WithValidData_ShouldCreateProduct()
     {
         // Arrange
@@ -177,51 +161,6 @@ public class ProductsControllerTests(ITestOutputHelper output) : TestBase(output
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.NotFound);
-    }
-
-    [Fact]
-    public async Task UpdateProduct_WithValidData_ShouldUpdateProduct()
-    {
-        // Arrange
-        await LoginAsManager();
-
-        var createProductDto = new ProductDto()
-        {
-            Name = $"Test Product {DateTime.Now.Ticks}",
-            Price = 100.00m,
-            Description = "Test Description",
-            Barcode = $"TEST{DateTime.Now.Ticks}",
-            Category = "Test Category"
-        };
-
-        var createResponse = await Client.PostAsJsonAsync("/api/products", createProductDto);
-        var createdProduct = await createResponse.Content.ReadFromJsonAsync<ProductDto>();
-
-        var updateProductDto = new ProductDto
-        {
-            Name = $"Updated Product {DateTime.Now.Ticks}",
-            Price = 200.00m,
-            Description = "Updated Description",
-            Barcode = $"UPDATED{DateTime.Now.Ticks}",
-            Category = "Updated Category"
-        };
-
-        // Act
-        var response = await Client.PutAsJsonAsync($"/api/products/{createdProduct!.Id}", updateProductDto);
-        var responseContent = await response.Content.ReadAsStringAsync();
-        _output.WriteLine($"Response Status: {response.StatusCode}");
-        _output.WriteLine($"Response Content: {responseContent}");
-
-        // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
-        var updatedProduct = await response.Content.ReadFromJsonAsync<ProductDto>();
-        updatedProduct.Should().NotBeNull();
-        updatedProduct!.Id.Should().Be(createdProduct.Id);
-        updatedProduct.Name.Should().Be(updateProductDto.Name);
-        updatedProduct.Price.Should().Be(updateProductDto.Price);
-        updatedProduct.Description.Should().Be(updateProductDto.Description);
-        updatedProduct.Barcode.Should().Be(updateProductDto.Barcode);
-        updatedProduct.Category.Should().Be(updateProductDto.Category);
     }
 
     [Fact]

@@ -1,5 +1,7 @@
 @model Frontend.Models.Catalog.CatalogProductViewModel
+@using Frontend.Models
 
+<!-- Модальное окно предпросмотра -->
 <div class="modal fade" id="productPreviewModal-@Model.Id" tabindex="-1" aria-labelledby="productPreviewModalLabel-@Model.Id" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
@@ -8,34 +10,54 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <div class="row">
-                    <div class="col-md-6">
-                        <p><strong>Категория:</strong> @Model.Category</p>
-                        <p><strong>Штрих-код:</strong> @Model.Barcode</p>
-                        <p><strong>Цена:</strong> @Model.Price.ToString("C")</p>
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <h4 class="text-muted">@Model.Category</h4>
+                            <hr/>
+                        </div>
                     </div>
-                    <div class="col-md-6">
-                        <p><strong>Описание:</strong></p>
-                        <p>@Model.Description</p>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <h5>Описание</h5>
+                            <p class="fs-6">@Model.Description</p>
+                        </div>
                     </div>
-                </div>
-                <div class="mt-4 d-flex justify-content-end align-items-center">
-                    <div class="d-flex align-items-center">
-                        <button class="btn btn-outline-primary btn-sm" onclick="event.stopPropagation(); decreaseQuantity(@Model.Id)">
-                            <i class="bi bi-dash"></i>
-                        </button>
-                        <input type="number" class="form-control form-control-sm mx-2" 
-                               style="width: 50px;" 
-                               id="quantity-@Model.Id" 
-                               value="@Model.Quantity" 
-                               min="0"
-                               onchange="event.stopPropagation(); updateQuantity(@Model.Id, this.value)">
-                        <button class="btn btn-outline-primary btn-sm" onclick="event.stopPropagation(); increaseQuantity(@Model.Id)">
-                            <i class="bi bi-plus"></i>
-                        </button>
+                    <div class="row mt-4">
+                        <div class="col-md-12">
+                            <h5>Детали товара</h5>
+                            <div class="d-flex justify-content-between align-items-center mt-2">
+                                <div class="d-flex align-items-center">
+                                    <span class="me-2">Штрих-код:</span>
+                                    <span class="badge bg-primary rounded-pill fs-6">@Model.Barcode</span>
+                                </div>
+                                <div class="d-flex align-items-center">
+                                    <span class="me-2">Цена:</span>
+                                    <span class="badge bg-success rounded-pill fs-6">@Model.Price.ToString("N2") @CurrencySettings.Symbol</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mt-4">
+                        <div class="col-md-6 align-content-center">
+                            <div class="input-group" style="width: 100%;">
+                                <button class="btn btn-outline-secondary btn-sm" type="button" onclick="event.stopPropagation(); event.preventDefault(); decreaseQuantity(@Model.Id); return false;">
+                                    <i class="bi bi-dash"></i>
+                                </button>
+                                <input type="number" class="form-control form-control-sm text-center"
+                                       id="quantity-preview-@Model.Id"
+                                       value="@Model.Quantity"
+                                       min="0"
+                                       onclick="event.stopPropagation(); event.preventDefault();"
+                                       onchange="event.stopPropagation(); event.preventDefault(); updateQuantity(@Model.Id, this.value); return false;">
+                                <button class="btn btn-outline-secondary btn-sm" type="button" onclick="event.stopPropagation(); event.preventDefault(); increaseQuantity(@Model.Id); return false;">
+                                    <i class="bi bi-plus"></i>
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-</div> 
+</div>

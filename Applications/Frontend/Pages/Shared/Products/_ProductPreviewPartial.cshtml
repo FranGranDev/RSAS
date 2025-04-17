@@ -1,41 +1,54 @@
 @model Frontend.Models.Products.ProductCardViewModel
 
-<div class="container-fluid">
-    <div class="row">
-        <div class="col-md-12">
-            <h4 class="text-muted">@Model.Product.Category</h4>
-            <hr/>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-md-12">
-            <h5>Описание</h5>
-            <p class="fs-6">@Model.Product.Description</p>
-        </div>
-    </div>
-    <div class="row mt-4">
-        <div class="col-md-12">
-            <h5>Детали товара</h5>
-            <div class="d-flex justify-content-between align-items-center mt-2">
-                <div class="d-flex align-items-center">
-                    <span class="me-2">Штрих-код:</span>
-                    <span class="badge bg-primary rounded-pill fs-6">@Model.Product.Barcode</span>
-                </div>
-                <div class="d-flex align-items-center">
-                    <span class="me-2">Цена:</span>
-                    <span class="badge bg-success rounded-pill fs-6">@Model.Product.Price.ToString("C")</span>
-                </div>
+<!-- Модальное окно предпросмотра -->
+<div class="modal fade" id="productPreviewModal-@Model.Product.Id" tabindex="-1" aria-labelledby="productPreviewModalLabel-@Model.Product.Id" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title" id="productPreviewModalLabel-@Model.Product.Id">@Model.Product.Name</h2>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <h4 class="text-muted">@Model.Product.Category</h4>
+                            <hr/>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <h5>Описание</h5>
+                            <p class="fs-6">@Model.Product.Description</p>
+                        </div>
+                    </div>
+                    <div class="row mt-4">
+                        <div class="col-md-12">
+                            <h5>Детали товара</h5>
+                            <div class="d-flex justify-content-between align-items-center mt-2">
+                                <div class="d-flex align-items-center">
+                                    <span class="me-2">Штрих-код:</span>
+                                    <span class="badge bg-primary rounded-pill fs-6">@Model.Product.Barcode</span>
+                                </div>
+                                <div class="d-flex align-items-center">
+                                    <span class="me-2">Цена:</span>
+                                    <span class="badge bg-success rounded-pill fs-6">@Model.Product.Price.ToString("C")</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    @if (!string.IsNullOrEmpty(Model.EditAction))
+                    {
+                        <div class="row mt-4">
+                            <div class="col-md-12">
+                                <a href="@Model.EditAction" class="btn btn-primary">
+                                    <i class="fas fa-edit"></i> Редактировать товар
+                                </a>
+                            </div>
+                        </div>
+                    }
+                </div> 
             </div>
         </div>
     </div>
-    @if (!string.IsNullOrEmpty(Model.EditAction))
-    {
-        <div class="row mt-4">
-            <div class="col-md-12">
-                <a href="@Model.EditAction" class="btn btn-primary">
-                    <i class="fas fa-edit"></i> Редактировать товар
-                </a>
-            </div>
-        </div>
-    }
 </div> 

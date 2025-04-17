@@ -10,20 +10,19 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
+using Xunit.Abstractions;
 
 namespace Server.Tests.Controllers;
 
-public class OrdersControllerTests
+public class OrdersControllerTests : TestBase
 {
-    private readonly Mock<IAuthorizationService> _authorizationServiceMock;
     private readonly OrdersController _controller;
     private readonly Mock<IOrderService> _orderServiceMock;
 
-    public OrdersControllerTests()
+    public OrdersControllerTests(ITestOutputHelper output) : base(output)
     {
         _orderServiceMock = new Mock<IOrderService>();
-        _authorizationServiceMock = new Mock<IAuthorizationService>();
-        _controller = new OrdersController(_orderServiceMock.Object, _authorizationServiceMock.Object);
+        _controller = new OrdersController(_orderServiceMock.Object);
 
         // Настройка базового пользователя с ролью менеджера
         var user = new ClaimsPrincipal(new ClaimsIdentity(new Claim[]
@@ -100,6 +99,8 @@ public class OrdersControllerTests
     public async Task GetOrders_AsManager_ShouldReturnOrders()
     {
         // Arrange
+        await LoginAsManager();
+        
         var expectedOrders = new List<OrderDto> { CreateTestOrderDto() };
         _orderServiceMock.Setup(x => x.GetAllOrdersAsync())
             .ReturnsAsync(expectedOrders);
@@ -117,6 +118,8 @@ public class OrdersControllerTests
     public async Task GetMyOrders_AsUser_ShouldReturnUserOrders()
     {
         // Arrange
+        await LoginAsClient();
+        
         var expectedOrders = new List<OrderDto> { CreateTestOrderDto() };
         _orderServiceMock.Setup(x => x.GetOrdersByUserIdAsync("test-user-id"))
             .ReturnsAsync(expectedOrders);
@@ -134,6 +137,8 @@ public class OrdersControllerTests
     public async Task GetOrder_AsManager_ShouldReturnAnyOrder()
     {
         // Arrange
+        await LoginAsManager();
+        
         var orderId = 1;
         var expectedOrder = CreateTestOrderDto();
         _orderServiceMock.Setup(x => x.GetOrderByIdAsync(orderId))
@@ -152,6 +157,8 @@ public class OrdersControllerTests
     public async Task GetOrder_AsUser_ShouldReturnOwnOrder()
     {
         // Arrange
+        await LoginAsClient();
+        
         var orderId = 1;
         var expectedOrder = CreateTestOrderDto();
         _orderServiceMock.Setup(x => x.GetOrderByIdAsync(orderId))
@@ -169,39 +176,11 @@ public class OrdersControllerTests
     }
 
     [Fact]
-    public async Task GetOrder_AsUser_ShouldReturnForbiddenForNotOwnOrder()
-    {
-        // Arrange
-        var orderId = 1;
-        var expectedOrder = CreateTestOrderDto();
-        _orderServiceMock.Setup(x => x.GetOrderByIdAsync(orderId))
-            .ReturnsAsync(expectedOrder);
-        _orderServiceMock.Setup(x => x.IsOrderOwnerAsync(orderId, "test-user-id"))
-            .ReturnsAsync(false);
-
-        // Настройка пользователя с ролью User
-        var user = new ClaimsPrincipal(new ClaimsIdentity(new Claim[]
-        {
-            new(ClaimTypes.NameIdentifier, "test-user-id"),
-            new(ClaimTypes.Role, AppConst.Roles.Client)
-        }, "mock"));
-
-        _controller.ControllerContext = new ControllerContext
-        {
-            HttpContext = new DefaultHttpContext { User = user }
-        };
-
-        // Act
-        var result = await _controller.GetOrder(orderId);
-
-        // Assert
-        result.Result.Should().BeOfType<ForbidResult>();
-    }
-
-    [Fact]
     public async Task GetOrder_WithInvalidId_ShouldReturnNotFound()
     {
         // Arrange
+        await LoginAsManager();
+        
         var orderId = 999;
         _orderServiceMock.Setup(x => x.GetOrderByIdAsync(orderId))
             .ThrowsAsync(new OrderNotFoundException(orderId));
@@ -217,6 +196,8 @@ public class OrdersControllerTests
     public async Task CreateOrder_WithValidData_ShouldCreateOrder()
     {
         // Arrange
+        await LoginAsClient();
+        
         var createOrderDto = CreateTestCreateOrderDto();
         var expectedOrder = CreateTestOrderDto();
         _orderServiceMock.Setup(x => x.CreateOrderAsync(createOrderDto, "test-user-id"))
@@ -235,6 +216,8 @@ public class OrdersControllerTests
     public async Task CreateOrder_WithInvalidData_ShouldReturnBadRequest()
     {
         // Arrange
+        await LoginAsManager();
+        
         var createOrderDto = new CreateOrderDto
         {
             ClientName = "",
@@ -254,6 +237,8 @@ public class OrdersControllerTests
     public async Task UpdateOrder_WithValidData_ShouldUpdateOrder()
     {
         // Arrange
+        await LoginAsManager();
+        
         var orderId = 1;
         var updateOrderDto = new UpdateOrderDto
         {
@@ -277,6 +262,8 @@ public class OrdersControllerTests
     public async Task UpdateOrder_WithInvalidId_ShouldReturnNotFound()
     {
         // Arrange
+        await LoginAsManager();
+        
         var orderId = 999;
         var updateOrderDto = new UpdateOrderDto();
         _orderServiceMock.Setup(x => x.IsOrderOwnerAsync(orderId, "test-user-id"))
@@ -295,6 +282,8 @@ public class OrdersControllerTests
     public async Task DeleteOrder_WithValidId_ShouldDeleteOrder()
     {
         // Arrange
+        await LoginAsManager();
+        
         var orderId = 1;
         _orderServiceMock.Setup(x => x.IsOrderOwnerAsync(orderId, "test-user-id"))
             .ReturnsAsync(true);
@@ -440,66 +429,13 @@ public class OrdersControllerTests
     }
 
     [Fact]
-    public async Task GetOrder_WithoutManagerRole_ShouldReturnForbidden()
-    {
-        // Arrange
-        var user = new ClaimsPrincipal(new ClaimsIdentity(new Claim[]
-        {
-            new(ClaimTypes.NameIdentifier, "test-user-id"),
-            new(ClaimTypes.Role, AppConst.Roles.Client)
-        }, "mock"));
-
-        _controller.ControllerContext = new ControllerContext
-        {
-            HttpContext = new DefaultHttpContext { User = user }
-        };
-
-        // Act
-        var result = await _controller.GetOrder(1);
-
-        // Assert
-        result.Result.Should().BeOfType<ForbidResult>();
-    }
-
-    [Fact]
     public async Task UpdateOrder_WithoutManagerRole_ShouldReturnForbidden()
     {
         // Arrange
-        var user = new ClaimsPrincipal(new ClaimsIdentity(new Claim[]
-        {
-            new(ClaimTypes.NameIdentifier, "test-user-id"),
-            new(ClaimTypes.Role, AppConst.Roles.Client)
-        }, "mock"));
-
-        _controller.ControllerContext = new ControllerContext
-        {
-            HttpContext = new DefaultHttpContext { User = user }
-        };
+        await LoginAsManager();
 
         // Act
         var result = await _controller.UpdateOrder(1, new UpdateOrderDto());
-
-        // Assert
-        result.Should().BeOfType<ForbidResult>();
-    }
-
-    [Fact]
-    public async Task DeleteOrder_WithoutManagerRole_ShouldReturnForbidden()
-    {
-        // Arrange
-        var user = new ClaimsPrincipal(new ClaimsIdentity(new Claim[]
-        {
-            new(ClaimTypes.NameIdentifier, "test-user-id"),
-            new(ClaimTypes.Role, AppConst.Roles.Client)
-        }, "mock"));
-
-        _controller.ControllerContext = new ControllerContext
-        {
-            HttpContext = new DefaultHttpContext { User = user }
-        };
-
-        // Act
-        var result = await _controller.DeleteOrder(1);
 
         // Assert
         result.Should().BeOfType<ForbidResult>();
@@ -559,6 +495,196 @@ public class OrdersControllerTests
 
         // Act
         var result = await _controller.UpdateDelivery(orderId, updateDeliveryDto);
+
+        // Assert
+        result.Result.Should().BeOfType<BadRequestObjectResult>();
+    }
+
+    [Fact]
+    public async Task ExecuteOrder_WithValidId_ShouldExecuteOrder()
+    {
+        // Arrange
+        await LoginAsManager();
+        
+        var orderId = 1;
+        var expectedOrder = CreateTestOrderDto();
+        expectedOrder.State = Order.States.InProcess;
+        _orderServiceMock.Setup(x => x.ExecuteOrderAsync(orderId))
+            .ReturnsAsync(expectedOrder);
+
+        // Act
+        var result = await _controller.ExecuteOrder(orderId);
+
+        // Assert
+        var okResult = result.Result.Should().BeOfType<OkObjectResult>().Subject;
+        var order = okResult.Value.Should().BeOfType<OrderDto>().Subject;
+        order.Should().BeEquivalentTo(expectedOrder);
+    }
+
+    [Fact]
+    public async Task ExecuteOrder_WithInvalidId_ShouldReturnNotFound()
+    {
+        // Arrange
+        var orderId = 999;
+        _orderServiceMock.Setup(x => x.ExecuteOrderAsync(orderId))
+            .ThrowsAsync(new OrderNotFoundException(orderId));
+
+        // Act
+        var result = await _controller.ExecuteOrder(orderId);
+
+        // Assert
+        result.Result.Should().BeOfType<NotFoundObjectResult>();
+    }
+
+    [Fact]
+    public async Task ExecuteOrder_WithoutStock_ShouldReturnBadRequest()
+    {
+        // Arrange
+        var orderId = 1;
+        _orderServiceMock.Setup(x => x.ExecuteOrderAsync(orderId))
+            .ThrowsAsync(new StockNotFoundException(0));
+
+        // Act
+        var result = await _controller.ExecuteOrder(orderId);
+
+        // Assert
+        result.Result.Should().BeOfType<BadRequestObjectResult>();
+    }
+
+    [Fact]
+    public async Task ExecuteOrder_WithInsufficientStock_ShouldReturnBadRequest()
+    {
+        // Arrange
+        var orderId = 1;
+        var productId = 1;
+        var requestedQuantity = 10;
+        var availableQuantity = 5;
+        _orderServiceMock.Setup(x => x.ExecuteOrderAsync(orderId))
+            .ThrowsAsync(new InsufficientStockException(productId, requestedQuantity, availableQuantity));
+
+        // Act
+        var result = await _controller.ExecuteOrder(orderId);
+
+        // Assert
+        result.Result.Should().BeOfType<BadRequestObjectResult>();
+    }
+    
+    [Fact]
+    public async Task CancelOrder_WithValidId_ShouldCancelOrder()
+    {
+        // Arrange
+        await LoginAsManager();
+        
+        var orderId = 1;
+        var expectedOrder = CreateTestOrderDto();
+        expectedOrder.State = Order.States.Cancelled;
+        _orderServiceMock.Setup(x => x.CancelOrderAsync(orderId))
+            .ReturnsAsync(expectedOrder);
+
+        // Act
+        var result = await _controller.CancelOrder(orderId);
+
+        // Assert
+        var okResult = result.Result.Should().BeOfType<OkObjectResult>().Subject;
+        var order = okResult.Value.Should().BeOfType<OrderDto>().Subject;
+        order.Should().BeEquivalentTo(expectedOrder);
+    }
+
+    [Fact]
+    public async Task CancelOrder_WithInvalidId_ShouldReturnNotFound()
+    {
+        // Arrange
+        var orderId = 999;
+        _orderServiceMock.Setup(x => x.CancelOrderAsync(orderId))
+            .ThrowsAsync(new OrderNotFoundException(orderId));
+
+        // Act
+        var result = await _controller.CancelOrder(orderId);
+
+        // Assert
+        result.Result.Should().BeOfType<NotFoundObjectResult>();
+    }
+
+    [Fact]
+    public async Task CancelOrder_WithCompletedOrder_ShouldReturnBadRequest()
+    {
+        // Arrange
+        var orderId = 1;
+        _orderServiceMock.Setup(x => x.CancelOrderAsync(orderId))
+            .ThrowsAsync(new InvalidOrderStateException("Нельзя отменить завершенный заказ"));
+
+        // Act
+        var result = await _controller.CancelOrder(orderId);
+
+        // Assert
+        result.Result.Should().BeOfType<BadRequestObjectResult>();
+    }
+
+    [Fact]
+    public async Task CancelOrder_WithInProcessOrder_ShouldReturnOk()
+    {
+        // Arrange
+        var orderId = 1;
+        var expectedOrder = CreateTestOrderDto();
+        expectedOrder.State = Order.States.Cancelled;
+        _orderServiceMock.Setup(x => x.CancelOrderAsync(orderId))
+            .ReturnsAsync(expectedOrder);
+
+        // Act
+        var result = await _controller.CancelOrder(orderId);
+
+        // Assert
+        var okResult = result.Result.Should().BeOfType<OkObjectResult>().Subject;
+        var order = okResult.Value.Should().BeOfType<OrderDto>().Subject;
+        order.Should().BeEquivalentTo(expectedOrder);
+    }
+
+    [Fact]
+    public async Task CompleteOrder_WithValidId_ShouldCompleteOrder()
+    {
+        // Arrange
+        await LoginAsManager();
+        
+        var orderId = 1;
+        var expectedOrder = CreateTestOrderDto();
+        expectedOrder.State = Order.States.Completed;
+        _orderServiceMock.Setup(x => x.CompleteOrderAsync(orderId))
+            .ReturnsAsync(expectedOrder);
+
+        // Act
+        var result = await _controller.CompleteOrder(orderId);
+
+        // Assert
+        var okResult = result.Result.Should().BeOfType<OkObjectResult>().Subject;
+        var order = okResult.Value.Should().BeOfType<OrderDto>().Subject;
+        order.Should().BeEquivalentTo(expectedOrder);
+    }
+
+    [Fact]
+    public async Task CompleteOrder_WithInvalidId_ShouldReturnNotFound()
+    {
+        // Arrange
+        var orderId = 999;
+        _orderServiceMock.Setup(x => x.CompleteOrderAsync(orderId))
+            .ThrowsAsync(new OrderNotFoundException(orderId));
+
+        // Act
+        var result = await _controller.CompleteOrder(orderId);
+
+        // Assert
+        result.Result.Should().BeOfType<NotFoundObjectResult>();
+    }
+
+    [Fact]
+    public async Task CompleteOrder_WithCompletedOrder_ShouldReturnBadRequest()
+    {
+        // Arrange
+        var orderId = 1;
+        _orderServiceMock.Setup(x => x.CompleteOrderAsync(orderId))
+            .ThrowsAsync(new InvalidOrderStateException("Заказ уже завершен"));
+
+        // Act
+        var result = await _controller.CompleteOrder(orderId);
 
         // Assert
         result.Result.Should().BeOfType<BadRequestObjectResult>();

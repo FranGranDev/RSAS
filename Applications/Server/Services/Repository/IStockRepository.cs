@@ -12,5 +12,7 @@ namespace Application.Services.Repository
         Task<bool> ExistsByAddressAsync(string address);
         Task<Stock> GetWithStockProductsAsync(int id);
         Task<IEnumerable<Stock>> GetAllWithStockProductsAsync();
+        Task<StockProducts> GetStockProductAsync(int stockId, int productId);
+        Task UpdateStockProductAsync(StockProducts stockProduct);
     }
 }

@@ -25,7 +25,6 @@ namespace Application.DTOs
 
     public class CreateOrderDto
     {
-        [Required(ErrorMessage = "ID склада обязателен")]
         public int? StockId { get; set; }
 
         [Required(ErrorMessage = "Имя клиента обязательно")]

@@ -15,13 +15,11 @@ namespace Application.Controllers
     [Route("api/[controller]")]
     public class OrdersController : ControllerBase
     {
-        private readonly IAuthorizationService _authorizationService;
         private readonly IOrderService _orderService;
 
-        public OrdersController(IOrderService orderService, IAuthorizationService authorizationService)
+        public OrdersController(IOrderService orderService)
         {
             _orderService = orderService;
-            _authorizationService = authorizationService;
         }
 
         /// <summary>
@@ -89,7 +87,7 @@ namespace Application.Controllers
         /// <response code="400">Некорректные входные данные</response>
         /// <response code="404">Склад не найден</response>
         [HttpPost]
-        [Authorize(Policy = "RequireUserRole")]
+        [Authorize]
         public async Task<ActionResult<OrderDto>> CreateOrder(CreateOrderDto createOrderDto)
         {
             if (!ModelState.IsValid)
@@ -289,6 +287,91 @@ namespace Application.Controllers
         {
             var deliveries = await _orderService.GetDeliveriesByDateRangeAsync(startDate, endDate);
             return Ok(deliveries);
+        }
+
+        /// <summary>
+        ///     Выполнить заказ
+        /// </summary>
+        /// <param name="id">ID заказа</param>
+        /// <returns>Обновленный заказ</returns>
+        /// <response code="400">Некорректные входные данные</response>
+        /// <response code="403">Недостаточно прав для выполнения заказа</response>
+        /// <response code="404">Заказ не найден</response>
+        [HttpPost("{id}/execute")]
+        [Authorize(Policy = "RequireManagerRole")]
+        public async Task<ActionResult<OrderDto>> ExecuteOrder(int id)
+        {
+            try
+            {
+                var order = await _orderService.ExecuteOrderAsync(id);
+                return Ok(order);
+            }
+            catch (OrderNotFoundException)
+            {
+                return NotFound($"Заказ с ID {id} не найден");
+            }
+            catch (StockNotFoundException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (InsufficientStockException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        /// <summary>
+        ///     Отменить заказ
+        /// </summary>
+        /// <param name="id">ID заказа</param>
+        /// <returns>Обновленный заказ</returns>
+        /// <response code="400">Некорректные входные данные</response>
+        /// <response code="403">Недостаточно прав для отмены заказа</response>
+        /// <response code="404">Заказ не найден</response>
+        [HttpPost("{id}/cancel")]
+        [Authorize(Policy = "RequireManagerRole")]
+        public async Task<ActionResult<OrderDto>> CancelOrder(int id)
+        {
+            try
+            {
+                var order = await _orderService. CancelOrderAsync(id);
+                return Ok(order);
+            }
+            catch (OrderNotFoundException)
+            {
+                return NotFound($"Заказ с ID {id} не найден");
+            }
+            catch (InvalidOrderStateException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        /// <summary>
+        ///     Завершить заказ
+        /// </summary>
+        /// <param name="id">ID заказа</param>
+        /// <returns>Обновленный заказ</returns>
+        /// <response code="400">Некорректные входные данные</response>
+        /// <response code="403">Недостаточно прав для завершения заказа</response>
+        /// <response code="404">Заказ не найден</response>
+        [HttpPost("{id}/complete")]
+        [Authorize(Policy = "RequireManagerRole")]
+        public async Task<ActionResult<OrderDto>> CompleteOrder(int id)
+        {
+            try
+            {
+                var order = await _orderService.CompleteOrderAsync(id);
+                return Ok(order);
+            }
+            catch (OrderNotFoundException)
+            {
+                return NotFound($"Заказ с ID {id} не найден");
+            }
+            catch (InvalidOrderStateException ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
     }
 }

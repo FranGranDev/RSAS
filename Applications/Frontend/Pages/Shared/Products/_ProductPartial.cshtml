@@ -23,17 +23,4 @@
     </div>
 </div>
 
-<!-- Модальное окно предпросмотра -->
-<div class="modal fade" id="productPreviewModal-@Model.Product.Id" tabindex="-1" aria-labelledby="productPreviewModalLabel-@Model.Product.Id" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2 class="modal-title" id="productPreviewModalLabel-@Model.Product.Id">@Model.Product.Name</h2>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <partial name="Shared/Products/_ProductPreviewPartial" model="Model" />
-            </div>
-        </div>
-    </div>
-</div> 
+<partial name="Shared/Products/_ProductPreviewPartial" model="Model" />

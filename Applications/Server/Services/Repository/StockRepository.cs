@@ -57,5 +57,17 @@ namespace Server.Services.Repository
                 .ThenInclude(sp => sp.Product)
                 .ToListAsync();
         }
+
+        public async Task<StockProducts> GetStockProductAsync(int stockId, int productId)
+        {
+            return await _context.StockProducts
+                .FirstOrDefaultAsync(sp => sp.StockId == stockId && sp.ProductId == productId);
+        }
+
+        public async Task UpdateStockProductAsync(StockProducts stockProduct)
+        {
+            _context.StockProducts.Update(stockProduct);
+            await _context.SaveChangesAsync();
+        }
     }
 }

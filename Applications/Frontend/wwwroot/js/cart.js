@@ -1,80 +1,68 @@
 function updateQuantity(productId, quantity) {
-    quantity = Math.max(0, parseInt(quantity));
-    document.getElementById(`quantity-${productId}`).value = quantity;
-    
-    fetch('/Client/Catalog/UpdateCart', {
-        method: 'POST',
+    $.ajax({
+        type: 'POST',
+        url: '/Client/Catalog?handler=UpdateCart',
+        data: JSON.stringify({ productId: productId, quantity: quantity }),
+        contentType: 'application/json',
         headers: {
-            'Content-Type': 'application/json',
-            'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+            'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
         },
-        body: JSON.stringify({
-            productId: productId,
-            quantity: quantity
-        })
-    })
-    .then(response => response.json())
-    .then(data => {
-        updateCartUI(data);
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        toastr.error('Произошла ошибка при обновлении корзины');
+        success: function (result) {
+            // Обновляем количество в карточке товара
+            $('#quantity-' + productId).val(quantity);
+            $('#quantity-preview-' + productId).val(quantity);
+            
+            // Обновляем информацию о корзине
+            $('#cart-total-quantity').text(result.totalQuantity);
+            $('#cart-total-price').text(result.totalPrice.toFixed(2) + ' р.');
+            
+            // Обновляем состояние кнопки "Оформить заказ"
+            $('#create-order-btn').toggleClass('disabled', result.totalQuantity === 0);
+        },
+        error: function (error) {
+            console.error('Ошибка при обновлении корзины:', error);
+            notification.showError('Произошла ошибка при обновлении корзины');
+        }
     });
 }
 
 function increaseQuantity(productId) {
-    const input = document.getElementById(`quantity-${productId}`);
-    const newQuantity = parseInt(input.value) + 1;
-    updateQuantity(productId, newQuantity);
+    var input = $('#quantity-' + productId);
+    var previewInput = $('#quantity-preview-' + productId);
+    var newValue = parseInt(input.val()) + 1;
+    input.val(newValue).trigger('change');
+    previewInput.val(newValue);
 }
 
 function decreaseQuantity(productId) {
-    const input = document.getElementById(`quantity-${productId}`);
-    const newQuantity = Math.max(0, parseInt(input.value) - 1);
-    updateQuantity(productId, newQuantity);
+    var input = $('#quantity-' + productId);
+    var previewInput = $('#quantity-preview-' + productId);
+    var newValue = Math.max(0, parseInt(input.val()) - 1);
+    input.val(newValue).trigger('change');
+    previewInput.val(newValue);
 }
 
 function clearCart() {
-    fetch('/Client/Catalog/ClearCart', {
-        method: 'POST',
+    $.ajax({
+        type: 'POST',
+        url: '/Client/Catalog?handler=ClearCart',
         headers: {
-            'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+            'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
+        },
+        success: function (result) {
+            // Сброс количества всех товаров
+            $('input[type="number"]').val(0);
+            
+            // Обновляем информацию о корзине
+            $('#cart-total-quantity').text(result.totalQuantity);
+            $('#cart-total-price').text(result.totalPrice.toFixed(2) + ' р.');
+            
+            // Обновляем состояние кнопки "Оформить заказ"
+            $('#create-order-btn').toggleClass('disabled', result.totalQuantity === 0);
+        },
+        error: function (error) {
+            console.error('Ошибка при очистке корзины:', error);
+            notification.showError('Произошла ошибка при очистке корзины');
         }
-    })
-    .then(response => response.json())
-    .then(data => {
-        updateCartUI(data);
-        // Сброс количества всех товаров
-        document.querySelectorAll('input[type="number"]').forEach(input => {
-            input.value = 0;
-        });
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        toastr.error('Произошла ошибка при очистке корзины');
     });
-}
-
-function updateCartUI(cartData) {
-    // Обновление количества товаров в корзине
-    const cartQuantity = document.querySelector('.bi-cart3 + .badge');
-    if (cartQuantity) {
-        cartQuantity.textContent = cartData.totalQuantity;
-    }
-
-    // Обновление общей суммы
-    const cartTotal = document.querySelector('.fw-bold');
-    if (cartTotal) {
-        cartTotal.textContent = new Intl.NumberFormat('ru-RU', {
-            style: 'currency',
-            currency: 'RUB'
-        }).format(cartData.totalPrice);
-    }
-
-    // Обновление состояния кнопки "Оформить заказ"
-    const orderButton = document.querySelector('a[href="/Client/Order/Create"]');
-    if (orderButton) {
-        orderButton.classList.toggle('disabled', cartData.totalQuantity === 0);
-    }
 } 

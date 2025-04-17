@@ -42,7 +42,7 @@ namespace Application.Controllers
         /// <response code="403">Недостаточно прав для просмотра товара</response>
         /// <response code="404">Товар не найден</response>
         [HttpGet("{id}")]
-        [Authorize(Policy = "RequireManagerRole")]
+        [Authorize]
         public async Task<ActionResult<ProductDto>> GetProduct(int id)
         {
             try

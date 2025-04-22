@@ -16,9 +16,6 @@ namespace Application.DTOs
 
     public class CreateDeliveryDto
     {
-        [Required(ErrorMessage = "ID заказа обязателен")]
-        public int OrderId { get; set; }
-
         [Required(ErrorMessage = "Дата доставки обязательна")]
         [DataType(DataType.DateTime)]
         public DateTime DeliveryDate { get; set; }
@@ -40,7 +37,7 @@ namespace Application.DTOs
         public string Flat { get; set; }
 
         [Required(ErrorMessage = "Почтовый индекс обязателен")]
-        [RegularExpression(@"^\d{6}$", ErrorMessage = "Почтовый индекс должен содержать 6 цифр")]
+        [StringLength(10, ErrorMessage = "Почтовый индекс не должен превышать 10 символов")]
         public string PostalCode { get; set; }
     }
 

@@ -45,22 +45,28 @@ namespace Application.Services
 
         public async Task<OrderDto> CreateOrderAsync(CreateOrderDto createOrderDto, string userId)
         {
+            // Создаем базовый заказ
             var order = _mapper.Map<Order>(createOrderDto);
             order.UserId = userId;
             order.OrderDate = DateTime.UtcNow;
             order.ChangeDate = DateTime.UtcNow;
             order.State = Order.States.New;
+            order.CancellationReason = "";
+            order.Products = new List<OrderProduct>();
 
-            await _orderRepository.AddAsync(order);
+            // Сначала сохраняем заказ, чтобы получить его ID
+            order = await _orderRepository.AddAsync(order);
 
-            // Создаем доставку
-            if (createOrderDto.Delivery != null)
+            // Теперь создаем продукты заказа
+            foreach (var productDto in createOrderDto.Products)
             {
-                var delivery = _mapper.Map<Delivery>(createOrderDto.Delivery);
-                delivery.OrderId = order.Id;
-                delivery.Status = "Создана";
-                await _deliveryRepository.AddAsync(delivery);
+                var orderProduct = _mapper.Map<OrderProduct>(productDto);
+                orderProduct.OrderId = order.Id;
+                order.Products.Add(orderProduct);
             }
+
+            // Обновляем заказ с продуктами
+            await _orderRepository.UpdateAsync(order);
 
             return _mapper.Map<OrderDto>(order);
         }
@@ -261,12 +267,6 @@ namespace Application.Services
             await _deliveryRepository.UpdateAsync(delivery);
 
             return _mapper.Map<DeliveryDto>(delivery);
-        }
-
-        public async Task<IEnumerable<DeliveryDto>> GetDeliveriesByStatusAsync(string status)
-        {
-            var deliveries = await _deliveryRepository.GetByStatusAsync(status);
-            return _mapper.Map<IEnumerable<DeliveryDto>>(deliveries);
         }
 
         public async Task<IEnumerable<DeliveryDto>> GetDeliveriesByDateRangeAsync(DateTime startDate, DateTime endDate)

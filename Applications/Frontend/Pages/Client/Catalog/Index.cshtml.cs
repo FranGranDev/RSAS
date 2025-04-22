@@ -82,6 +82,12 @@ public class IndexModel : PageModel
         if (!_memoryCache.TryGetValue(cacheKey, out CartViewModel cart))
         {
             cart = new CartViewModel();
+            Console.WriteLine($"Создана новая корзина для пользователя {userId}");
+        }
+        else
+        {
+            Console.WriteLine($"Получена существующая корзина для пользователя {userId}");
+            Console.WriteLine($"Товаров в корзине: {cart.Items.Count}");
         }
 
         var item = cart.Items.FirstOrDefault(x => x.ProductId == request.ProductId);
@@ -90,10 +96,12 @@ public class IndexModel : PageModel
             if (request.Quantity == 0)
             {
                 cart.Items.Remove(item);
+                Console.WriteLine($"Удален товар {item.Name} из корзины");
             }
             else
             {
                 item.Quantity = request.Quantity;
+                Console.WriteLine($"Обновлено количество товара {item.Name} до {request.Quantity}");
             }
         }
         else if (request.Quantity > 0)
@@ -107,13 +115,16 @@ public class IndexModel : PageModel
                 Name = product.Name,
                 Barcode = product.Barcode,
                 Price = product.Price,
+                Description = product.Description,
                 Quantity = request.Quantity
             });
+            Console.WriteLine($"Добавлен новый товар {product.Name} в корзину");
         }
 
         var cacheOptions = new MemoryCacheEntryOptions()
             .SetSlidingExpiration(TimeSpan.FromDays(7));
         _memoryCache.Set(cacheKey, cart, cacheOptions);
+        Console.WriteLine($"Корзина сохранена в кэш. Товаров в корзине: {cart.Items.Count}");
 
         return new JsonResult(new
         {

@@ -18,6 +18,8 @@ namespace Application.Services
             CreateMap<CreateOrderDto, Order>();
             CreateMap<UpdateOrderDto, Order>();
             CreateMap<OrderProduct, OrderProductDto>();
+            CreateMap<CreateOrderProductDto, OrderProduct>()
+                .ForMember(dest => dest.ProductPrice, opt => opt.MapFrom(src => src.Price));
 
             // Delivery
             CreateMap<Delivery, DeliveryDto>();

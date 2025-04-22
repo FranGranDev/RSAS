@@ -21,7 +21,6 @@ namespace Application.Services
 
         // Методы для работы с доставкой
         Task<DeliveryDto> UpdateDeliveryAsync(int orderId, UpdateDeliveryDto updateDeliveryDto);
-        Task<IEnumerable<DeliveryDto>> GetDeliveriesByStatusAsync(string status);
         Task<IEnumerable<DeliveryDto>> GetDeliveriesByDateRangeAsync(DateTime startDate, DateTime endDate);
     }
 }

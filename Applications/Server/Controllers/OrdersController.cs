@@ -90,11 +90,6 @@ namespace Application.Controllers
         [Authorize]
         public async Task<ActionResult<OrderDto>> CreateOrder(CreateOrderDto createOrderDto)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
             if (createOrderDto.Products == null || !createOrderDto.Products.Any())
             {
                 return BadRequest("Заказ должен содержать хотя бы один товар");
@@ -121,11 +116,7 @@ namespace Application.Controllers
                 var order = await _orderService.CreateOrderAsync(createOrderDto, userId);
                 return CreatedAtAction(nameof(GetOrder), new { id = order.Id }, order);
             }
-            catch (StockNotFoundException)
-            {
-                return NotFound($"Склад с ID {createOrderDto.StockId} не найден");
-            }
-            catch (InsufficientStockException ex)
+            catch (Exception ex)
             {
                 return BadRequest(ex.Message);
             }
@@ -256,20 +247,6 @@ namespace Application.Controllers
             {
                 return BadRequest(ex.Message);
             }
-        }
-
-        /// <summary>
-        ///     Получить доставки по статусу
-        /// </summary>
-        /// <param name="status">Статус доставки</param>
-        /// <returns>Список доставок</returns>
-        /// <response code="403">Недостаточно прав для просмотра доставок</response>
-        [HttpGet("deliveries/status/{status}")]
-        [Authorize(Policy = "RequireManagerRole")]
-        public async Task<ActionResult<IEnumerable<DeliveryDto>>> GetDeliveriesByStatus(string status)
-        {
-            var deliveries = await _orderService.GetDeliveriesByStatusAsync(status);
-            return Ok(deliveries);
         }
 
         /// <summary>

@@ -1,0 +1,31 @@
+@page
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@model Frontend.Pages.Client.Order.SuccessModel
+@{
+    ViewData["Title"] = "Заказ успешно оформлен";
+}
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-sm">
+                <div class="card-body text-center">
+                    <div class="mb-4">
+                        <i class="bi bi-check-circle-fill text-success" style="font-size: 4rem;"></i>
+                    </div>
+                    <h1 class="card-title h3 mb-4">@ViewData["Title"]</h1>
+                    <p class="lead mb-4">Ваш заказ успешно оформлен и принят в обработку.</p>
+                    <p class="text-muted mb-4">Номер вашего заказа: <strong>@Model.OrderId</strong></p>
+                    <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
+                        <a asp-page="/Client/Order/Index" class="btn btn-primary btn-lg px-4 gap-3">
+                            <i class="bi bi-list-ul"></i> К моим заказам
+                        </a>
+                        <a asp-page="/Client/Catalog/Index" class="btn btn-outline-secondary btn-lg px-4">
+                            <i class="bi bi-shop"></i> Вернуться в каталог
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div> 

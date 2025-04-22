@@ -17,14 +17,6 @@ namespace Server.Services.Repository
                 .FirstOrDefaultAsync(d => d.OrderId == orderId);
         }
 
-        public async Task<IEnumerable<Delivery>> GetByStatusAsync(string status)
-        {
-            return await _context.Deliveries
-                .Include(d => d.Order)
-                .Where(d => d.Status == status)
-                .ToListAsync();
-        }
-
         public async Task<IEnumerable<Delivery>> GetByDateRangeAsync(DateTime startDate, DateTime endDate)
         {
             return await _context.Deliveries

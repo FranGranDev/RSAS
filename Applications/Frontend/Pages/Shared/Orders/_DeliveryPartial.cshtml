@@ -45,13 +45,57 @@
             </div>
         </div>
         <div class="form-group mb-3">
-                <label asp-for="DeliveryDate" class="control-label"></label>
-                <input asp-for="DeliveryDate" class="form-control" />
-                <span asp-validation-for="DeliveryDate" class="text-danger"></span>
+            <label asp-for="DeliveryDate" class="control-label"></label>
+            <input asp-for="DeliveryDate" 
+                   type="datetime-local" 
+                   class="form-control" 
+                   step="3600"
+                   min="@DateTime.Now.ToString("yyyy-MM-ddTHH:00")"
+                   value="@Model.DeliveryDate.ToString("yyyy-MM-ddTHH:00")"
+                   onchange="formatDeliveryDate(this)" />
+            <span asp-validation-for="DeliveryDate" class="text-danger"></span>
         </div>
     </div>
 </div>
 
 @section Scripts {
-    <script src="~/js/delivery-date.js"></script>
+    <style>
+        input[type="datetime-local"] {
+            font-family: monospace;
+        }
+        input[type="datetime-local"]::-webkit-datetime-edit {
+            padding: 0;
+        }
+        input[type="datetime-local"]::-webkit-datetime-edit-fields-wrapper {
+            background: transparent;
+        }
+        input[type="datetime-local"]::-webkit-datetime-edit-text {
+            color: #666;
+            padding: 0 0.3em;
+        }
+        input[type="datetime-local"]::-webkit-datetime-edit-hour-field,
+        input[type="datetime-local"]::-webkit-datetime-edit-minute-field,
+        input[type="datetime-local"]::-webkit-datetime-edit-day-field,
+        input[type="datetime-local"]::-webkit-datetime-edit-month-field,
+        input[type="datetime-local"]::-webkit-datetime-edit-year-field {
+            color: #000;
+            padding: 0;
+        }
+    </style>
+    <script>
+        function formatDeliveryDate(input) {
+            // Устанавливаем минуты в 00
+            const date = new Date(input.value);
+            date.setMinutes(0);
+            input.value = date.toISOString().slice(0, 16);
+        }
+
+        // Инициализация при загрузке страницы
+        document.addEventListener('DOMContentLoaded', function() {
+            const dateInput = document.querySelector('input[type="datetime-local"]');
+            if (dateInput) {
+                formatDeliveryDate(dateInput);
+            }
+        });
+    </script>
 } 

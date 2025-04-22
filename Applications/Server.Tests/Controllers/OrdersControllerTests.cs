@@ -368,36 +368,6 @@ public class OrdersControllerTests : TestBase
     }
 
     [Fact]
-    public async Task GetDeliveriesByStatus_WithValidStatus_ShouldReturnDeliveries()
-    {
-        // Arrange
-        var status = "В пути";
-        var expectedDeliveries = new List<DeliveryDto>
-        {
-            new()
-            {
-                OrderId = 1,
-                DeliveryDate = DateTime.UtcNow.AddDays(1),
-                City = "Test City",
-                Street = "Test Street",
-                House = "1",
-                Flat = "1",
-                PostalCode = "123456"
-            }
-        };
-        _orderServiceMock.Setup(x => x.GetDeliveriesByStatusAsync(status))
-            .ReturnsAsync(expectedDeliveries);
-
-        // Act
-        var result = await _controller.GetDeliveriesByStatus(status);
-
-        // Assert
-        var okResult = result.Result.Should().BeOfType<OkObjectResult>().Subject;
-        var deliveries = okResult.Value.Should().BeAssignableTo<IEnumerable<DeliveryDto>>().Subject;
-        deliveries.Should().BeEquivalentTo(expectedDeliveries);
-    }
-
-    [Fact]
     public async Task GetDeliveriesByDateRange_WithValidDates_ShouldReturnDeliveries()
     {
         // Arrange

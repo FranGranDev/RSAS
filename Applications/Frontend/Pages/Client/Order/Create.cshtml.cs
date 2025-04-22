@@ -9,6 +9,7 @@ using Application.DTOs;
 using Application.Models;
 using Frontend.Models.Catalog;
 using Frontend.Services.Account;
+using System.Text.Json;
 
 namespace Frontend.Pages.Client.Order
 {
@@ -81,30 +82,57 @@ namespace Frontend.Pages.Client.Order
                 return Page();
             }
 
-            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            var cart = GetOrCreateCart();
-
-            // Создаем DTO для заказа
-            var createOrderDto = new CreateOrderDto
+            try
             {
-                ClientName = $"{Contact.FirstName} {Contact.LastName}",
-                ContactPhone = Contact.Phone,
-                PaymentType = Payment.PaymentType,
-                Products = cart.Items.Select(item => new CreateOrderProductDto
+                Cart = GetOrCreateCart();
+                
+                if (Cart.Items.Count == 0)
                 {
-                    ProductId = item.ProductId,
-                    Quantity = item.Quantity
-                }).ToList(),
-                Delivery = Delivery.ToDto()
-            };
+                    TempData["error"] = "Корзина пуста. Пожалуйста, добавьте товары в корзину.";
+                    return Page();
+                }
 
-            // Отправляем запрос на создание заказа
-            var order = await _apiService.PostAsync<OrderDto, CreateOrderDto>("api/orders", createOrderDto);
+                // Создаем DTO для заказа
+                var createOrderDto = new CreateOrderDto
+                {
+                    StockId = null, // Пока не используем склад
+                    ClientName = $"{Contact.FirstName} {Contact.LastName}",
+                    ContactPhone = Contact.Phone,
+                    PaymentType = Payment.PaymentType,
+                    Products = Cart.Items.Select(item => new CreateOrderProductDto
+                    {
+                        ProductId = item.ProductId,
+                        ProductName = item.Name,
+                        ProductDescription = item.Description,
+                        Price = item.Price,
+                        Quantity = item.Quantity
+                    }).ToList(),
+                    Delivery = new CreateDeliveryDto
+                    {
+                        DeliveryDate = Delivery.DeliveryDate,
+                        City = Delivery.City,
+                        Street = Delivery.Street,
+                        House = Delivery.House,
+                        Flat = Delivery.Flat,
+                        PostalCode = Delivery.PostalCode
+                    }
+                };
 
-            // Очищаем корзину
-            ClearCart();
+                // Отправляем запрос на создание заказа
+                var order = await _apiService.PostAsync<OrderDto, CreateOrderDto>("api/orders", createOrderDto);
 
-            return RedirectToPage("/Client/Order/Success", new { orderId = order.Id });
+                // Очищаем корзину
+                ClearCart();
+
+                return RedirectToPage("/Client/Order/Success", new { orderId = order.Id });
+            }
+            catch (Exception ex)
+            {
+                TempData["error"] = "Произошла ошибка при оформлении заказа. Пожалуйста, попробуйте позже.";
+                
+                Cart = GetOrCreateCart();
+                return Page();
+            }
         }
 
         private CartViewModel GetOrCreateCart()
@@ -127,7 +155,17 @@ namespace Frontend.Pages.Client.Order
         {
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             var cacheKey = string.Format(CartCacheKey, userId);
-            _memoryCache.Remove(cacheKey);
+            
+            var cart = new CartViewModel();
+            var cacheOptions = new MemoryCacheEntryOptions()
+                .SetSlidingExpiration(TimeSpan.FromDays(7));
+            _memoryCache.Set(cacheKey, cart, cacheOptions);
         }
+    }
+
+    // Добавим класс для десериализации ошибок валидации
+    public class ValidationErrorResponse
+    {
+        public Dictionary<string, string[]> Errors { get; set; }
     }
 } 

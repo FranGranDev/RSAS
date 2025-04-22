@@ -11,6 +11,5 @@
         public string House { get; set; }
         public string Flat { get; set; }
         public string PostalCode { get; set; }
-        public string Status { get; set; }
     }
 }

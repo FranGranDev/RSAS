@@ -2,6 +2,8 @@ using Application.DTOs;
 using Application.Models;
 using AutoMapper;
 using Server.Models;
+using System.Linq;
+using Application.Extensions;
 
 namespace Application.Services
 {
@@ -14,10 +16,15 @@ namespace Application.Services
             CreateMap<ProductDto, Product>();
 
             // Orders
-            CreateMap<Order, OrderDto>();
+            CreateMap<Order, OrderDto>()
+                .ForMember(dest => dest.TotalAmount, opt => opt.MapFrom(src => src.Products.Sum(p => p.ProductPrice * p.Quantity)))
+                .ForMember(dest => dest.PaymentTypeDisplay, opt => opt.MapFrom(src => src.PaymentType.GetDisplayName()))
+                .ForMember(dest => dest.StateDisplay, opt => opt.MapFrom(src => src.State.GetDisplayName()));
             CreateMap<CreateOrderDto, Order>();
             CreateMap<UpdateOrderDto, Order>();
-            CreateMap<OrderProduct, OrderProductDto>();
+            CreateMap<OrderProduct, OrderProductDto>()
+                .ForMember(dest => dest.Price, opt => opt.MapFrom(src => src.ProductPrice))
+                .ForMember(dest => dest.TotalAmount, opt => opt.MapFrom(src => src.ProductPrice * src.Quantity));
             CreateMap<CreateOrderProductDto, OrderProduct>()
                 .ForMember(dest => dest.ProductPrice, opt => opt.MapFrom(src => src.Price));
 

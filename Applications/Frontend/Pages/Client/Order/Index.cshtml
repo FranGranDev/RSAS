@@ -1,0 +1,62 @@
+@page
+@model Frontend.Pages.Client.Order.IndexModel
+@{
+    ViewData["Title"] = "Мои заказы";
+}
+
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>@ViewData["Title"]</h1>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="input-group">
+                <input type="text" class="form-control" id="searchInput" placeholder="Поиск по номеру заказа...">
+                <button class="btn btn-outline-secondary" type="button" id="searchButton">
+                    <i class="bi bi-search"></i>
+                </button>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <select class="form-select" id="statusFilter">
+                <option value="">Все статусы</option>
+                <option value="New">Новый</option>
+                <option value="Processing">В обработке</option>
+                <option value="Completed">Завершен</option>
+                <option value="Cancelled">Отменен</option>
+            </select>
+        </div>
+        <div class="col-md-3">
+            <select class="form-select" id="dateSort">
+                <option value="">Сортировка по дате</option>
+                <option value="asc">По возрастанию</option>
+                <option value="desc">По убыванию</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="row" id="ordersGrid">
+        @foreach (var order in Model.Orders)
+        {
+            <div class="col-md-6 col-lg-4 mb-4 order-card"
+                 data-id="@order.Id"
+                 data-status="@order.State"
+                 data-date="@order.OrderDate.ToString("yyyy-MM-dd")">
+                <partial name="Shared/Orders/_ClientOrderCardPartial" model="order" />
+            </div>
+        }
+    </div>
+
+    <div class="d-flex justify-content-center mt-4">
+        <nav aria-label="Page navigation">
+            <ul class="pagination" id="pagination">
+                <!-- Пагинация будет добавлена через JavaScript -->
+            </ul>
+        </nav>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/order-filter.js"></script>
+} 

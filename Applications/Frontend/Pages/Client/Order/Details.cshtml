@@ -1,0 +1,113 @@
+@page "{id:int}"
+@using Application.Models
+@model Frontend.Pages.Client.Order.DetailsModel
+@{
+    ViewData["Title"] = $"Заказ #{Model.Order.Id}";
+}
+
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>@ViewData["Title"]</h1>
+        <a href="/Client/Order" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i> Назад к списку заказов
+        </a>
+    </div>
+
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="card-title mb-0">Информация о заказе</h5>
+                        <span class="badge bg-@(Model.Order.State == Order.States.Completed ? "success" : 
+                                        Model.Order.State == Order.States.Cancelled ? "danger" : 
+                                        Model.Order.State == Order.States.InProcess ? "warning" :
+                                        Model.Order.State == Order.States.New ? "info" :
+                                        Model.Order.State == Order.States.OnHold ? "secondary" : "primary")">
+                            @Model.Order.StateDisplay
+                        </span>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <strong>Дата заказа:</strong>
+                                <p>@Model.Order.OrderDate.ToString("dd.MM.yyyy HH:mm")</p>
+                            </div>
+                            <div class="mb-3">
+                                <strong>Способ оплаты:</strong>
+                                <p>@Model.Order.PaymentTypeDisplay</p>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <strong>Клиент:</strong>
+                                <p>@Model.Order.ClientName</p>
+                            </div>
+                            <div class="mb-3">
+                                <strong>Телефон:</strong>
+                                <p>@Model.Order.ContactPhone</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Товары в заказе</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Товар</th>
+                                    <th>Количество</th>
+                                    <th>Цена</th>
+                                    <th>Сумма</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var product in Model.Order.Products)
+                                {
+                                    <tr>
+                                        <td>@product.ProductName</td>
+                                        <td>@product.Quantity</td>
+                                        <td>@product.Price.ToString("C")</td>
+                                        <td>@((product.Price * product.Quantity).ToString("C"))</td>
+                                    </tr>
+                                }
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td colspan="3" class="text-end"><strong>Итого:</strong></td>
+                                    <td><strong>@Model.Order.TotalAmount.ToString("C")</strong></td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Информация о доставке</h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <strong>Адрес доставки:</strong>
+                        <p>@Model.Order.Delivery.FullAddress</p>
+                    </div>
+                    <div class="mb-3">
+                        <strong>Дата доставки:</strong>
+                        <p>@Model.Order.Delivery.DeliveryDate.ToString("dd.MM.yyyy")</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div> 

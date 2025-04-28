@@ -12,6 +12,7 @@ namespace Application.DTOs
         public string House { get; set; }
         public string Flat { get; set; }
         public string PostalCode { get; set; }
+        public string FullAddress => $"{PostalCode}, {City}, ул. {Street}, д. {House}, кв. {Flat}";
     }
 
     public class CreateDeliveryDto

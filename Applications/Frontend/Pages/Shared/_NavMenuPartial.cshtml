@@ -11,6 +11,12 @@
                     <span>Каталог</span>
                 </a>
             </li>
+            <li class="nav-item">
+                <a class="nav-link d-flex align-items-center" asp-page="/Client/Order/Index">
+                    <i class="bi bi-bag me-1"></i>
+                    <span>Мои заказы</span>
+                </a>
+            </li>
         }
         @if (await AuthService.IsInRoleAsync("Manager"))
         {

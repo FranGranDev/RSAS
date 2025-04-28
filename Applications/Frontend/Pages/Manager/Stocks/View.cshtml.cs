@@ -1,11 +1,13 @@
 using Application.DTOs;
 using Frontend.Models.Stocks;
 using Frontend.Services.Api;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace Frontend.Pages.Manager.Stocks;
 
+[Authorize(Roles = "Manager")]
 public class ViewModel : PageModel
 {
     private readonly IApiService _apiService;

@@ -1,0 +1,49 @@
+@page
+@model Frontend.Pages.Manager.IndexModel
+@{
+    ViewData["Title"] = "Панель управления";
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="bi bi-speedometer2 me-2"></i>Панель управления
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="card mb-3">
+                                <div class="card-body">
+                                    <h5 class="card-title">
+                                        <i class="bi bi-box me-2"></i>Управление товарами
+                                    </h5>
+                                    <p class="card-text">Управление ассортиментом товаров, их категориями и характеристиками.</p>
+                                    <a href="/Manager/Products/Index" class="btn btn-primary">
+                                        <i class="bi bi-arrow-right me-2"></i>Перейти
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card mb-3">
+                                <div class="card-body">
+                                    <h5 class="card-title">
+                                        <i class="bi bi-building me-2"></i>Управление складами
+                                    </h5>
+                                    <p class="card-text">Управление складами, остатками товаров и их перемещением.</p>
+                                    <a href="/Manager/Stocks/Index" class="btn btn-primary">
+                                        <i class="bi bi-arrow-right me-2"></i>Перейти
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div> 

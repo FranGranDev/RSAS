@@ -1,0 +1,34 @@
+@using Frontend.Models
+@model IEnumerable<Application.DTOs.OrderProductDto>
+
+<div class="table-responsive">
+    <table class="table table-hover table-bordered table-secondary rounded-3 overflow-hidden">
+        <thead>
+            <tr>
+                <th class="text-center fs-5" style="width: 40%">Товар</th>
+                <th class="text-center fs-5" style="width: 20%">Цена</th>
+                <th class="text-center fs-5" style="width: 20%">Количество</th>
+                <th class="text-center fs-5" style="width: 20%">Сумма</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td class="text-start">@item.ProductName</td>
+                    <td class="text-start">@item.Price.ToString(CurrencySettings.Format) @CurrencySettings.Symbol</td>
+                    <td class="text-start">@item.Quantity</td>
+                    <td class="text-start">@((item.Price * item.Quantity).ToString(CurrencySettings.Format)) @CurrencySettings.Symbol</td>
+                </tr>
+            }
+        </tbody>
+        <tfoot>
+            <tr class="table-success">
+                <td class="text-start"><strong>Итого:</strong></td>
+                <td></td>
+                <td class="text-start"><strong>@Model.Sum(x => x.Quantity)</strong></td>
+                <td class="text-start"><strong>@Model.Sum(x => x.TotalAmount).ToString(CurrencySettings.Format) @CurrencySettings.Symbol</strong></td>
+            </tr>
+        </tfoot>
+    </table>
+</div> 

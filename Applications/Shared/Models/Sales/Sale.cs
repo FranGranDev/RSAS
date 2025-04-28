@@ -34,8 +34,6 @@ namespace Server.Models
         [Required]
         public string PaymentMethod { get; set; }
 
-        public string? Comment { get; set; }
-
         public virtual ICollection<SaleProduct> Products { get; set; } = new List<SaleProduct>();
     }
 } 

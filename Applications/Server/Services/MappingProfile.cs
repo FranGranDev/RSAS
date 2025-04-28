@@ -20,6 +20,19 @@ namespace Application.Services
                 .ForMember(dest => dest.TotalAmount, opt => opt.MapFrom(src => src.Products.Sum(p => p.ProductPrice * p.Quantity)))
                 .ForMember(dest => dest.PaymentTypeDisplay, opt => opt.MapFrom(src => src.PaymentType.GetDisplayName()))
                 .ForMember(dest => dest.StateDisplay, opt => opt.MapFrom(src => src.State.GetDisplayName()));
+            CreateMap<Order, OrderWithStockInfoDto>()
+                .ForMember(dest => dest.TotalAmount, opt => opt.MapFrom(src => src.Products.Sum(p => p.ProductPrice * p.Quantity)))
+                .ForMember(dest => dest.PaymentTypeDisplay, opt => opt.MapFrom(src => src.PaymentType.GetDisplayName()))
+                .ForMember(dest => dest.StateDisplay, opt => opt.MapFrom(src => src.State.GetDisplayName()))
+                .ForMember(dest => dest.Products, opt => opt.MapFrom(src => src.Products.Select(p => new OrderProductWithStockInfoDto
+                {
+                    ProductId = p.ProductId,
+                    Name = p.Product.Name,
+                    Price = p.ProductPrice,
+                    QuantityInOrder = p.Quantity,
+                    QuantityInStock = 0, // Это значение будет обновлено в сервисе
+                    IsEnough = false // Это значение будет обновлено в сервисе
+                })));
             CreateMap<CreateOrderDto, Order>();
             CreateMap<UpdateOrderDto, Order>();
             CreateMap<OrderProduct, OrderProductDto>()
@@ -34,7 +47,9 @@ namespace Application.Services
             CreateMap<UpdateDeliveryDto, Delivery>();
 
             // Sales
-            CreateMap<Sale, SaleDto>();
+            CreateMap<Sale, SaleDto>()
+                .ForMember(dest => dest.Products, opt => opt.MapFrom(src => src.Products));
+            CreateMap<SaleProduct, SaleProductDto>();
 
             // Stocks
             CreateMap<Stock, StockDto>();

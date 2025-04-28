@@ -11,7 +11,7 @@
         <div class="d-flex flex-column mt-auto">
             <div class="d-flex align-items-center mb-2">
                 <span class="badge bg-primary">@Model.Product.Barcode</span>
-                @if (Model.StockProduct != null)
+                @if (Model.StockProduct != null && Model.StockProduct.Quantity > 0)
                 {
                     <span class="badge @(Model.StockProduct.Quantity > 0 ? "bg-success" : "bg-danger") ms-2">
                         @Model.StockProduct.Quantity шт.

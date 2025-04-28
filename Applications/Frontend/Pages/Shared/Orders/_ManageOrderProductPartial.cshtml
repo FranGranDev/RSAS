@@ -1,0 +1,66 @@
+@using Frontend.Models
+@model IEnumerable<Application.DTOs.OrderProductWithStockInfoDto>
+
+<div class="table-responsive">
+    <table class="table table-hover table-bordered table-secondary rounded-3 overflow-hidden">
+        <thead>
+            <tr>
+                <th class="text-center fs-5" style="width: 30%">Товар</th>
+                <th class="text-center fs-5" style="width: 15%">Цена</th>
+                <th class="text-center fs-5" style="width: 15%">Количество в заказе</th>
+                <th class="text-center fs-5" style="width: 15%">Доступно на складе</th>
+                <th class="text-center fs-5" style="width: 15%">Сумма</th>
+                <th class="text-center fs-5" style="width: 10%">Статус</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td class="text-start">@item.Name</td>
+                    <td class="text-start">@item.Price.ToString(CurrencySettings.Format) @CurrencySettings.Symbol</td>
+                    <td class="text-start">@item.QuantityInOrder</td>
+                    <td class="text-start">@item.QuantityInStock</td>
+                    <td class="text-start">@((item.Price * item.QuantityInOrder).ToString(CurrencySettings.Format)) @CurrencySettings.Symbol</td>
+                    <td class="text-center">
+                        @if (item.IsEnough)
+                        {
+                            <span class="badge bg-success">
+                                <i class="bi bi-check-circle"></i> Достаточно
+                            </span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-danger">
+                                <i class="bi bi-exclamation-circle"></i> Недостаточно
+                            </span>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+        <tfoot>
+            <tr class="table-success">
+                <td class="text-start"><strong>Итого:</strong></td>
+                <td></td>
+                <td class="text-start"><strong>@Model.Sum(x => x.QuantityInOrder)</strong></td>
+                <td></td>
+                <td class="text-start"><strong>@Model.Sum(x => x.Price * x.QuantityInOrder).ToString(CurrencySettings.Format) @CurrencySettings.Symbol</strong></td>
+                <td class="text-center">
+                    @if (Model.All(x => x.IsEnough))
+                    {
+                        <span class="badge bg-success">
+                            <i class="bi bi-check-circle"></i> Все товары в наличии
+                        </span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-danger">
+                            <i class="bi bi-exclamation-circle"></i> Не все товары в наличии
+                        </span>
+                    }
+                </td>
+            </tr>
+        </tfoot>
+    </table>
+</div> 

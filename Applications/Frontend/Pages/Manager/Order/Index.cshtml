@@ -1,7 +1,7 @@
 @page
-@model Frontend.Pages.Client.Order.IndexModel
+@model Frontend.Pages.Manager.Order.IndexModel
 @{
-    ViewData["Title"] = "Мои заказы";
+    ViewData["Title"] = "Управление заказами";
 }
 
 <div class="container-fluid">
@@ -43,7 +43,7 @@
                  data-id="@order.Id"
                  data-status="@order.State.ToString().ToLower()"
                  data-date="@order.OrderDate.ToString("yyyy-MM-ddTHH:mm:ss")">
-                <partial name="Shared/Orders/_ClientOrderCardPartial" model="order" />
+                <partial name="Shared/Orders/_ManagerOrderCardPartial" model="order" />
             </div>
         }
     </div>

@@ -13,14 +13,25 @@ $(document).ready(function () {
     function filterOrders() {
         const searchTerm = searchInput.val().toLowerCase();
         const statusValue = statusFilter.val();
+        const dateFrom = $('#dateFrom').val();
+        const dateTo = $('#dateTo').val();
         
         filteredOrders = Array.from(document.querySelectorAll('.order-card')).filter(card => {
             const id = card.dataset.id;
             const status = card.dataset.status;
+            const orderDate = new Date(card.dataset.date);
+            
             const matchesSearch = id.includes(searchTerm);
-            const matchesStatus = !statusValue || status === statusValue;
-            return matchesSearch && matchesStatus;
+            const matchesStatus = !statusValue || status === statusValue.toLowerCase();
+            const matchesDate = (!dateFrom || orderDate >= new Date(dateFrom)) &&
+                              (!dateTo || orderDate <= new Date(dateTo));
+            
+            return matchesSearch && matchesStatus && matchesDate;
         });
+        
+        // Показываем/скрываем карточки
+        $('.order-card').hide();
+        filteredOrders.forEach(card => $(card).show());
         
         sortOrders();
         showCurrentPage();
@@ -30,11 +41,23 @@ $(document).ready(function () {
     // Функция сортировки заказов
     function sortOrders() {
         const sortValue = dateSort.val();
+
         if (sortValue) {
             filteredOrders.sort((a, b) => {
                 const dateA = new Date(a.dataset.date);
                 const dateB = new Date(b.dataset.date);
-                return sortValue === 'asc' ? dateA - dateB : dateB - dateA;
+                
+                if (sortValue === 'asc') {
+                    return dateA - dateB;
+                } else {
+                    return dateB - dateA;
+                }
+            });
+
+            // Обновляем порядок элементов в DOM
+            const ordersGrid = document.getElementById('ordersGrid');
+            filteredOrders.forEach(card => {
+                ordersGrid.appendChild(card);
             });
         }
     }

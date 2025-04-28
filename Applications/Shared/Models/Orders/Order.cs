@@ -13,7 +13,7 @@ namespace Application.Models
 
         public enum States
         {
-            [Display(Name = "В обработке")] New,
+            [Display(Name = "Новый")] New,
             [Display(Name = "В работе")] InProcess,
             [Display(Name = "Отложено")] OnHold,
             [Display(Name = "Отменено")] Cancelled,

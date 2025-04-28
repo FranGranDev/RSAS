@@ -469,75 +469,6 @@ public class OrdersControllerTests : TestBase
         // Assert
         result.Result.Should().BeOfType<BadRequestObjectResult>();
     }
-
-    [Fact]
-    public async Task ExecuteOrder_WithValidId_ShouldExecuteOrder()
-    {
-        // Arrange
-        await LoginAsManager();
-        
-        var orderId = 1;
-        var expectedOrder = CreateTestOrderDto();
-        expectedOrder.State = Order.States.InProcess;
-        _orderServiceMock.Setup(x => x.ExecuteOrderAsync(orderId))
-            .ReturnsAsync(expectedOrder);
-
-        // Act
-        var result = await _controller.ExecuteOrder(orderId);
-
-        // Assert
-        var okResult = result.Result.Should().BeOfType<OkObjectResult>().Subject;
-        var order = okResult.Value.Should().BeOfType<OrderDto>().Subject;
-        order.Should().BeEquivalentTo(expectedOrder);
-    }
-
-    [Fact]
-    public async Task ExecuteOrder_WithInvalidId_ShouldReturnNotFound()
-    {
-        // Arrange
-        var orderId = 999;
-        _orderServiceMock.Setup(x => x.ExecuteOrderAsync(orderId))
-            .ThrowsAsync(new OrderNotFoundException(orderId));
-
-        // Act
-        var result = await _controller.ExecuteOrder(orderId);
-
-        // Assert
-        result.Result.Should().BeOfType<NotFoundObjectResult>();
-    }
-
-    [Fact]
-    public async Task ExecuteOrder_WithoutStock_ShouldReturnBadRequest()
-    {
-        // Arrange
-        var orderId = 1;
-        _orderServiceMock.Setup(x => x.ExecuteOrderAsync(orderId))
-            .ThrowsAsync(new StockNotFoundException(0));
-
-        // Act
-        var result = await _controller.ExecuteOrder(orderId);
-
-        // Assert
-        result.Result.Should().BeOfType<BadRequestObjectResult>();
-    }
-
-    [Fact]
-    public async Task ExecuteOrder_WithInsufficientStock_ShouldReturnBadRequest()
-    {
-        // Arrange
-        var orderId = 1;
-        var productId = 1;
-        var requestedQuantity = 10;
-        var availableQuantity = 5;
-        _orderServiceMock.Setup(x => x.ExecuteOrderAsync(orderId))
-            .ThrowsAsync(new InsufficientStockException(productId, requestedQuantity, availableQuantity));
-
-        // Act
-        var result = await _controller.ExecuteOrder(orderId);
-
-        // Assert
-        result.Result.Should().BeOfType<BadRequestObjectResult>();
-    }
     
     [Fact]
     public async Task CancelOrder_WithValidId_ShouldCancelOrder()
@@ -655,6 +586,87 @@ public class OrdersControllerTests : TestBase
 
         // Act
         var result = await _controller.CompleteOrder(orderId);
+
+        // Assert
+        result.Result.Should().BeOfType<BadRequestObjectResult>();
+    }
+
+    [Fact]
+    public async Task GetOrderWithStockInfo_WithValidData_ShouldReturnOrderWithStockInfo()
+    {
+        // Arrange
+        var orderId = 1;
+        var stockId = 1;
+        var expectedOrder = new OrderWithStockInfoDto
+        {
+            Id = orderId,
+            Products = new List<OrderProductWithStockInfoDto>
+            {
+                new()
+                {
+                    ProductId = 1,
+                    Name = "Test Product",
+                    Price = 100,
+                    QuantityInOrder = 2,
+                    QuantityInStock = 5,
+                    IsEnough = true
+                }
+            }
+        };
+        _orderServiceMock.Setup(x => x.GetOrderWithStockInfoAsync(orderId, stockId))
+            .ReturnsAsync(expectedOrder);
+
+        // Act
+        var result = await _controller.GetOrderWithStockInfo(orderId, stockId);
+
+        // Assert
+        var okResult = result.Result.Should().BeOfType<OkObjectResult>().Subject;
+        var order = okResult.Value.Should().BeOfType<OrderWithStockInfoDto>().Subject;
+        order.Should().BeEquivalentTo(expectedOrder);
+    }
+
+    [Fact]
+    public async Task GetOrderWithStockInfo_WithInvalidOrderId_ShouldReturnNotFound()
+    {
+        // Arrange
+        var orderId = 999;
+        var stockId = 1;
+        _orderServiceMock.Setup(x => x.GetOrderWithStockInfoAsync(orderId, stockId))
+            .ThrowsAsync(new OrderNotFoundException(orderId));
+
+        // Act
+        var result = await _controller.GetOrderWithStockInfo(orderId, stockId);
+
+        // Assert
+        result.Result.Should().BeOfType<NotFoundObjectResult>();
+    }
+
+    [Fact]
+    public async Task GetOrderWithStockInfo_WithInvalidStockId_ShouldReturnNotFound()
+    {
+        // Arrange
+        var orderId = 1;
+        var stockId = 999;
+        _orderServiceMock.Setup(x => x.GetOrderWithStockInfoAsync(orderId, stockId))
+            .ThrowsAsync(new StockNotFoundException(stockId));
+
+        // Act
+        var result = await _controller.GetOrderWithStockInfo(orderId, stockId);
+
+        // Assert
+        result.Result.Should().BeOfType<NotFoundObjectResult>();
+    }
+
+    [Fact]
+    public async Task GetOrderWithStockInfo_WithoutStockId_ShouldReturnBadRequest()
+    {
+        // Arrange
+        var orderId = 1;
+        _orderServiceMock.Setup(x => x.GetOrderWithStockInfoAsync(orderId, null))
+            .ThrowsAsync(new ArgumentException("Не указан склад для проверки наличия товаров"));
+
+        // Act
+        var result = await _controller.GetOrderWithStockInfo(orderId, null);
 
         // Assert
         result.Result.Should().BeOfType<BadRequestObjectResult>();

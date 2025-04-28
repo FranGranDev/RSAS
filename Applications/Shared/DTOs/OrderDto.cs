@@ -23,6 +23,36 @@ namespace Application.DTOs
         public DeliveryDto Delivery { get; set; }
     }
 
+    public class OrderProductWithStockInfoDto
+    {
+        public int ProductId { get; set; }
+        public string Name { get; set; }
+        public decimal Price { get; set; }
+        public int QuantityInOrder { get; set; }
+        public int QuantityInStock { get; set; }
+        public bool IsEnough { get; set; }
+    }
+
+    public class OrderWithStockInfoDto
+    {
+        public int Id { get; set; }
+        public string UserId { get; set; }
+        public string UserName { get; set; }
+        public int? StockId { get; set; }
+        public string StockName { get; set; }
+        public string ClientName { get; set; }
+        public string ContactPhone { get; set; }
+        public Order.PaymentTypes PaymentType { get; set; }
+        public string PaymentTypeDisplay { get; set; }
+        public DateTime ChangeDate { get; set; }
+        public DateTime OrderDate { get; set; }
+        public Order.States State { get; set; }
+        public string StateDisplay { get; set; }
+        public decimal TotalAmount { get; set; }
+        public IEnumerable<OrderProductWithStockInfoDto> Products { get; set; }
+        public DeliveryDto Delivery { get; set; }
+    }
+
     public class CreateOrderDto
     {
         public int? StockId { get; set; }

@@ -1,0 +1,326 @@
+@page "{id:int}"
+@model Frontend.Pages.Manager.Order.ManageModel
+@{
+    ViewData["Title"] = "Управление заказом";
+}
+
+<div class="container">
+    <div class="row mb-2">
+        <div class="col">
+            <div class="d-flex align-items-center">
+                <h2 class="mb-0">Управление заказом #@Model.Order.Id</h2>
+                <span class="badge bg-@(Model.Order.State == Application.Models.Order.States.Completed ? "success" : 
+                                    Model.Order.State == Application.Models.Order.States.Cancelled ? "danger" : 
+                                    Model.Order.State == Application.Models.Order.States.InProcess ? "warning" :
+                                    Model.Order.State == Application.Models.Order.States.New ? "info" :
+                                    Model.Order.State == Application.Models.Order.States.OnHold ? "secondary" : "primary") ms-3">
+                    @Model.Order.StateDisplay
+                </span>
+            </div>
+        </div>
+        <div class="col-auto">
+            <div class="btn-group">
+                @if (Model.Order.State == Application.Models.Order.States.New)
+                {
+                    <button type="button" class="btn btn-primary" id="executeOrderBtn" 
+                            @(Model.Order.Products.All(p => p.IsEnough) ? "" : "disabled")>
+                        <i class="bi bi-box-seam"></i> Подготовить товар
+                    </button>
+                    <button type="button" class="btn btn-warning" id="holdOrderBtn">
+                        <i class="bi bi-pause-circle"></i> Отложить заказ
+                    </button>
+                    <button type="button" class="btn btn-danger" id="cancelOrderBtn">
+                        <i class="bi bi-x-circle"></i> Отменить заказ
+                    </button>
+                }
+                else if (Model.Order.State == Application.Models.Order.States.InProcess)
+                {
+                    <button type="button" class="btn btn-success" id="completeOrderBtn">
+                        <i class="bi bi-check-circle"></i> Завершить заказ
+                    </button>
+                    <button type="button" class="btn btn-danger" id="cancelOrderBtn">
+                        <i class="bi bi-x-circle"></i> Отменить заказ
+                    </button>
+                }
+                else if (Model.Order.State == Application.Models.Order.States.OnHold)
+                {
+                    <button type="button" class="btn btn-success" id="resumeOrderBtn">
+                        <i class="bi bi-play-circle"></i> Возобновить заказ
+                    </button>
+                    <button type="button" class="btn btn-danger" id="cancelOrderBtn">
+                        <i class="bi bi-x-circle"></i> Отменить заказ
+                    </button>
+                }
+                else if (Model.Order.State == Application.Models.Order.States.Cancelled)
+                {
+                    <button type="button" class="btn btn-danger" id="deleteOrderBtn">
+                        <i class="bi bi-trash"></i> Удалить заказ
+                    </button>
+                }
+            </div>
+        </div>
+    </div>
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Товары в заказе</h3>
+                </div>
+                <div class="card-body">
+                    @if (Model.Order.State == Application.Models.Order.States.New || Model.Order.State == Application.Models.Order.States.OnHold)
+                    {
+                        <div class="row mb-3">
+                            <div class="col-md-4">
+                                <label class="form-label">Выберите склад для проверки наличия:</label>
+                                <select class="form-select" id="stockSelect">
+                                    @foreach (var stock in Model.Stocks)
+                                    {
+                                        <option value="@stock.Id">@stock.Name</option>
+                                    }
+                                </select>
+                            </div>
+                        </div>
+                        <div id="orderProductsTable">
+                            @await Html.PartialAsync("Shared/Orders/_ManageOrderProductPartial", Model.Order.Products)
+                        </div>
+                    }
+                    else
+                    {
+                        <div id="orderProductsTable">
+                            @await Html.PartialAsync("Shared/Orders/_OrderProductPartial", Model.Order.Products)
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-1">
+        <div class="col-md-6">
+            @await Html.PartialAsync("Shared/Orders/_ContactInfoPartial", new Frontend.Models.Orders.ContactInfoViewModel
+            {
+                FirstName = Model.Order.ClientName.Split(' ')[0],
+                LastName = Model.Order.ClientName.Split(' ')[1],
+                Phone = Model.Order.ContactPhone,
+                Editable = false
+            })
+        </div>
+        <div class="col-md-6">
+            @await Html.PartialAsync("Shared/Orders/_PaymentPartial", new Frontend.Models.Orders.PaymentViewModel
+            {
+                PaymentType = Model.Order.PaymentType,
+                Amount = Model.Order.TotalAmount,
+                Editable = false
+            })
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            @if (Model.Order.State == Application.Models.Order.States.New || Model.Order.State == Application.Models.Order.States.InProcess)
+            {
+                @await Html.PartialAsync("Shared/Orders/_ManageDeliveryPartial", new Frontend.Models.Orders.DeliveryViewModel
+                {
+                    City = Model.Order.Delivery.City,
+                    Street = Model.Order.Delivery.Street,
+                    House = Model.Order.Delivery.House,
+                    Flat = Model.Order.Delivery.Flat,
+                    PostalCode = Model.Order.Delivery.PostalCode,
+                    DeliveryDate = Model.Order.Delivery.DeliveryDate,
+                    Editable = true,
+                    OrderId = Model.Order.Id
+                })
+            }
+            else
+            {
+                @await Html.PartialAsync("Shared/Orders/_DeliveryPartial", new Frontend.Models.Orders.DeliveryViewModel
+                {
+                    City = Model.Order.Delivery.City,
+                    Street = Model.Order.Delivery.Street,
+                    House = Model.Order.Delivery.House,
+                    Flat = Model.Order.Delivery.Flat,
+                    PostalCode = Model.Order.Delivery.PostalCode,
+                    DeliveryDate = Model.Order.Delivery.DeliveryDate,
+                    Editable = false,
+                    OrderId = Model.Order.Id
+                })
+            }
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @Html.AntiForgeryToken()
+    <script>
+        function formatDeliveryDate(input) {
+            const date = new Date(input.value);
+            const timezoneOffset = date.getTimezoneOffset();
+            date.setMinutes(date.getMinutes() - timezoneOffset);
+            date.setMinutes(0);
+            input.value = date.toISOString().slice(0, 16);
+        }
+
+        $(document).ready(function() {
+            // Инициализация при загрузке страницы
+            const dateInput = document.querySelector('input[type="datetime-local"]');
+            if (dateInput) {
+                formatDeliveryDate(dateInput);
+            }
+
+            $('#stockSelect').change(function() {
+                var stockId = $(this).val();
+                $('#orderProductsTable').load(`?handler=OrderProducts&stockId=${stockId}`, function() {
+                    // Проверяем наличие всех товаров после загрузки таблицы
+                    var allEnough = true;
+                    $('tbody tr').each(function() {
+                        if (!$(this).find('.badge').hasClass('bg-success')) {
+                            allEnough = false;
+                            return false;
+                        }
+                    });
+                    $('#executeOrderBtn').prop('disabled', !allEnough);
+                });
+            });
+            
+            $('#executeOrderBtn').click(function() {
+                if (confirm('Вы уверены, что хотите подготовить товар?')) {
+                    var stockId = $('#stockSelect').val();
+                    $.ajax({
+                        type: 'POST',
+                        url: '?handler=ExecuteOrder',
+                        data: JSON.stringify({ 
+                            orderId: @Model.Order.Id,
+                            stockId: parseInt(stockId)
+                        }),
+                        contentType: 'application/json',
+                        headers: {
+                            'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
+                        },
+                        success: function(response) {
+                            if (response.success) {
+                                location.reload();
+                                notification.showSuccess('Заказ успешно подготовлен к выдаче');
+                            } else {
+                                notification.showError('Ошибка: ' + response.error);
+                            }
+                        },
+                        error: function(xhr, status, error) {
+                            console.error('Ошибка при выполнении заказа:', error);
+                            notification.showError('Произошла ошибка при выполнении заказа');
+                        }
+                    });
+                }
+            });
+            
+            $('#cancelOrderBtn').click(function() {
+                if (confirm('Вы уверены, что хотите отменить заказ?')) {
+                    $.post('?handler=CancelOrder', { orderId: @Model.Order.Id })
+                        .done(function(response) {
+                            if (response.success) {
+                                location.reload();
+                                notification.showSuccess('Заказ успешно отменен');
+                            } else {
+                                notification.showError('Ошибка: ' + response.error);
+                            }
+                        });
+                }
+            });
+            
+            $('#completeOrderBtn').click(function() {
+                if (confirm('Вы уверены, что хотите завершить заказ?')) {
+                    $.post('?handler=CompleteOrder', { orderId: @Model.Order.Id })
+                        .done(function(response) {
+                            if (response.success) {
+                                location.reload();
+                                notification.showSuccess('Заказ успешно завершен');
+                            } else {
+                                notification.showError('Ошибка: ' + response.error);
+                            }
+                        });
+                }
+            });
+
+            $('#holdOrderBtn').click(function() {
+                if (confirm('Вы уверены, что хотите отложить заказ?')) {
+                    $.post('?handler=HoldOrder', { orderId: @Model.Order.Id })
+                        .done(function(response) {
+                            if (response.success) {
+                                location.reload();
+                            } else {
+                                notification.showError('Ошибка: ' + response.error);
+                            }
+                        });
+                }
+            });
+
+            $('#resumeOrderBtn').click(function() {
+                if (confirm('Вы уверены, что хотите возобновить заказ?')) {
+                    $.post('?handler=ResumeOrder', { orderId: @Model.Order.Id })
+                        .done(function(response) {
+                            if (response.success) {
+                                location.reload();
+                            } else {
+                                notification.showError('Ошибка: ' + response.error);
+                            }
+                        });
+                }
+            });
+
+            // Обработка обновления даты доставки
+            $('#updateDeliveryDateBtn').click(function() {
+                const deliveryDate = $('#DeliveryDate').val();
+                const orderId = @Model.Id; // Используем Id из модели страницы
+                
+                $.ajax({
+                    type: 'POST',
+                    url: '?handler=UpdateDeliveryDate',
+                    data: JSON.stringify({ 
+                        orderId: orderId,
+                        deliveryDate: deliveryDate
+                    }),
+                    contentType: 'application/json',
+                    headers: {
+                        'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            notification.showSuccess('Дата доставки успешно обновлена');
+                        } else {
+                            notification.showError(response.error || 'Произошла ошибка при обновлении даты доставки');
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Ошибка при обновлении даты доставки:', error);
+                        notification.showError('Произошла ошибка при обновлении даты доставки');
+                    }
+                });
+            });
+
+            $('#deleteOrderBtn').click(function() {
+                if (confirm('Вы уверены, что хотите удалить заказ? Это действие нельзя отменить.')) {
+                    $.ajax({
+                        type: 'DELETE',
+                        url: '?handler=DeleteOrder',
+                        data: JSON.stringify({ orderId: @Model.Order.Id }),
+                        contentType: 'application/json',
+                        headers: {
+                            'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
+                        },
+                        success: function(response) {
+                            if (response.success) {
+                                notification.showSuccess('Заказ успешно удален');
+                                window.location.href = '/Manager/Order';
+                            } else {
+                                notification.showError('Ошибка: ' + response.error);
+                            }
+                        },
+                        error: function(xhr, status, error) {
+                            console.error('Ошибка при удалении заказа:', error);
+                            notification.showError('Произошла ошибка при удалении заказа');
+                        }
+                    });
+                }
+            });
+        });
+    </script>
+} 

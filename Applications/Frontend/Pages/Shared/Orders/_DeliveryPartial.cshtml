@@ -49,6 +49,7 @@
             <input asp-for="DeliveryDate" 
                    type="datetime-local" 
                    class="form-control" 
+                   disabled="@(!Model.Editable)"
                    step="3600"
                    min="@DateTime.Now.ToString("yyyy-MM-ddTHH:00")"
                    value="@Model.DeliveryDate.ToString("yyyy-MM-ddTHH:00")"

@@ -60,6 +60,8 @@ namespace Frontend.Models.Orders
             set => Delivery.DeliveryDate = value;
         }
 
+        public int OrderId { get; set; }
+
         public CreateDeliveryDto ToDto() => Delivery;
     }
 } 

@@ -175,13 +175,6 @@ namespace Application.Controllers
         {
             try
             {
-                var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-
-                if (!await _orderService.IsOrderOwnerAsync(id, userId))
-                {
-                    return Forbid();
-                }
-
                 await _orderService.DeleteOrderAsync(id);
                 return NoContent();
             }
@@ -229,11 +222,6 @@ namespace Application.Controllers
         [Authorize(Policy = "RequireManagerRole")]
         public async Task<ActionResult<DeliveryDto>> UpdateDelivery(int orderId, UpdateDeliveryDto updateDeliveryDto)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
             try
             {
                 var delivery = await _orderService.UpdateDeliveryAsync(orderId, updateDeliveryDto);
@@ -270,17 +258,18 @@ namespace Application.Controllers
         ///     Выполнить заказ
         /// </summary>
         /// <param name="id">ID заказа</param>
+        /// <param name="stockId">ID склада для выполнения заказа</param>
         /// <returns>Обновленный заказ</returns>
         /// <response code="400">Некорректные входные данные</response>
         /// <response code="403">Недостаточно прав для выполнения заказа</response>
         /// <response code="404">Заказ не найден</response>
         [HttpPost("{id}/execute")]
         [Authorize(Policy = "RequireManagerRole")]
-        public async Task<ActionResult<OrderDto>> ExecuteOrder(int id)
+        public async Task<ActionResult<OrderDto>> ExecuteOrder(int id, [FromBody] int stockId)
         {
             try
             {
-                var order = await _orderService.ExecuteOrderAsync(id);
+                var order = await _orderService.ExecuteOrderAsync(id, stockId);
                 return Ok(order);
             }
             catch (OrderNotFoundException)
@@ -289,11 +278,11 @@ namespace Application.Controllers
             }
             catch (StockNotFoundException ex)
             {
-                return BadRequest(ex.Message);
+                return BadRequest($"Склад с ID {stockId} не найден");
             }
             catch (InsufficientStockException ex)
             {
-                return BadRequest(ex.Message);
+                return BadRequest($"Недостаточно товара на складе: {ex.Message}");
             }
         }
 
@@ -311,7 +300,7 @@ namespace Application.Controllers
         {
             try
             {
-                var order = await _orderService. CancelOrderAsync(id);
+                var order = await _orderService.CancelOrderAsync(id);
                 return Ok(order);
             }
             catch (OrderNotFoundException)
@@ -325,7 +314,7 @@ namespace Application.Controllers
         }
 
         /// <summary>
-        ///     Завершить заказ
+        ///     Завершить заказ и создать продажу
         /// </summary>
         /// <param name="id">ID заказа</param>
         /// <returns>Обновленный заказ</returns>
@@ -348,6 +337,117 @@ namespace Application.Controllers
             catch (InvalidOrderStateException ex)
             {
                 return BadRequest(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// Отложить заказ
+        /// </summary>
+        /// <param name="id">ID заказа</param>
+        /// <returns>Обновленный заказ</returns>
+        /// <response code="400">Некорректные входные данные</response>
+        /// <response code="403">Недостаточно прав для откладывания заказа</response>
+        /// <response code="404">Заказ не найден</response>
+        [HttpPost("{id}/hold")]
+        [Authorize(Policy = "RequireManagerRole")]
+        public async Task<ActionResult<OrderDto>> HoldOrder(int id)
+        {
+            try
+            {
+                var order = await _orderService.HoldOrderAsync(id);
+                return Ok(order);
+            }
+            catch (OrderNotFoundException)
+            {
+                return NotFound($"Заказ с ID {id} не найден");
+            }
+            catch (InvalidOrderStateException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// Возобновить отложенный заказ
+        /// </summary>
+        /// <param name="id">ID заказа</param>
+        /// <returns>Обновленный заказ</returns>
+        /// <response code="400">Некорректные входные данные</response>
+        /// <response code="403">Недостаточно прав для возобновления заказа</response>
+        /// <response code="404">Заказ не найден</response>
+        [HttpPost("{id}/resume")]
+        [Authorize(Policy = "RequireManagerRole")]
+        public async Task<ActionResult<OrderDto>> ResumeOrder(int id)
+        {
+            try
+            {
+                var order = await _orderService.ResumeOrderAsync(id);
+                return Ok(order);
+            }
+            catch (OrderNotFoundException)
+            {
+                return NotFound($"Заказ с ID {id} не найден");
+            }
+            catch (InvalidOrderStateException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// Получить информацию о заказе с учетом наличия товаров на складе
+        /// </summary>
+        /// <param name="id">ID заказа</param>
+        /// <param name="stockId">ID склада для проверки наличия (если не указан, используется текущий склад заказа)</param>
+        /// <returns>Информация о заказе с данными о наличии товаров</returns>
+        /// <response code="403">Недостаточно прав для просмотра заказа</response>
+        /// <response code="404">Заказ или склад не найден</response>
+        [HttpGet("{id}/stock-info")]
+        [Authorize(Policy = "RequireManagerRole")]
+        public async Task<ActionResult<OrderWithStockInfoDto>> GetOrderWithStockInfo(int id, [FromQuery] int? stockId)
+        {
+            try
+            {
+                var order = await _orderService.GetOrderWithStockInfoAsync(id, stockId);
+                return Ok(order);
+            }
+            catch (OrderNotFoundException)
+            {
+                return NotFound($"Заказ с ID {id} не найден");
+            }
+            catch (StockNotFoundException)
+            {
+                return NotFound($"Склад не найден");
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// Получить информацию о доставке заказа
+        /// </summary>
+        /// <param name="id">ID заказа</param>
+        /// <returns>Информация о доставке</returns>
+        /// <response code="403">Недостаточно прав для просмотра доставки</response>
+        /// <response code="404">Заказ не найден</response>
+        [HttpGet("{id}/delivery")]
+        [Authorize(Policy = "RequireManagerRole")]
+        public async Task<ActionResult<DeliveryDto>> GetDelivery(int id)
+        {
+            try
+            {
+                var delivery = await _orderService.GetDeliveryAsync(id);
+                return Ok(delivery);
+            }
+            catch (OrderNotFoundException)
+            {
+                return NotFound($"Заказ с ID {id} не найден");
             }
         }
     }

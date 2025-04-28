@@ -57,6 +57,7 @@ namespace Server.Services.Sales
                 TotalAmount = totalAmount,
                 ClientName = order.ClientName,
                 ClientPhone = order.ContactPhone,
+                PaymentMethod = order.PaymentType.ToString(),
                 Products = order.Products.Select(op => new SaleProduct
                 {
                     ProductId = op.ProductId,

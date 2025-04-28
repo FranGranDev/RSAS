@@ -4,24 +4,29 @@ using Application.Models;
 using Application.Services.Repository;
 using AutoMapper;
 using Server.Services.Repository;
+using Microsoft.EntityFrameworkCore;
+using Server.Services.Sales;
 
 namespace Application.Services
 {
     public class OrderService : IOrderService
     {
         private readonly IDeliveryRepository _deliveryRepository;
-        private readonly IMapper _mapper;
         private readonly IOrderRepository _orderRepository;
         private readonly IStockRepository _stockRepository;
+        private readonly ISaleService _saleService;
+        private readonly IMapper _mapper;
 
         public OrderService(
             IOrderRepository orderRepository,
             IStockRepository stockRepository,
             IMapper mapper,
+            ISaleService saleService,
             IDeliveryRepository deliveryRepository)
         {
             _orderRepository = orderRepository;
             _stockRepository = stockRepository;
+            _saleService = saleService;
             _mapper = mapper;
             _deliveryRepository = deliveryRepository;
         }
@@ -71,7 +76,7 @@ namespace Application.Services
             return _mapper.Map<OrderDto>(order);
         }
 
-        public async Task<OrderDto> ExecuteOrderAsync(int id)
+        public async Task<OrderDto> ExecuteOrderAsync(int id, int stockId)
         {
             var order = await _orderRepository.GetWithDetailsAsync(id);
             if (order == null)
@@ -79,72 +84,55 @@ namespace Application.Services
                 throw new OrderNotFoundException(id);
             }
 
-            if (!order.StockId.HasValue)
+            // Проверяем существование склада
+            var stock = await _stockRepository.GetByIdAsync(stockId);
+            if (stock == null)
             {
-                throw new StockNotFoundException(id);
+                throw new StockNotFoundException(stockId);
             }
 
-            // Проверяем наличие товаров на складе
+            // Проверяем наличие всех товаров на складе
             foreach (var product in order.Products)
             {
-                var stockProduct = await _stockRepository.GetStockProductAsync(order.StockId.Value, product.ProductId);
-                if (stockProduct == null)
+                var stockProduct = await _stockRepository.GetStockProductAsync(stockId, product.ProductId);
+                if (stockProduct == null || stockProduct.Quantity < product.Quantity)
                 {
                     throw new InsufficientStockException(product.ProductId, product.Quantity, 0);
-                }
-
-                if (stockProduct.Quantity < product.Quantity)
-                {
-                    throw new InsufficientStockException(product.ProductId, product.Quantity, stockProduct.Quantity);
                 }
             }
 
             // Списываем товары со склада
             foreach (var product in order.Products)
             {
-                var stockProduct = await _stockRepository.GetStockProductAsync(order.StockId.Value, product.ProductId);
+                var stockProduct = await _stockRepository.GetStockProductAsync(stockId, product.ProductId);
                 stockProduct.Quantity -= product.Quantity;
                 await _stockRepository.UpdateStockProductAsync(stockProduct);
             }
 
+            // Связываем заказ со складом
+            order.StockId = stockId;
             order.State = Order.States.InProcess;
             order.ChangeDate = DateTime.UtcNow;
-            await _orderRepository.UpdateAsync(order);
 
+            await _orderRepository.UpdateAsync(order);
             return _mapper.Map<OrderDto>(order);
         }
 
         public async Task<OrderDto> CancelOrderAsync(int id)
         {
-            var order = await _orderRepository.GetWithDetailsAsync(id);
+            var order = await _orderRepository.GetByIdAsync(id);
             if (order == null)
             {
                 throw new OrderNotFoundException(id);
             }
 
-            if (order.State == Order.States.Completed)
+            if (order.State == Order.States.Completed || order.State == Order.States.Cancelled)
             {
-                throw new InvalidOrderStateException("Нельзя отменить завершенный заказ");
-            }
-
-            // Возвращаем товары на склад, если заказ был в процессе выполнения
-            if (order.State == Order.States.InProcess && order.StockId.HasValue)
-            {
-                foreach (var product in order.Products)
-                {
-                    var stockProduct = await _stockRepository.GetStockProductAsync(order.StockId.Value, product.ProductId);
-                    if (stockProduct != null)
-                    {
-                        stockProduct.Quantity += product.Quantity;
-                        await _stockRepository.UpdateStockProductAsync(stockProduct);
-                    }
-                }
+                throw new InvalidOrderStateException($"Невозможно отменить заказ в состоянии {order.State}");
             }
 
             order.State = Order.States.Cancelled;
-            order.ChangeDate = DateTime.UtcNow;
             await _orderRepository.UpdateAsync(order);
-
             return _mapper.Map<OrderDto>(order);
         }
 
@@ -228,8 +216,10 @@ namespace Application.Services
 
             order.State = Order.States.Completed;
             order.ChangeDate = DateTime.UtcNow;
-
+            
+            await _saleService.CreateFromOrderAsync(order.Id);
             await _orderRepository.UpdateAsync(order);
+            
             return _mapper.Map<OrderDto>(order);
         }
 
@@ -273,6 +263,106 @@ namespace Application.Services
         {
             var deliveries = await _deliveryRepository.GetByDateRangeAsync(startDate, endDate);
             return _mapper.Map<IEnumerable<DeliveryDto>>(deliveries);
+        }
+
+        public async Task<OrderWithStockInfoDto> GetOrderWithStockInfoAsync(int orderId, int? stockId = null)
+        {
+            var order = await _orderRepository.GetWithDetailsAsync(orderId);
+            if (order == null)
+            {
+                throw new OrderNotFoundException(orderId);
+            }
+
+            var orderDto = _mapper.Map<OrderWithStockInfoDto>(order);
+
+            // Если склад не указан, используем текущий склад заказа
+            var targetStockId = stockId ?? order.StockId;
+            if (targetStockId == null)
+            {
+                throw new ArgumentException("Не указан склад для проверки наличия товаров");
+            }
+
+            var stock = await _stockRepository.GetWithStockProductsAsync(targetStockId.Value);
+            if (stock == null)
+            {
+                throw new StockNotFoundException(targetStockId.Value);
+            }
+
+            // Обновляем информацию о товарах с учетом наличия на складе
+            orderDto.Products = order.Products.Select(op =>
+            {
+                var stockProduct = stock.StockProducts.FirstOrDefault(sp => sp.ProductId == op.ProductId);
+                return new OrderProductWithStockInfoDto
+                {
+                    ProductId = op.ProductId,
+                    Name = op.Product.Name,
+                    Price = op.Product.Price,
+                    QuantityInOrder = op.Quantity,
+                    QuantityInStock = stockProduct?.Quantity ?? 0,
+                    IsEnough = stockProduct?.Quantity >= op.Quantity
+                };
+            }).ToList();
+
+            orderDto.StockId = targetStockId;
+            orderDto.StockName = stock.Name;
+
+            return orderDto;
+        }
+
+        public async Task<DeliveryDto> GetDeliveryAsync(int orderId)
+        {
+            var order = await _orderRepository.GetWithDetailsAsync(orderId);
+            if (order == null)
+            {
+                throw new OrderNotFoundException(orderId);
+            }
+
+            return new DeliveryDto
+            {
+                Id = order.Id,
+                City = order.Delivery.City,
+                Street = order.Delivery.Street,
+                House = order.Delivery.House,
+                Flat = order.Delivery.Flat,
+                PostalCode = order.Delivery.PostalCode,
+                DeliveryDate = order.Delivery.DeliveryDate
+            };
+        }
+
+        public async Task<OrderDto> HoldOrderAsync(int id)
+        {
+            var order = await _orderRepository.GetByIdAsync(id);
+            if (order == null)
+            {
+                throw new OrderNotFoundException(id);
+            }
+
+            if (order.State != Order.States.New)
+            {
+                throw new InvalidOrderStateException($"Невозможно отложить заказ в состоянии {order.State}");
+            }
+
+            order.State = Order.States.OnHold;
+            await _orderRepository.UpdateAsync(order);
+            return _mapper.Map<OrderDto>(order);
+        }
+
+        public async Task<OrderDto> ResumeOrderAsync(int id)
+        {
+            var order = await _orderRepository.GetByIdAsync(id);
+            if (order == null)
+            {
+                throw new OrderNotFoundException(id);
+            }
+
+            if (order.State != Order.States.OnHold)
+            {
+                throw new InvalidOrderStateException($"Невозможно возобновить заказ в состоянии {order.State}");
+            }
+
+            order.State = Order.States.New;
+            await _orderRepository.UpdateAsync(order);
+            return _mapper.Map<OrderDto>(order);
         }
     }
 }

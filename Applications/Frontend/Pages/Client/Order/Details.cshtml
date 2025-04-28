@@ -15,10 +15,12 @@
 
     <div class="row">
         <div class="col-md-8">
-            <div class="card mb-4">
+            <div class="card mb-4 h-100">
                 <div class="card-header">
                     <div class="d-flex justify-content-between align-items-center">
-                        <h5 class="card-title mb-0">Информация о заказе</h5>
+                        <h5 class="card-title mb-0">
+                            <i class="bi bi-info-circle me-2"></i>Информация о заказе
+                        </h5>
                         <span class="badge bg-@(Model.Order.State == Order.States.Completed ? "success" : 
                                         Model.Order.State == Order.States.Cancelled ? "danger" : 
                                         Model.Order.State == Order.States.InProcess ? "warning" :
@@ -53,49 +55,14 @@
                     </div>
                 </div>
             </div>
-
-            <div class="card mb-4">
-                <div class="card-header">
-                    <h5 class="card-title mb-0">Товары в заказе</h5>
-                </div>
-                <div class="card-body">
-                    <div class="table-responsive">
-                        <table class="table">
-                            <thead>
-                                <tr>
-                                    <th>Товар</th>
-                                    <th>Количество</th>
-                                    <th>Цена</th>
-                                    <th>Сумма</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach (var product in Model.Order.Products)
-                                {
-                                    <tr>
-                                        <td>@product.ProductName</td>
-                                        <td>@product.Quantity</td>
-                                        <td>@product.Price.ToString("C")</td>
-                                        <td>@((product.Price * product.Quantity).ToString("C"))</td>
-                                    </tr>
-                                }
-                            </tbody>
-                            <tfoot>
-                                <tr>
-                                    <td colspan="3" class="text-end"><strong>Итого:</strong></td>
-                                    <td><strong>@Model.Order.TotalAmount.ToString("C")</strong></td>
-                                </tr>
-                            </tfoot>
-                        </table>
-                    </div>
-                </div>
-            </div>
         </div>
 
         <div class="col-md-4">
-            <div class="card">
+            <div class="card h-100">
                 <div class="card-header">
-                    <h5 class="card-title mb-0">Информация о доставке</h5>
+                    <h5 class="card-title mb-0">
+                        <i class="bi bi-truck me-2"></i>Информация о доставке
+                    </h5>
                 </div>
                 <div class="card-body">
                     <div class="mb-3">
@@ -106,6 +73,21 @@
                         <strong>Дата доставки:</strong>
                         <p>@Model.Order.Delivery.DeliveryDate.ToString("dd.MM.yyyy")</p>
                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="bi bi-cart me-2"></i>Товары в заказе
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <partial name="Shared/Orders/_OrderProductItemsPartial" model="Model.Order.Products" />
                 </div>
             </div>
         </div>

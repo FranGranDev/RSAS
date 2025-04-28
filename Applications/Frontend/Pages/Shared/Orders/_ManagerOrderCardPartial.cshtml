@@ -1,0 +1,54 @@
+@using Application.Models
+@model Application.DTOs.OrderDto
+
+<div class="card h-100 shadow-sm" style="cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;" 
+     onclick="window.location.href='/Manager/Order/Manage/@Model.Id'"
+     onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='0 0.5rem 1rem rgba(0,0,0,0.15)'"
+     onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 0.125rem 0.25rem rgba(0,0,0,0.075)'">
+    <div class="card-header">
+        <div class="d-flex justify-content-between align-items-center">
+            <h5 class="card-title mb-0">Заказ #@Model.Id</h5>
+            <span class="badge bg-@(Model.State == Order.States.Completed ? "success" : 
+                                Model.State == Order.States.Cancelled ? "danger" : 
+                                Model.State == Order.States.InProcess ? "warning" :
+                                Model.State == Order.States.New ? "info" :
+                                Model.State == Order.States.OnHold ? "secondary" : "primary")">
+                @Model.StateDisplay
+            </span>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="mb-2">
+            <strong>Клиент:</strong>
+            <span>@Model.ClientName</span>
+        </div>
+        <div class="mb-2">
+            <strong>Дата заказа:</strong>
+            <span>@Model.OrderDate.ToString("dd.MM.yyyy HH:mm")</span>
+        </div>
+        <div class="mb-2">
+            <strong>Сумма заказа:</strong>
+            <span>@Model.TotalAmount.ToString("C")</span>
+        </div>
+        <div class="mb-2">
+            <strong>Способ оплаты:</strong>
+            <span>@Model.PaymentTypeDisplay</span>
+        </div>
+        <div class="mb-2">
+            <strong>Доставка:</strong>
+            <span>@Model.Delivery.FullAddress</span>
+        </div>
+        <div class="mb-2">
+            <strong>Телефон клиента:</strong>
+            <span>@Model.ContactPhone</span>
+        </div>
+    </div>
+    <div class="card-footer">
+        <div class="d-flex justify-content-between align-items-center">
+            <small class="text-muted">@Model.Products.Count() товаров</small>
+            <a href="/Manager/Order/Manage/@Model.Id" class="btn btn-sm btn-outline-primary">
+                Управление
+            </a>
+        </div>
+    </div>
+</div> 

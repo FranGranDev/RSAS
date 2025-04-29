@@ -2,19 +2,32 @@ $(document).ready(function () {
     const ordersGrid = $('#ordersGrid');
     const searchInput = $('#searchInput');
     const statusFilter = $('#statusFilter');
+    const dateFrom = $('#dateFrom');
+    const dateTo = $('#dateTo');
     const dateSort = $('#dateSort');
     const pagination = $('#pagination');
+    const resetDates = $('#resetDates');
     
     let currentPage = 1;
     let itemsPerPage = 6;
     let filteredOrders = Array.from(document.querySelectorAll('.order-card'));
     
+    // Функция установки стандартных дат
+    function setDefaultDates() {
+        const today = new Date();
+        const yearAgo = new Date();
+        yearAgo.setFullYear(today.getFullYear() - 1);
+        
+        dateFrom.val(yearAgo.toISOString().split('T')[0]);
+        dateTo.val(today.toISOString().split('T')[0]);
+    }
+    
     // Функция фильтрации заказов
     function filterOrders() {
         const searchTerm = searchInput.val().toLowerCase();
         const statusValue = statusFilter.val();
-        const dateFrom = $('#dateFrom').val();
-        const dateTo = $('#dateTo').val();
+        const dateFromValue = dateFrom.val();
+        const dateToValue = dateTo.val();
         
         filteredOrders = Array.from(document.querySelectorAll('.order-card')).filter(card => {
             const id = card.dataset.id;
@@ -23,8 +36,8 @@ $(document).ready(function () {
             
             const matchesSearch = id.includes(searchTerm);
             const matchesStatus = !statusValue || status === statusValue.toLowerCase();
-            const matchesDate = (!dateFrom || orderDate >= new Date(dateFrom)) &&
-                              (!dateTo || orderDate <= new Date(dateTo));
+            const matchesDate = (!dateFromValue || orderDate >= new Date(dateFromValue)) &&
+                              (!dateToValue || orderDate <= new Date(dateToValue + 'T23:59:59'));
             
             return matchesSearch && matchesStatus && matchesDate;
         });
@@ -77,13 +90,40 @@ $(document).ready(function () {
         let paginationHtml = '';
         
         if (totalPages > 1) {
+            const maxVisiblePages = 5; // Максимальное количество видимых страниц
+            let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
+            let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+            
+            // Корректируем startPage, если endPage достиг конца
+            if (endPage - startPage + 1 < maxVisiblePages) {
+                startPage = Math.max(1, endPage - maxVisiblePages + 1);
+            }
+            
+            // Кнопка "Предыдущая"
             paginationHtml += `
                 <li class="page-item ${currentPage === 1 ? 'disabled' : ''}">
                     <a class="page-link" href="#" data-page="${currentPage - 1}">Предыдущая</a>
                 </li>
             `;
             
-            for (let i = 1; i <= totalPages; i++) {
+            // Первая страница
+            if (startPage > 1) {
+                paginationHtml += `
+                    <li class="page-item">
+                        <a class="page-link" href="#" data-page="1">1</a>
+                    </li>
+                `;
+                if (startPage > 2) {
+                    paginationHtml += `
+                        <li class="page-item disabled">
+                            <span class="page-link">...</span>
+                        </li>
+                    `;
+                }
+            }
+            
+            // Основные страницы
+            for (let i = startPage; i <= endPage; i++) {
                 paginationHtml += `
                     <li class="page-item ${currentPage === i ? 'active' : ''}">
                         <a class="page-link" href="#" data-page="${i}">${i}</a>
@@ -91,6 +131,23 @@ $(document).ready(function () {
                 `;
             }
             
+            // Последняя страница
+            if (endPage < totalPages) {
+                if (endPage < totalPages - 1) {
+                    paginationHtml += `
+                        <li class="page-item disabled">
+                            <span class="page-link">...</span>
+                        </li>
+                    `;
+                }
+                paginationHtml += `
+                    <li class="page-item">
+                        <a class="page-link" href="#" data-page="${totalPages}">${totalPages}</a>
+                    </li>
+                `;
+            }
+            
+            // Кнопка "Следующая"
             paginationHtml += `
                 <li class="page-item ${currentPage === totalPages ? 'disabled' : ''}">
                     <a class="page-link" href="#" data-page="${currentPage + 1}">Следующая</a>
@@ -104,7 +161,13 @@ $(document).ready(function () {
     // Обработчики событий
     searchInput.on('input', filterOrders);
     statusFilter.on('change', filterOrders);
+    dateFrom.on('change', filterOrders);
+    dateTo.on('change', filterOrders);
     dateSort.on('change', filterOrders);
+    resetDates.on('click', function() {
+        setDefaultDates();
+        filterOrders();
+    });
     
     pagination.on('click', '.page-link', function(e) {
         e.preventDefault();
@@ -117,5 +180,6 @@ $(document).ready(function () {
     });
     
     // Инициализация
+    setDefaultDates();
     filterOrders();
 }); 

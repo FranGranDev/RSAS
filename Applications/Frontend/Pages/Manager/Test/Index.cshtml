@@ -1,0 +1,113 @@
+@page
+@model Frontend.Pages.Manager.Test.IndexModel
+@{
+    ViewData["Title"] = "Генерация тестовых продаж";
+}
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Генерация тестовых продаж</h3>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label asp-for="GenerateSalesDto.StartDate" class="control-label">Дата начала</label>
+                                    <input asp-for="GenerateSalesDto.StartDate" class="form-control" type="datetime-local" />
+                                    <span asp-validation-for="GenerateSalesDto.StartDate" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label asp-for="GenerateSalesDto.EndDate" class="control-label">Дата окончания</label>
+                                    <input asp-for="GenerateSalesDto.EndDate" class="form-control" type="datetime-local" />
+                                    <span asp-validation-for="GenerateSalesDto.EndDate" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row mt-3">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label asp-for="GenerateSalesDto.SalesCount" class="control-label">Количество продаж</label>
+                                    <input asp-for="GenerateSalesDto.SalesCount" class="form-control" type="number" min="1" max="1000" />
+                                    <span asp-validation-for="GenerateSalesDto.SalesCount" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label asp-for="GenerateSalesDto.AverageOrderDurationMinutes" class="control-label">Средняя продолжительность заказа (минут)</label>
+                                    <input asp-for="GenerateSalesDto.AverageOrderDurationMinutes" class="form-control" type="number" min="1" max="1440" />
+                                    <span asp-validation-for="GenerateSalesDto.AverageOrderDurationMinutes" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row mt-3">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label asp-for="GenerateSalesDto.MinProductsPerOrder" class="control-label">Минимальное количество товаров в заказе</label>
+                                    <input asp-for="GenerateSalesDto.MinProductsPerOrder" class="form-control" type="number" min="1" max="10" />
+                                    <span asp-validation-for="GenerateSalesDto.MinProductsPerOrder" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label asp-for="GenerateSalesDto.MaxProductsPerOrder" class="control-label">Максимальное количество товаров в заказе</label>
+                                    <input asp-for="GenerateSalesDto.MaxProductsPerOrder" class="form-control" type="number" min="1" max="10" />
+                                    <span asp-validation-for="GenerateSalesDto.MaxProductsPerOrder" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row mt-3">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label asp-for="GenerateSalesDto.MinProductQuantity" class="control-label">Минимальное количество каждого товара</label>
+                                    <input asp-for="GenerateSalesDto.MinProductQuantity" class="form-control" type="number" min="1" max="100" />
+                                    <span asp-validation-for="GenerateSalesDto.MinProductQuantity" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label asp-for="GenerateSalesDto.MaxProductQuantity" class="control-label">Максимальное количество каждого товара</label>
+                                    <input asp-for="GenerateSalesDto.MaxProductQuantity" class="form-control" type="number" min="1" max="100" />
+                                    <span asp-validation-for="GenerateSalesDto.MaxProductQuantity" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row mt-3">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label asp-for="GenerateSalesDto.MinDeliveryDays" class="control-label">Минимальное количество дней до доставки</label>
+                                    <input asp-for="GenerateSalesDto.MinDeliveryDays" class="form-control" type="number" min="1" max="30" />
+                                    <span asp-validation-for="GenerateSalesDto.MinDeliveryDays" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label asp-for="GenerateSalesDto.MaxDeliveryDays" class="control-label">Максимальное количество дней до доставки</label>
+                                    <input asp-for="GenerateSalesDto.MaxDeliveryDays" class="form-control" type="number" min="1" max="30" />
+                                    <span asp-validation-for="GenerateSalesDto.MaxDeliveryDays" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group mt-4">
+                            <button type="submit" class="btn btn-primary">Сгенерировать тестовые продажи</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+} 

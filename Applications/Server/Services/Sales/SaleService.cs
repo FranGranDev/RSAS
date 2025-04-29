@@ -1,6 +1,7 @@
 using Application.DTOs;
 using Application.Exceptions;
 using Application.Models;
+using Application.Utils;
 using AutoMapper;
 using Server.Models;
 using Server.Services.Repository;
@@ -53,7 +54,7 @@ namespace Server.Services.Sales
             var sale = new Sale
             {
                 OrderId = orderId,
-                SaleDate = DateTime.Now,
+                SaleDate = SystemTime.Now,
                 TotalAmount = totalAmount,
                 ClientName = order.ClientName,
                 ClientPhone = order.ContactPhone,

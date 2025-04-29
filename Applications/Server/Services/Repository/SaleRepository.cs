@@ -1,6 +1,7 @@
 using System.Globalization;
 using Application.Data;
 using Application.DTOs;
+using Application.Utils;
 using Microsoft.EntityFrameworkCore;
 using Server.Models;
 
@@ -296,7 +297,7 @@ namespace Server.Services.Repository
 
         public async Task<IEnumerable<SeasonalityResultDto>> GetSeasonalityAsync(int years = 3)
         {
-            var endDate = DateTime.Now;
+            var endDate = SystemTime.Now;;
             var startDate = endDate.AddYears(-years);
 
             var monthlyData = await _dbSet
@@ -322,7 +323,7 @@ namespace Server.Services.Repository
 
         public async Task<IEnumerable<SalesForecastResultDto>> GetSalesForecastAsync(int days = 30)
         {
-            var endDate = DateTime.Now;
+            var endDate = SystemTime.Now;;
             var startDate = endDate.AddMonths(-3); // Используем данные за последние 3 месяца
 
             var historicalData = await _dbSet
@@ -383,7 +384,7 @@ namespace Server.Services.Repository
             DateTime? startDate = null,
             DateTime? endDate = null)
         {
-            var endDateValue = endDate ?? DateTime.Now;
+            var endDateValue = endDate ?? SystemTime.Now;;
             var startDateValue = startDate ?? endDateValue.AddMonths(-3);
 
             // Получаем исторические данные по категориям
@@ -421,7 +422,7 @@ namespace Server.Services.Repository
             DateTime? startDate = null,
             DateTime? endDate = null)
         {
-            var endDateValue = endDate ?? DateTime.Now;
+            var endDateValue = endDate ?? SystemTime.Now;;
             var startDateValue = startDate ?? endDateValue.AddMonths(-3);
 
             // Получаем исторические данные по продуктам
@@ -464,7 +465,7 @@ namespace Server.Services.Repository
             DateTime? startDate = null,
             DateTime? endDate = null)
         {
-            var endDateValue = endDate ?? DateTime.Now;
+            var endDateValue = endDate ?? SystemTime.Now;;
             var startDateValue = startDate ?? endDateValue.AddYears(-years);
 
             // Получаем месячные данные по категориям

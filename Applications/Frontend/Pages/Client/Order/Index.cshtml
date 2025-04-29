@@ -10,7 +10,7 @@
     </div>
 
     <div class="row mb-4">
-        <div class="col-md-4">
+        <div class="col-md-3">
             <div class="input-group">
                 <input type="text" class="form-control" id="searchInput" placeholder="Поиск по номеру заказа...">
                 <button class="btn btn-outline-secondary" type="button" id="searchButton">
@@ -18,7 +18,7 @@
                 </button>
             </div>
         </div>
-        <div class="col-md-3">
+        <div class="col-md-2">
             <select class="form-select" id="statusFilter">
                 <option value="">Все статусы</option>
                 <option value="New">Новый</option>
@@ -33,6 +33,15 @@
                 <option value="desc">Сначала новые</option>
                 <option value="asc">Сначала старые</option>
             </select>
+        </div>
+        <div class="col-md-4">
+            <div class="input-group">
+                <input type="date" class="form-control" id="dateFrom" placeholder="Дата от">
+                <input type="date" class="form-control" id="dateTo" placeholder="Дата до">
+                <button class="btn btn-outline-secondary" type="button" id="resetDates">
+                    <i class="bi bi-arrow-counterclockwise"></i>
+                </button>
+            </div>
         </div>
     </div>
 

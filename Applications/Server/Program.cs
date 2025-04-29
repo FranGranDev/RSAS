@@ -7,6 +7,7 @@ using Application.Models;
 using Application.Services;
 using Application.Services.Repository;
 using Application.Services.Stocks;
+using Application.Services.Test;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -95,6 +96,7 @@ namespace Application
             builder.Services.AddScoped<ISaleService, SaleService>();
             builder.Services.AddScoped<IClientService, ClientService>();
             builder.Services.AddScoped<IEmployeeService, EmployeeService>();
+            builder.Services.AddScoped<ITestDataService, TestDataService>();
 
             // API
             builder.Services.AddControllers();

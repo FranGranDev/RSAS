@@ -193,7 +193,7 @@ namespace Application.Services.Stocks
             var existingStockProduct = stock.StockProducts.FirstOrDefault(sp => sp.ProductId == productId);
             if (existingStockProduct != null)
             {
-                throw new BusinessException($"Товар с ID {productId} уже существует на складе");
+                return await UpdateStockProductQuantityAsync(stockId, productId, quantity);
             }
 
             var stockProduct = new StockProducts

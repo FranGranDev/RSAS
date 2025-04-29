@@ -2,6 +2,7 @@ using Application.DTOs;
 using Application.Exceptions;
 using Application.Models;
 using Application.Services.Repository;
+using Application.Utils;
 using AutoMapper;
 using Server.Services.Repository;
 using Microsoft.EntityFrameworkCore;
@@ -53,7 +54,7 @@ namespace Application.Services
             // Создаем базовый заказ
             var order = _mapper.Map<Order>(createOrderDto);
             order.UserId = userId;
-            order.OrderDate = DateTime.UtcNow;
+            order.OrderDate = SystemTime.Now;
             order.ChangeDate = DateTime.UtcNow;
             order.State = Order.States.New;
             order.CancellationReason = "";

@@ -5,19 +5,17 @@
 }
 
 <div class="container-fluid">
-    <div class="d-flex justify-content-between align-items-center mb-1">
-        <h1>@ViewData["Title"]</h1>
-        <div class="d-flex align-items-center">
-            <div class="input-group me-3">
-                <input type="date" id="startDate" class="form-control" />
-                <span class="input-group-text">по</span>
-                <input type="date" id="endDate" class="form-control" />
-                <button class="btn btn-primary" onclick="loadData()" title="Применить">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h1 class="mb-0">@ViewData["Title"]</h1>
+        <div class="d-flex align-items-center gap-2">
+            <div class="input-group" style="width: 300px;">
+                <input type="text" class="form-control" id="dateRangePicker" placeholder="Выберите период">
+                <button class="btn btn-outline-secondary" type="button" id="applyDateRange">
                     <i class="bi bi-check-lg"></i>
                 </button>
             </div>
-            <button class="btn btn-outline-secondary" onclick="refreshData()" title="Обновить">
-                <i class="bi bi-arrow-clockwise"></i>
+            <button class="btn btn-primary" id="refreshData">
+                <i class="bi bi-arrow-clockwise"></i> Обновить
             </button>
         </div>
     </div>
@@ -52,4 +50,4 @@
 
 @section Scripts {
     <script src="~/js/analytics.js"></script>
-} 
+}

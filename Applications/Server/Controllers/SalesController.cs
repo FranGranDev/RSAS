@@ -8,7 +8,7 @@ using System.Security.Claims;
 
 namespace Server.Controllers
 {
-    [Authorize(Roles = "RequireManagerRole")]
+    [Authorize]
     [ApiController]
     [Route("api/[controller]")]
     public class SalesController : ControllerBase
@@ -24,6 +24,7 @@ namespace Server.Controllers
         /// Получить продажу по ID
         /// </summary>
         [HttpGet("{id}")]
+        [Authorize(Policy = "RequireManagerRole")]
         public async Task<ActionResult<SaleDto>> GetById(int id)
         {
             if (id <= 0)
@@ -46,6 +47,7 @@ namespace Server.Controllers
         /// Получить все продажи
         /// </summary>
         [HttpGet]
+        [Authorize(Policy = "RequireManagerRole")]
         public async Task<ActionResult<IEnumerable<SaleDto>>> GetAll()
         {
             var sales = await _saleService.GetAllAsync();
@@ -56,6 +58,7 @@ namespace Server.Controllers
         /// Создать продажу из заказа
         /// </summary>
         [HttpPost("from-order/{orderId}")]
+        [Authorize(Policy = "RequireManagerRole")]
         public async Task<ActionResult<SaleDto>> CreateFromOrder(int orderId)
         {
             if (orderId <= 0)
@@ -82,6 +85,7 @@ namespace Server.Controllers
         /// Получить аналитику продаж
         /// </summary>
         [HttpGet("analytics")]
+        [Authorize(Policy = "RequireManagerRole")]
         public async Task<ActionResult<SalesAnalyticsDto>> GetSalesAnalytics(
             [FromQuery] DateTime? startDate = null,
             [FromQuery] DateTime? endDate = null)
@@ -111,6 +115,7 @@ namespace Server.Controllers
         /// Получить аналитику заказов
         /// </summary>
         [HttpGet("orders-analytics")]
+        [Authorize(Policy = "RequireManagerRole")]
         public async Task<ActionResult<OrdersAnalyticsDto>> GetOrdersAnalytics(
             [FromQuery] DateTime? startDate = null,
             [FromQuery] DateTime? endDate = null)
@@ -140,6 +145,7 @@ namespace Server.Controllers
         /// Получить аналитику для дашборда
         /// </summary>
         [HttpGet("dashboard")]
+        [Authorize(Policy = "RequireManagerRole")]
         public async Task<ActionResult<DashboardAnalyticsDto>> GetDashboardAnalytics(
             [FromQuery] DateTime? startDate = null,
             [FromQuery] DateTime? endDate = null)
@@ -169,6 +175,7 @@ namespace Server.Controllers
         /// Получить прогноз по категориям
         /// </summary>
         [HttpGet("forecast/categories")]
+        [Authorize(Policy = "RequireManagerRole")]
         public async Task<ActionResult<IEnumerable<CategoryForecastDto>>> GetCategoryForecast(
             [FromQuery] int days = 30,
             [FromQuery] DateTime? startDate = null,
@@ -209,6 +216,7 @@ namespace Server.Controllers
         /// Получить прогноз спроса
         /// </summary>
         [HttpGet("forecast/demand")]
+        [Authorize(Policy = "RequireManagerRole")]
         public async Task<ActionResult<IEnumerable<DemandForecastDto>>> GetDemandForecast(
             [FromQuery] int days = 30,
             [FromQuery] DateTime? startDate = null,
@@ -249,6 +257,7 @@ namespace Server.Controllers
         /// Получить анализ влияния сезонности
         /// </summary>
         [HttpGet("seasonality")]
+        [Authorize(Policy = "RequireManagerRole")]
         public async Task<ActionResult<IEnumerable<SeasonalityImpactDto>>> GetSeasonalityImpact(
             [FromQuery] int years = 3,
             [FromQuery] DateTime? startDate = null,
@@ -289,6 +298,7 @@ namespace Server.Controllers
         /// Сгенерировать отчет
         /// </summary>
         [HttpPost("report")]
+        [Authorize(Policy = "RequireManagerRole")]
         public async Task<ActionResult<ReportDto>> GenerateReport(
             [FromQuery] ReportType type,
             [FromQuery] ReportFormat format,
@@ -336,6 +346,7 @@ namespace Server.Controllers
         /// Сгенерировать расширенный отчет
         /// </summary>
         [HttpPost("report/extended")]
+        [Authorize(Policy = "RequireManagerRole")]
         public async Task<ActionResult<ReportDto>> GenerateExtendedReport(
             [FromQuery] ReportType type,
             [FromQuery] ReportFormat format,
@@ -383,6 +394,7 @@ namespace Server.Controllers
         /// Получить расширенную аналитику
         /// </summary>
         [HttpGet("extended")]
+        [Authorize(Policy = "RequireManagerRole")]
         public async Task<ActionResult<ExtendedSalesAnalyticsDto>> GetExtendedAnalytics(
             [FromQuery] DateTime? startDate = null,
             [FromQuery] DateTime? endDate = null)
@@ -412,6 +424,7 @@ namespace Server.Controllers
         /// Получить KPI
         /// </summary>
         [HttpGet("kpi")]
+        [Authorize(Policy = "RequireManagerRole")]
         public async Task<ActionResult<KpiDto>> GetKpi(
             [FromQuery] DateTime? startDate = null,
             [FromQuery] DateTime? endDate = null)
@@ -441,6 +454,7 @@ namespace Server.Controllers
         /// Получить топ продуктов
         /// </summary>
         [HttpGet("top-products")]
+        [Authorize(Policy = "RequireManagerRole")]
         public async Task<ActionResult<IEnumerable<TopProductResultDto>>> GetTopProducts(
             [FromQuery] int count = 10,
             [FromQuery] DateTime? startDate = null,
@@ -481,6 +495,7 @@ namespace Server.Controllers
         /// Получить продажи по категориям
         /// </summary>
         [HttpGet("category-sales")]
+        [Authorize(Policy = "RequireManagerRole")]
         public async Task<ActionResult<IEnumerable<CategorySalesResultDto>>> GetCategorySales(
             [FromQuery] DateTime? startDate = null,
             [FromQuery] DateTime? endDate = null)
@@ -510,6 +525,7 @@ namespace Server.Controllers
         /// Получить тренд продаж
         /// </summary>
         [HttpGet("trend")]
+        [Authorize(Policy = "RequireManagerRole")]
         public async Task<ActionResult<IEnumerable<SalesTrendResultDto>>> GetSalesTrend(
             [FromQuery] DateTime startDate,
             [FromQuery] DateTime endDate,

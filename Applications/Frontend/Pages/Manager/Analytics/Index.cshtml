@@ -1,0 +1,134 @@
+@page
+@model Frontend.Pages.Manager.Analytics.IndexModel
+@{
+    ViewData["Title"] = "Аналитика";
+}
+
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-1">
+        <h1>@ViewData["Title"]</h1>
+        <div class="d-flex align-items-center">
+            <div class="input-group me-3">
+                <input type="date" id="startDate" class="form-control" />
+                <span class="input-group-text">по</span>
+                <input type="date" id="endDate" class="form-control" />
+                <button class="btn btn-primary" onclick="loadData()" title="Применить">
+                    <i class="bi bi-check-lg"></i>
+                </button>
+            </div>
+            <button class="btn btn-outline-secondary" onclick="refreshData()" title="Обновить">
+                <i class="bi bi-arrow-clockwise"></i>
+            </button>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col">
+            <ul class="nav nav-tabs nav-fill" role="tablist">
+                <li class="nav-item">
+                    <a class="nav-link active" data-bs-toggle="tab" href="#dashboard" role="tab">Дашборд</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" data-bs-toggle="tab" href="#sales" role="tab">Продажи</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" data-bs-toggle="tab" href="#orders" role="tab">Заказы</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" data-bs-toggle="tab" href="#reports" role="tab">Отчеты</a>
+                </li>
+            </ul>
+
+            <div class="tab-content mt-3">
+                <div class="tab-pane fade show active" id="dashboard" role="tabpanel">
+                    @*<div id="analytics-content">
+                        @await Html.PartialAsync("_Dashboard", ViewData["DashboardData"])
+                    </div>*@
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            // Загрузка начальных данных при открытии страницы
+            loadData();
+        });
+
+        function loadData() {
+            const startDate = document.getElementById('startDate').value;
+            const endDate = document.getElementById('endDate').value;
+
+            // Загрузка данных для активной вкладки
+            const activeTab = document.querySelector('.nav-tabs .nav-link.active');
+            const tabId = activeTab.getAttribute('href').substring(1);
+
+            switch (tabId) {
+                case 'dashboard':
+                    loadDashboardData(startDate, endDate);
+                    break;
+                case 'sales':
+                    loadSalesData(startDate, endDate);
+                    break;
+                case 'orders':
+                    loadOrdersData(startDate, endDate);
+                    break;
+                case 'reports':
+                    loadReportsData(startDate, endDate);
+                    break;
+            }
+        }
+
+        function refreshData() {
+            loadData();
+        }
+
+        function loadDashboardData(startDate, endDate) {
+            $.get(`?handler=Dashboard&startDate=${startDate}&endDate=${endDate}`, function(data) {
+                $('#analytics-content').html(data);
+            });
+        }
+
+        function loadSalesData(startDate, endDate) {
+            $.get(`?handler=Sales&startDate=${startDate}&endDate=${endDate}`, function(data) {
+                $('#analytics-content').html(data);
+            });
+        }
+
+        function loadOrdersData(startDate, endDate) {
+            $.get(`?handler=Orders&startDate=${startDate}&endDate=${endDate}`, function(data) {
+                $('#analytics-content').html(data);
+            });
+        }
+
+        function loadReportsData(startDate, endDate) {
+            $.get(`?handler=Reports&startDate=${startDate}&endDate=${endDate}`, function(data) {
+                $('#analytics-content').html(data);
+            });
+        }
+
+        // Загрузка данных при переключении вкладок
+        $('.nav-tabs .nav-link').on('shown.bs.tab', function (e) {
+            const startDate = document.getElementById('startDate').value;
+            const endDate = document.getElementById('endDate').value;
+            const tabId = e.target.getAttribute('href').substring(1);
+
+            switch (tabId) {
+                case 'dashboard':
+                    loadDashboardData(startDate, endDate);
+                    break;
+                case 'sales':
+                    loadSalesData(startDate, endDate);
+                    break;
+                case 'orders':
+                    loadOrdersData(startDate, endDate);
+                    break;
+                case 'reports':
+                    loadReportsData(startDate, endDate);
+                    break;
+            }
+        });
+    </script>
+} 

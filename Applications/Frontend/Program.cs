@@ -24,12 +24,13 @@ builder.Services.AddHttpClient("ApiClient", client =>
 });
 
 // Register services
+builder.Services.AddMemoryCache();
 builder.Services.AddScoped<IApiService, ApiService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IClaimsService, ClaimsService>();
 builder.Services.AddScoped<IClientService, ClientService>();
-builder.Services.AddMemoryCache();
 builder.Services.AddScoped<ICartService, CartService>();
+builder.Services.AddScoped<IAnalyticsService, AnalyticsService>();
 
 // Configure authentication
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)

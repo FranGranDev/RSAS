@@ -18,7 +18,6 @@ namespace Server.Services.Repository
 
         // Аналитика
         Task<decimal> GetTotalRevenueAsync(DateTime? startDate = null, DateTime? endDate = null);
-        Task<decimal> GetTotalCostAsync(DateTime? startDate = null, DateTime? endDate = null);
         Task<int> GetTotalSalesCountAsync(DateTime? startDate = null, DateTime? endDate = null);
         Task<decimal> GetAverageSaleAmountAsync(DateTime? startDate = null, DateTime? endDate = null);
         Task<IEnumerable<TopProductResultDto>> GetTopProductsAsync(
@@ -38,8 +37,6 @@ namespace Server.Services.Repository
 
         // Расширенная аналитика
         Task<decimal> GetSalesConversionRateAsync(DateTime? startDate = null, DateTime? endDate = null);
-        Task<decimal> GetGrossProfitAsync(DateTime? startDate = null, DateTime? endDate = null);
-        Task<decimal> GetProfitMarginAsync(DateTime? startDate = null, DateTime? endDate = null);
         Task<TimeSpan> GetAverageOrderProcessingTimeAsync(DateTime? startDate = null, DateTime? endDate = null);
         Task<IEnumerable<StockEfficiencyResultDto>> GetStockEfficiencyAsync(
             DateTime? startDate = null,

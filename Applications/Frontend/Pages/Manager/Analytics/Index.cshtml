@@ -38,16 +38,16 @@
             </ul>
 
             <div class="tab-content mt-3">
-                <div class="tab-pane fade show active" id="dashboard" role="tabpanel">
-                    @*<div id="analytics-content">
-                        @await Html.PartialAsync("_Dashboard", ViewData["DashboardData"])
-                    </div>*@
-                </div>
+                <div id="analytics-content">
+                    @await Html.PartialAsync("Shared/Analytics/Dashboard/_Dashboard", ViewData["DashboardData"])
+                                                                                                                          </div>
             </div>
         </div>
     </div>
 </div>
 
 @section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="~/js/analytics.js"></script>
+    <script src="~/js/analytics-dashboard.js"></script>
 }

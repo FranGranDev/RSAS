@@ -1,0 +1,67 @@
+@model Application.DTOs.DashboardAnalyticsDto
+@using Frontend.Models
+
+<div class="dashboard-container">
+    <!-- Контейнер для KPI карточек -->
+    <div id="kpi-cards-container">
+        @await Html.PartialAsync("Shared/Analytics/Dashboard/_KpiCards", Model)
+    </div>
+
+    <!-- Контейнер для графика -->
+    <div id="trend-chart-container">
+        @await Html.PartialAsync("Shared/Analytics/Dashboard/_TrendChart")
+    </div>
+
+    <!-- Контейнер для таблицы топ товаров -->
+    <div id="top-products-container">
+        @await Html.PartialAsync("Shared/Analytics/Dashboard/_TopProducts", Model)
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Инициализация графика
+        function initTrendChart(data) {
+            const ctx = document.getElementById('trendChart');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: data.labels,
+                    datasets: [{
+                        label: 'Выручка',
+                        data: data.revenue,
+                        borderColor: '#0d6efd',
+                        tension: 0.1
+                    }, {
+                        label: 'Количество продаж',
+                        data: data.salesCount,
+                        borderColor: '#198754',
+                        tension: 0.1
+                    }, {
+                        label: 'Средний чек',
+                        data: data.averageOrderAmount,
+                        borderColor: '#0dcaf0',
+                        tension: 0.1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        },
+                        title: {
+                            display: true,
+                            text: 'Динамика показателей'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+    </script>
+} 

@@ -19,7 +19,6 @@ namespace Server.Services.Sales
 
         // Базовая аналитика
         Task<decimal> GetTotalRevenueAsync(DateTime? startDate = null, DateTime? endDate = null);
-        Task<decimal> GetTotalCostAsync(DateTime? startDate = null, DateTime? endDate = null);
         Task<int> GetTotalSalesCountAsync(DateTime? startDate = null, DateTime? endDate = null);
         Task<decimal> GetAverageSaleAmountAsync(DateTime? startDate = null, DateTime? endDate = null);
 
@@ -36,7 +35,7 @@ namespace Server.Services.Sales
         Task<IEnumerable<SalesTrendResultDto>> GetSalesTrendAsync(
             DateTime startDate,
             DateTime endDate,
-            TimeSpan interval);
+            string interval = "1d");
 
         // Комплексная аналитика
         Task<DashboardAnalyticsDto> GetDashboardAnalyticsAsync(DateTime? startDate = null, DateTime? endDate = null);

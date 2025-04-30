@@ -10,8 +10,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Frontend", "Frontend\Fronte
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shared", "Shared\Shared.csproj", "{85335E01-CDA7-497B-8C1F-36281E6A824E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LEGACY_FRONTEND", "LEGACY_FRONTEND\LEGACY_FRONTEND.csproj", "{3F01DAA6-E7BC-4636-8973-7E8A5881D806}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -34,10 +32,6 @@ Global
 		{85335E01-CDA7-497B-8C1F-36281E6A824E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{85335E01-CDA7-497B-8C1F-36281E6A824E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{85335E01-CDA7-497B-8C1F-36281E6A824E}.Release|Any CPU.Build.0 = Release|Any CPU
-		{3F01DAA6-E7BC-4636-8973-7E8A5881D806}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{3F01DAA6-E7BC-4636-8973-7E8A5881D806}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{3F01DAA6-E7BC-4636-8973-7E8A5881D806}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{3F01DAA6-E7BC-4636-8973-7E8A5881D806}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

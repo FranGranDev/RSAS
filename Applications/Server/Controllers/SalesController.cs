@@ -527,58 +527,25 @@ namespace Server.Controllers
         [HttpGet("trend")]
         [Authorize(Policy = "RequireManagerRole")]
         public async Task<ActionResult<IEnumerable<SalesTrendResultDto>>> GetSalesTrend(
-            [FromQuery] DateTime startDate,
-            [FromQuery] DateTime endDate,
+            [FromQuery] DateTime? startDate = null,
+            [FromQuery] DateTime? endDate = null,
             [FromQuery] string interval = "1d")
         {
-            if (startDate > endDate)
+            if (startDate.HasValue && endDate.HasValue && startDate > endDate)
             {
                 return BadRequest("Начальная дата не может быть позже конечной");
             }
 
-            if (startDate > DateTime.UtcNow)
+            if (startDate.HasValue && startDate > DateTime.UtcNow)
             {
                 return BadRequest("Начальная дата не может быть в будущем");
             }
 
-            TimeSpan timeSpan;
-            if (interval.EndsWith("d"))
-            {
-                if (!int.TryParse(interval[..^1], out var days))
-                {
-                    return BadRequest("Неверный формат интервала. Используйте формат '1d', '2d' и т.д.");
-                }
-                timeSpan = TimeSpan.FromDays(days);
-            }
-            else if (interval.EndsWith("h"))
-            {
-                if (!int.TryParse(interval[..^1], out var hours))
-                {
-                    return BadRequest("Неверный формат интервала. Используйте формат '1h', '2h' и т.д.");
-                }
-                timeSpan = TimeSpan.FromHours(hours);
-            }
-            else if (interval.EndsWith("m"))
-            {
-                if (!int.TryParse(interval[..^1], out var minutes))
-                {
-                    return BadRequest("Неверный формат интервала. Используйте формат '1m', '2m' и т.д.");
-                }
-                timeSpan = TimeSpan.FromMinutes(minutes);
-            }
-            else
-            {
-                return BadRequest("Неверный формат интервала. Используйте формат '1d', '1h', '1m' и т.д.");
-            }
-
-            if (timeSpan.TotalDays > 30)
-            {
-                return BadRequest("Интервал не может быть больше 30 дней");
-            }
-
             try
             {
-                var trend = await _saleService.GetSalesTrendAsync(startDate, endDate, timeSpan);
+                var trend = await _saleService.GetSalesTrendAsync(startDate ?? DateTime.UtcNow.AddDays(-30), 
+                                                                endDate ?? DateTime.UtcNow, 
+                                                                interval);
                 return Ok(trend);
             }
             catch (InvalidDateRangeException ex)

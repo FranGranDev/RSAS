@@ -40,7 +40,7 @@ public class IndexModel : PageModel
         try
         {
             var dashboardData = await _analyticsService.GetDashboardAnalyticsAsync(startDate, endDate);
-            return Partial("_Dashboard", dashboardData);
+            return Partial("Shared/Analytics/Dashboard/_Dashboard", dashboardData);
         }
         catch (Exception ex)
         {
@@ -54,7 +54,7 @@ public class IndexModel : PageModel
         try
         {
             var salesData = await _analyticsService.GetSalesAnalyticsAsync(startDate, endDate);
-            return Partial("_Sales", salesData);
+            return Partial("Shared/Analytics/Sales/_Sales", salesData);
         }
         catch (Exception ex)
         {
@@ -68,7 +68,7 @@ public class IndexModel : PageModel
         try
         {
             var ordersData = await _analyticsService.GetOrdersAnalyticsAsync(startDate, endDate);
-            return Partial("_Orders", ordersData);
+            return Partial("Shared/Analytics/Orders/_Orders", ordersData);
         }
         catch (Exception ex)
         {
@@ -82,11 +82,28 @@ public class IndexModel : PageModel
         try
         {
             var reportsData = await _analyticsService.GetExtendedAnalyticsAsync(startDate, endDate);
-            return Partial("_Reports", reportsData);
+            return Partial("Shared/Analytics/Reports/_Reports", reportsData);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Ошибка при загрузке данных отчетов");
+            return StatusCode(500);
+        }
+    }
+
+    public async Task<IActionResult> OnGetTrendAsync(DateTime? startDate, DateTime? endDate, string interval = "1d")
+    {
+        try
+        {
+            var trendData = await _analyticsService.GetSalesTrendAsync(
+                startDate ?? DateTime.UtcNow.AddDays(-30),
+                endDate ?? DateTime.UtcNow,
+                interval);
+            return new JsonResult(trendData);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Ошибка при загрузке данных тренда");
             return StatusCode(500);
         }
     }

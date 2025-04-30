@@ -1,0 +1,13 @@
+@model (string Title, string Value, string Icon, string Color)
+
+<div class="col-md-4">
+    <div class="card h-100">
+        <div class="card-body">
+            <h5 class="card-title">
+                <i class="bi @Model.Icon text-@Model.Color"></i>
+                @Model.Title
+            </h5>
+            <h2 class="card-text">@Model.Value</h2>
+        </div>
+    </div>
+</div> 

@@ -112,12 +112,6 @@ namespace Server.Services.Sales
             return await _saleRepository.GetTotalRevenueAsync(startDate, endDate);
         }
 
-        public async Task<decimal> GetTotalCostAsync(DateTime? startDate = null, DateTime? endDate = null)
-        {
-            ValidateDateRange(startDate, endDate);
-            return await _saleRepository.GetTotalCostAsync(startDate, endDate);
-        }
-
         public async Task<int> GetTotalSalesCountAsync(DateTime? startDate = null, DateTime? endDate = null)
         {
             ValidateDateRange(startDate, endDate);
@@ -153,14 +147,45 @@ namespace Server.Services.Sales
         public async Task<IEnumerable<SalesTrendResultDto>> GetSalesTrendAsync(
             DateTime startDate,
             DateTime endDate,
-            TimeSpan interval)
+            string interval = "1d")
         {
             if (startDate > endDate)
                 throw new InvalidDateRangeException("Дата начала не может быть позже даты окончания");
-            if (interval <= TimeSpan.Zero)
+
+            TimeSpan timeSpan;
+            if (interval.EndsWith("d"))
+            {
+                if (!int.TryParse(interval[..^1], out var days))
+                {
+                    throw new InvalidAnalyticsParametersException("Неверный формат интервала. Используйте формат '1d', '2d' и т.д.");
+                }
+                timeSpan = TimeSpan.FromDays(days);
+            }
+            else if (interval.EndsWith("h"))
+            {
+                if (!int.TryParse(interval[..^1], out var hours))
+                {
+                    throw new InvalidAnalyticsParametersException("Неверный формат интервала. Используйте формат '1h', '2h' и т.д.");
+                }
+                timeSpan = TimeSpan.FromHours(hours);
+            }
+            else if (interval.EndsWith("m"))
+            {
+                if (!int.TryParse(interval[..^1], out var minutes))
+                {
+                    throw new InvalidAnalyticsParametersException("Неверный формат интервала. Используйте формат '1m', '2m' и т.д.");
+                }
+                timeSpan = TimeSpan.FromMinutes(minutes);
+            }
+            else
+            {
+                throw new InvalidAnalyticsParametersException("Неверный формат интервала. Используйте формат '1d', '1h', '1m' и т.д.");
+            }
+
+            if (timeSpan <= TimeSpan.Zero)
                 throw new InvalidAnalyticsParametersException("Интервал должен быть больше 0");
 
-            return await _saleRepository.GetSalesTrendAsync(startDate, endDate, interval);
+            return await _saleRepository.GetSalesTrendAsync(startDate, endDate, timeSpan);
         }
 
         public async Task<DashboardAnalyticsDto> GetDashboardAnalyticsAsync(DateTime? startDate = null, DateTime? endDate = null)
@@ -192,7 +217,7 @@ namespace Server.Services.Sales
             var salesTrend = await GetSalesTrendAsync(
                 startDate ?? DateTime.MinValue,
                 endDate ?? DateTime.MaxValue,
-                TimeSpan.FromDays(1));
+                "1d");
 
             return new SalesAnalyticsDto
             {
@@ -259,8 +284,6 @@ namespace Server.Services.Sales
             ValidateDateRange(startDate, endDate);
 
             var conversionRate = await _saleRepository.GetSalesConversionRateAsync(startDate, endDate);
-            var grossProfit = await _saleRepository.GetGrossProfitAsync(startDate, endDate);
-            var profitMargin = await _saleRepository.GetProfitMarginAsync(startDate, endDate);
             var averageOrderProcessingTime = await _saleRepository.GetAverageOrderProcessingTimeAsync(startDate, endDate);
             var stockEfficiency = await _saleRepository.GetStockEfficiencyAsync(startDate, endDate);
             var seasonality = await _saleRepository.GetSeasonalityAsync();
@@ -269,8 +292,6 @@ namespace Server.Services.Sales
             return new ExtendedSalesAnalyticsDto
             {
                 ConversionRate = conversionRate,
-                GrossProfit = grossProfit,
-                ProfitMargin = profitMargin,
                 AverageOrderProcessingTime = averageOrderProcessingTime,
                 StockEfficiency = stockEfficiency.ToList(),
                 Seasonality = seasonality.ToList(),
@@ -383,9 +404,7 @@ namespace Server.Services.Sales
                         { "Конверсия продаж", kpi.SalesConversion },
                         { "Выручка", kpi.Revenue },
                         { "Объем продаж", kpi.SalesVolume },
-                        { "Маржинальная прибыль", kpi.GrossProfit },
                         { "Средний чек", kpi.AverageCheck },
-                        { "Рентабельность", kpi.ProfitMargin },
                         { "Оборачиваемость склада", kpi.StockTurnover }
                     };
                     break;
@@ -411,8 +430,6 @@ namespace Server.Services.Sales
             var extendedAnalytics = await GetExtendedAnalyticsAsync(startDate, endDate);
             
             report.Data.Metrics.Add("Конверсия продаж", extendedAnalytics.ConversionRate);
-            report.Data.Metrics.Add("Маржинальная прибыль", extendedAnalytics.GrossProfit);
-            report.Data.Metrics.Add("Рентабельность", extendedAnalytics.ProfitMargin);
 
             report.Data.Tables.Add(new ReportTableDto
             {

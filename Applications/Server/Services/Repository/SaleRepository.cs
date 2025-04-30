@@ -79,22 +79,6 @@ namespace Server.Services.Repository
             return await query.SumAsync(s => s.TotalAmount);
         }
 
-        public async Task<decimal> GetTotalCostAsync(DateTime? startDate = null, DateTime? endDate = null)
-        {
-            var query = _dbSet
-                .Include(s => s.Products)
-                .AsQueryable();
-            
-            if (startDate.HasValue)
-                query = query.Where(s => s.SaleDate >= startDate.Value);
-            if (endDate.HasValue)
-                query = query.Where(s => s.SaleDate <= endDate.Value);
-                
-            return await query
-                .SelectMany(s => s.Products)
-                .SumAsync(sp => sp.ProductPrice * sp.Quantity);
-        }
-
         public async Task<int> GetTotalSalesCountAsync(DateTime? startDate = null, DateTime? endDate = null)
         {
             var query = _dbSet.AsQueryable();
@@ -187,16 +171,41 @@ namespace Server.Services.Repository
             DateTime endDate,
             TimeSpan interval)
         {
-            var query = _dbSet.AsQueryable()
-                .Where(s => s.SaleDate >= startDate && s.SaleDate <= endDate);
+            // Получаем все продажи за период
+            var sales = await _dbSet
+                .Where(s => s.SaleDate >= startDate && s.SaleDate <= endDate)
+                .ToListAsync();
 
-            var result = await query
-                .GroupBy(s => new DateTime(
-                    s.SaleDate.Year,
-                    s.SaleDate.Month,
-                    s.SaleDate.Day,
-                    s.SaleDate.Hour / interval.Hours * interval.Hours,
-                    0, 0))
+            // Группируем продажи по интервалам
+            var result = sales
+                .GroupBy(s => {
+                    if (interval.TotalHours >= 1)
+                    {
+                        // Группировка по часам
+                        return new DateTime(
+                            s.SaleDate.Year,
+                            s.SaleDate.Month,
+                            s.SaleDate.Day,
+                            s.SaleDate.Hour / (int)interval.TotalHours * (int)interval.TotalHours,
+                            0, 0);
+                    }
+                    else if (interval.TotalMinutes >= 1)
+                    {
+                        // Группировка по минутам
+                        return new DateTime(
+                            s.SaleDate.Year,
+                            s.SaleDate.Month,
+                            s.SaleDate.Day,
+                            s.SaleDate.Hour,
+                            s.SaleDate.Minute / (int)interval.TotalMinutes * (int)interval.TotalMinutes,
+                            0);
+                    }
+                    else
+                    {
+                        // Группировка по дням
+                        return s.SaleDate.Date;
+                    }
+                })
                 .Select(g => new SalesTrendResultDto
                 {
                     Date = g.Key,
@@ -204,7 +213,7 @@ namespace Server.Services.Repository
                     Revenue = g.Sum(s => s.TotalAmount)
                 })
                 .OrderBy(x => x.Date)
-                .ToListAsync();
+                .ToList();
 
             return result;
         }
@@ -223,21 +232,7 @@ namespace Server.Services.Repository
 
             return totalOrders > 0 ? (decimal)completedSales / totalOrders : 0;
         }
-
-        public async Task<decimal> GetGrossProfitAsync(DateTime? startDate = null, DateTime? endDate = null)
-        {
-            var revenue = await GetTotalRevenueAsync(startDate, endDate);
-            var cost = await GetTotalCostAsync(startDate, endDate);
-            return revenue - cost;
-        }
-
-        public async Task<decimal> GetProfitMarginAsync(DateTime? startDate = null, DateTime? endDate = null)
-        {
-            var revenue = await GetTotalRevenueAsync(startDate, endDate);
-            var profit = await GetGrossProfitAsync(startDate, endDate);
-            return revenue > 0 ? profit / revenue : 0;
-        }
-
+        
         public async Task<TimeSpan> GetAverageOrderProcessingTimeAsync(DateTime? startDate = null, DateTime? endDate = null)
         {
             var query = _dbSet.AsQueryable();
@@ -365,9 +360,7 @@ namespace Server.Services.Repository
                 AverageOrderTime = await GetAverageOrderProcessingTimeAsync(startDate, endDate),
                 Revenue = await GetTotalRevenueAsync(startDate, endDate),
                 SalesVolume = await GetTotalSalesCountAsync(startDate, endDate),
-                GrossProfit = await GetGrossProfitAsync(startDate, endDate),
                 AverageCheck = await GetAverageSaleAmountAsync(startDate, endDate),
-                ProfitMargin = await GetProfitMarginAsync(startDate, endDate),
                 StockTurnover = (await GetStockEfficiencyAsync(startDate, endDate))
                     .Average(x => x.TurnoverRatio),
                 AverageOrderProcessingTime = await GetAverageOrderProcessingTimeAsync(startDate, endDate)

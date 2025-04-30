@@ -339,13 +339,7 @@ namespace Application.DTOs
     {
         [Display(Name = "Конверсия продаж")]
         public decimal ConversionRate { get; set; }
-
-        [Display(Name = "Маржинальная прибыль")]
-        public decimal GrossProfit { get; set; }
-
-        [Display(Name = "Рентабельность")]
-        public decimal ProfitMargin { get; set; }
-
+        
         [Display(Name = "Среднее время выполнения заказа")]
         public TimeSpan AverageOrderProcessingTime { get; set; }
 
@@ -426,15 +420,9 @@ namespace Application.DTOs
 
         [Display(Name = "Объем продаж")]
         public int SalesVolume { get; set; }
-
-        [Display(Name = "Маржинальная прибыль")]
-        public decimal GrossProfit { get; set; }
-
+        
         [Display(Name = "Средний чек")]
         public decimal AverageCheck { get; set; }
-
-        [Display(Name = "Рентабельность")]
-        public decimal ProfitMargin { get; set; }
 
         [Display(Name = "Оборачиваемость склада")]
         public decimal StockTurnover { get; set; }

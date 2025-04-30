@@ -1,0 +1,33 @@
+@model Application.DTOs.DashboardAnalyticsDto
+@using Frontend.Models
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Топ товаров</h5>
+                <div class="table-responsive">
+                    <table class="table table-hover table-bordered table-secondary rounded-3 overflow-hidden">
+                        <thead>
+                            <tr>
+                                <th class="text-center fs-5">Название товара</th>
+                                <th class="text-center fs-5">Количество продаж</th>
+                                <th class="text-center fs-5">Выручка</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var product in Model.TopProducts)
+                            {
+                                <tr>
+                                    <td class="text-start">@product.ProductName</td>
+                                    <td class="text-start">@product.SalesCount</td>
+                                    <td class="text-start">@product.Revenue.ToString(CurrencySettings.Format) @CurrencySettings.Symbol</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div> 

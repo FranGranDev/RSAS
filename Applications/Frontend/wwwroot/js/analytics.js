@@ -69,8 +69,11 @@ function refreshData() {
 }
 
 function loadDashboardData(startDate, endDate) {
+    // Загрузка KPI карточек
     $.get(`?handler=Dashboard&startDate=${startDate}&endDate=${endDate}`, function(data) {
-        $('#dashboard').html(data);
+        $('#kpi-cards-container').html($(data).find('#kpi-cards-container').html());
+        $('#top-products-container').html($(data).find('#top-products-container').html());
+        loadTrendData(); // Загрузка данных для графика
     }).fail(function() {
         notification.showError('Ошибка при загрузке данных дашборда');
     });

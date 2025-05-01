@@ -1,694 +1,588 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<ClassDiagram MajorVersion="1" MinorVersion="1">
-  <Comment CommentText="Меню аналитики">
-    <Position X="2.789" Y="0.576" Height="0.322" Width="1.255" />
+<ClassDiagram MajorVersion="1" MinorVersion="1" GroupingSetting="Access" MembersFormat="FullSignature">
+  <Comment CommentText="Исключения">
+    <Position X="20.5" Y="14.75" Height="0.363" Width="15.651" />
   </Comment>
-  <Comment CommentText="Меню управления сотрудниками">
-    <Position X="4.559" Y="0.533" Height="0.511" Width="1.364" />
+  <Comment CommentText="Сервисы">
+    <Position X="12.25" Y="1.25" Height="0.426" Width="12.008" />
   </Comment>
-  <Comment CommentText="Меню управления товарами">
-    <Position X="6.25" Y="0.5" Height="0.511" Width="3.273" />
+  <Comment CommentText="Контроллеры">
+    <Position X="25" Y="1.25" Height="0.426" Width="12.008" />
   </Comment>
-  <Comment CommentText="Меню управления складами">
-    <Position X="9.75" Y="0.5" Height="0.511" Width="3.273" />
+  <Comment CommentText="Репозитории данных">
+    <Position X="1.696" Y="10.359" Height="0.404" Width="17.306" />
   </Comment>
-  <Comment CommentText="Меню управления заказами">
-    <Position X="13.544" Y="0.5" Height="0.511" Width="3.226" />
-  </Comment>
-  <Comment CommentText="Меню авторизации и регистрации">
-    <Position X="17" Y="0.5" Height="0.511" Width="3.172" />
-  </Comment>
-  <Comment CommentText="Меню личного кабинета">
-    <Position X="20.872" Y="0.523" Height="0.511" Width="3.172" />
-  </Comment>
-  <Comment CommentText="Меню пользователя и компании">
-    <Position X="24.25" Y="0.5" Height="0.511" Width="6.802" />
-  </Comment>
-  <Comment CommentText="Модели товара и склада">
-    <Position X="6.25" Y="8.388" Height="0.511" Width="3.273" />
-  </Comment>
-  <Comment CommentText="Модели заказов">
-    <Position X="2.733" Y="8.401" Height="0.511" Width="3.273" />
-  </Comment>
-  <Comment CommentText="Модель продажи">
-    <Position X="9.694" Y="8.388" Height="0.511" Width="1.651" />
+  <Comment CommentText="Прочтие компоненты">
+    <Position X="20.5" Y="9.5" Height="0.363" Width="5.039" />
   </Comment>
   <Comment CommentText="База данных">
-    <Position X="11.877" Y="8.742" Height="0.349" Width="10.382" />
+    <Position X="1.717" Y="1.19" Height="0.363" Width="10.263" />
   </Comment>
-  <Comment CommentText="Модели представления">
-    <Position X="22.5" Y="8.04" Height="0.291" Width="8.474" />
-  </Comment>
-  <Comment CommentText="Остальное">
-    <Position X="9.779" Y="11.567" Height="0.291" Width="1.547" />
-  </Comment>
-  <Comment CommentText="Модели пользователей">
-    <Position X="2.793" Y="13.839" Height="0.299" Width="6.704" />
-  </Comment>
-  <Class Name="Application.Program">
-    <Position X="9.75" Y="12" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAA=</HashCode>
-      <FileName>Program.cs</FileName>
-    </TypeIdentifier>
-  </Class>
-  <Class Name="Application.Areas.Admin.Pages.Analytics.IndexModel">
-    <Position X="2.75" Y="1" Width="1.5" />
-    <NestedTypes>
-      <Enum Name="Application.Areas.Admin.Pages.Analytics.IndexModel.AnalyticsTypes" Collapsed="true">
-        <TypeIdentifier>
-          <NewMemberFileName>Areas\Admin\Pages\Analytics\Index.cshtml.cs</NewMemberFileName>
-        </TypeIdentifier>
-      </Enum>
-    </NestedTypes>
-    <TypeIdentifier>
-      <HashCode>AYAkBEAEgBgICAGCACAAJgAgAABkIAAAAAQAAEABAAg=</HashCode>
-      <FileName>Areas\Admin\Pages\Analytics\Index.cshtml.cs</FileName>
-    </TypeIdentifier>
-    <ShowAsAssociation>
-      <Field Name="dataManager" />
-    </ShowAsAssociation>
-  </Class>
-  <Class Name="Application.Areas.Admin.Pages.Employees.IndexModel">
-    <Position X="4.5" Y="1.25" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AIAAAAAAAAAAAAAgAAAAAAAACAAAgAAAAAAAIAAAAAA=</HashCode>
-      <FileName>Areas\Admin\Pages\Employees\Index.cshtml.cs</FileName>
-    </TypeIdentifier>
-  </Class>
-  <Class Name="Application.Areas.Admin.Pages.Employees.CreateModel">
-    <Position X="4.5" Y="4.25" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AIAAAAAAAAAAAAAgEAAAACAAAAAAAAQAgAQEAAAAAAQ=</HashCode>
-      <FileName>Areas\Admin\Pages\Employees\Create.cshtml.cs</FileName>
-    </TypeIdentifier>
-  </Class>
-  <Class Name="Application.Areas.Admin.Pages.Products.CreateModel">
-    <Position X="8" Y="1.25" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>CAACAAAAAAAAAAAAAAAAAAAAAAAAIAAAAAQAAAAAAAA=</HashCode>
-      <FileName>Areas\Admin\Pages\Products\Create.cshtml.cs</FileName>
-    </TypeIdentifier>
-    <ShowAsAssociation>
-      <Field Name="dataManager" />
-    </ShowAsAssociation>
-  </Class>
-  <Class Name="Application.Areas.Admin.Pages.Products.EditModel">
-    <Position X="6.25" Y="5" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AAACAAAAACAAAAAAAAIAAAAAAAAAIAAAAAYAAAAAAAA=</HashCode>
-      <FileName>Areas\Admin\Pages\Products\Edit.cshtml.cs</FileName>
-    </TypeIdentifier>
-    <ShowAsAssociation>
-      <Field Name="dataManager" />
-    </ShowAsAssociation>
-  </Class>
-  <Class Name="Application.Areas.Admin.Pages.Products.IndexModel">
-    <Position X="6.25" Y="1.25" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AAAABAAAAAAAAAAAAAAAAAEAAAAAoAAAAAQAACAAAAQ=</HashCode>
-      <FileName>Areas\Admin\Pages\Products\Index.cshtml.cs</FileName>
-    </TypeIdentifier>
-    <ShowAsAssociation>
-      <Field Name="dataManager" />
-    </ShowAsAssociation>
-  </Class>
-  <Class Name="Application.Areas.Admin.Pages.Stores.IndexModel">
-    <Position X="9.75" Y="1.25" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AAAAAABAAAAAAAAAAAAAAAAAgCAAIAAAAAQAAAAAAAA=</HashCode>
-      <FileName>Areas\Admin\Pages\Stores\Index.cshtml.cs</FileName>
-    </TypeIdentifier>
-    <ShowAsAssociation>
-      <Field Name="dataManager" />
-    </ShowAsAssociation>
-  </Class>
-  <Class Name="Application.Areas.Admin.Pages.Stores.AddStockModel">
-    <Position X="11.5" Y="5" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>CAAAAAAAAAAAAAAAAAAAAAAAgAAAIAAAAAQAAAAAAAA=</HashCode>
-      <FileName>Areas\Admin\Pages\Stores\AddStock.cshtml.cs</FileName>
-    </TypeIdentifier>
-    <ShowAsAssociation>
-      <Field Name="dataManager" />
-    </ShowAsAssociation>
-  </Class>
-  <Class Name="Application.Areas.Admin.Pages.Stores.AddProductModel">
-    <Position X="9.75" Y="4.25" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AAICBAAAAAAACAAAAAAAAAAAgAAAIAEAAAQAACAAAAQ=</HashCode>
-      <FileName>Areas\Admin\Pages\Stores\AddProduct.cshtml.cs</FileName>
-    </TypeIdentifier>
-    <ShowAsAssociation>
-      <Field Name="dataManager" />
-    </ShowAsAssociation>
-  </Class>
-  <Class Name="Application.Areas.Admin.Pages.Stores.EditModel">
-    <Position X="13.5" Y="5.5" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AAAAIAAAAAAAAAAgAAAAAAAAgAAAoAAAAAAAAAAAAAA=</HashCode>
-      <FileName>Areas\Admin\Pages\Stores\Edit.cshtml.cs</FileName>
-    </TypeIdentifier>
-    <ShowAsAssociation>
-      <Field Name="dataManager" />
-    </ShowAsAssociation>
-  </Class>
-  <Class Name="Application.Areas.Admin.Pages.Stores.StockInfoModel">
-    <Position X="11.5" Y="1.25" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AAAABAAAAAAACAAAAAAAAAAAgAAAIAAAAAQAACAAAAQ=</HashCode>
-      <FileName>Areas\Admin\Pages\Stores\StockInfo.cshtml.cs</FileName>
-    </TypeIdentifier>
-    <ShowAsAssociation>
-      <Field Name="dataManager" />
-    </ShowAsAssociation>
-  </Class>
-  <Class Name="Application.Areas.Manager.IndexModel">
-    <Position X="13.5" Y="1.25" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>IAAAAQAAgAAACAAgAIABAAACAAAAIAAAAAQAAAAAAAQ=</HashCode>
-      <FileName>Areas\Manager\Pages\Orders\Index.cshtml.cs</FileName>
-    </TypeIdentifier>
-    <ShowAsAssociation>
-      <Field Name="dataManager" />
-    </ShowAsAssociation>
-  </Class>
-  <Class Name="Application.Areas.Manager.Pages.OrderInfoModel">
-    <Position X="15.25" Y="1.25" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>EIAEABAQIABAAAQCBgAAAAAAAgEAIAIAAAYIAEAEAAw=</HashCode>
-      <FileName>Areas\Manager\Pages\Orders\OrderInfo.cshtml.cs</FileName>
-    </TypeIdentifier>
-    <ShowAsAssociation>
-      <Field Name="dataManager" />
-    </ShowAsAssociation>
-  </Class>
-  <Class Name="Application.Areas.Identity.Pages.Account.LoginModel">
-    <Position X="17" Y="1.25" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AQAAAAAAAAAAAAAgAABAAAAAMAAAAQAAAAIEAAAAAAA=</HashCode>
-      <FileName>Areas\Identity\Pages\Account\Login.cshtml.cs</FileName>
-    </TypeIdentifier>
-  </Class>
-  <Class Name="Application.Areas.Identity.Pages.Account.RegisterClientModel">
-    <Position X="17" Y="4.75" Width="1.5" />
-    <Compartments>
-      <Compartment Name="Methods" Collapsed="true" />
-    </Compartments>
-    <TypeIdentifier>
-      <HashCode>AIAAAIAAAQAAAAAgEQAAAAgAIAAAAQACAAIEAAAAAAQ=</HashCode>
-      <FileName>Areas\Identity\Pages\Account\RegisterClient.cshtml.cs</FileName>
-    </TypeIdentifier>
-  </Class>
-  <Class Name="Application.Areas.Identity.Pages.Account.RegisterCompanyModel">
-    <Position X="18.75" Y="1.25" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AIAEAIAAAQAAAAAgEQAAAAAAIAAAAQACAAIEBAAAAAA=</HashCode>
-      <FileName>Areas\Identity\Pages\Account\RegisterCompany.cshtml.cs</FileName>
-    </TypeIdentifier>
-  </Class>
-  <Class Name="Application.Areas.Identity.Pages.Account.About.ClientModel">
-    <Position X="20.75" Y="1.25" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AIAAAAAAAAAAAAAgAAAAAAgAAAAAAAACAAAAAAAEAAQ=</HashCode>
-      <FileName>Areas\Identity\Pages\Account\About\Client.cshtml.cs</FileName>
-    </TypeIdentifier>
-  </Class>
-  <Class Name="Application.Areas.Identity.Pages.Account.About.CompanyModel">
-    <Position X="22.5" Y="1.25" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AIAEAAAAAAAAAAAgAAAAAAAAAAAAAAACAAAABAAEAAQ=</HashCode>
-      <FileName>Areas\Identity\Pages\Account\About\Company.cshtml.cs</FileName>
-    </TypeIdentifier>
-  </Class>
-  <Class Name="Application.Areas.Identity.Pages.Account.About.EmployeeModel">
-    <Position X="20.75" Y="4.5" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AIAAAAAAAAAAAAAgAAAAAAAAAAAAAAACgAAAAAAEAAQ=</HashCode>
-      <FileName>Areas\Identity\Pages\Account\About\Employee.cshtml.cs</FileName>
-    </TypeIdentifier>
-  </Class>
-  <Class Name="Application.Areas.Identity.Pages.Account.About.IndexModel">
-    <Position X="22.5" Y="4.5" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AIAAAAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
-      <FileName>Areas\Identity\Pages\Account\About\Index.cshtml.cs</FileName>
-    </TypeIdentifier>
-  </Class>
-  <Class Name="Application.Areas.Identity.Pages.Account.AccessDeniedModel">
-    <Position X="18.75" Y="6" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAA=</HashCode>
-      <FileName>Areas\Identity\Pages\Account\AccessDenied.cshtml.cs</FileName>
-    </TypeIdentifier>
-  </Class>
-  <Class Name="Application.Pages.IndexModel">
-    <Position X="24.25" Y="1.25" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAIAAAAAAAAAQAAAAAAAA=</HashCode>
-      <FileName>Pages\Index.cshtml.cs</FileName>
-    </TypeIdentifier>
-  </Class>
-  <Class Name="Application.Pages.User.CatalogModel">
-    <Position X="26" Y="1.25" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>gAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
-      <FileName>Pages\User\Catalog.cshtml.cs</FileName>
-    </TypeIdentifier>
-  </Class>
-  <Class Name="Application.Pages.User.OrderingModel">
-    <Position X="29.5" Y="3.75" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>gIAAAAAAAAAAAAAACIAAAAgAAAAAIAAAAAQAAAAAAAw=</HashCode>
-      <FileName>Pages\User\Ordering.cshtml.cs</FileName>
-    </TypeIdentifier>
-    <ShowAsAssociation>
-      <Field Name="dataManager" />
-    </ShowAsAssociation>
-  </Class>
-  <Class Name="Application.Pages.CatalogBaseModel">
-    <Position X="27.75" Y="1.25" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>gEIABGAAAAAACAAAAAAAAAAAAAAAIAEAAAQAAEAAAAQ=</HashCode>
-      <FileName>Pages\Base\CatalogBaseModel.cs</FileName>
-    </TypeIdentifier>
-    <ShowAsAssociation>
-      <Field Name="dataManager" />
-    </ShowAsAssociation>
-  </Class>
-  <Class Name="Application.Pages.CatalogProducts">
-    <Position X="29.5" Y="1.25" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAIAAAAAAAAAAAABAAAAAAAAAAAAAAAA=</HashCode>
-      <FileName>Pages\Base\CatalogProducts.cs</FileName>
-    </TypeIdentifier>
-  </Class>
-  <Class Name="Application.Pages.OrdersModel">
-    <Position X="24.25" Y="3.5" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AIEAAAAAAAAAAAAgAAAAAAAAAAAAIAAAAAAAAAAAAAA=</HashCode>
-      <FileName>Pages\Orders.cshtml.cs</FileName>
-    </TypeIdentifier>
-    <ShowAsAssociation>
-      <Field Name="dataManager" />
-    </ShowAsAssociation>
-  </Class>
-  <Class Name="Application.Pages.OrderInfoModel">
-    <Position X="26" Y="3.5" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AIEAAAAAAAAAAAAAAAAAAAAIAACAIAAAAAQAAAAAAAw=</HashCode>
-      <FileName>Pages\OrderInfo.cshtml.cs</FileName>
-    </TypeIdentifier>
-    <ShowAsAssociation>
-      <Field Name="dataManager" />
-    </ShowAsAssociation>
-  </Class>
-  <Class Name="Application.Model.Stocks.Product">
-    <Position X="6.25" Y="9" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AAACAAAAAAAgAAAAAAAAAAQAAAAACAAAIAAAAACAAAA=</HashCode>
-      <FileName>Model\Stocks\Product.cs</FileName>
-    </TypeIdentifier>
-  </Class>
-  <Class Name="Application.Model.Stocks.Stock">
-    <Position X="8" Y="9" Width="1.5" />
-    <Compartments>
-      <Compartment Name="Nested Types" Collapsed="false" />
-    </Compartments>
-    <NestedTypes>
-      <Enum Name="Application.Model.Stocks.Stock.Types">
-        <TypeIdentifier>
-          <NewMemberFileName>Model\Stocks\Stock.cs</NewMemberFileName>
-        </TypeIdentifier>
-      </Enum>
-    </NestedTypes>
-    <TypeIdentifier>
-      <HashCode>AAACAAAAAAAAAAAAABIAAAQAAAAAAAAAAAAAAACAAAA=</HashCode>
-      <FileName>Model\Stocks\Stock.cs</FileName>
-    </TypeIdentifier>
-  </Class>
-  <Class Name="Application.Model.Stocks.StockProducts">
-    <Position X="4.5" Y="11.5" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>EAACAAAAAAAAAAAAAAAAAAAAgAAAAAAAAgAIgAAAAAA=</HashCode>
-      <FileName>Model\Stocks\StockProducts.cs</FileName>
-    </TypeIdentifier>
-  </Class>
-  <Class Name="Application.Model.Orders.Delivery">
-    <Position X="4.5" Y="9" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>EAEAAAAAAAAAAAAIJAAAEAAAAAAAAAAAAAIAAAAAAAA=</HashCode>
-      <FileName>Model\Orders\Delivery.cs</FileName>
-    </TypeIdentifier>
-  </Class>
-  <Class Name="Application.Model.Orders.Order">
-    <Position X="2.75" Y="9" Width="1.5" />
-    <NestedTypes>
-      <Enum Name="Application.Model.Orders.Order.States" Collapsed="true">
-        <TypeIdentifier>
-          <NewMemberFileName>Model\Orders\Order.cs</NewMemberFileName>
-        </TypeIdentifier>
-      </Enum>
-      <Enum Name="Application.Model.Orders.Order.PaymentTypes" Collapsed="true">
-        <TypeIdentifier>
-          <NewMemberFileName>Model\Orders\Order.cs</NewMemberFileName>
-        </TypeIdentifier>
-      </Enum>
-    </NestedTypes>
-    <TypeIdentifier>
-      <HashCode>CAAHAAAAAAAAAAAAAAAQAAgAgAABAAAAQQAIBAAAAAw=</HashCode>
-      <FileName>Model\Orders\Order.cs</FileName>
-    </TypeIdentifier>
-  </Class>
-  <Class Name="Application.Model.Orders.OrderProduct">
-    <Position X="6.25" Y="11.25" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>EAECAAAAAAAAAAAAAAAAgAABAAAAAAAAAAAAgAAIAAA=</HashCode>
-      <FileName>Model\Orders\OrderProduct.cs</FileName>
-    </TypeIdentifier>
-  </Class>
-  <Class Name="Application.Model.Sales.Sale">
-    <Position X="9.75" Y="9" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>EAECAAAAAAAAAAAAABAAAAAAgAAAAAAAAAAIAAEAAAA=</HashCode>
-      <FileName>Model\Sales\Sale.cs</FileName>
-    </TypeIdentifier>
-  </Class>
-  <Class Name="Application.Data.AppDbContext">
-    <Position X="12" Y="13.25" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AAEAAAABAQAgAAAAACAABAAAmAAgAAAAAAAAAACAAAQ=</HashCode>
-      <FileName>Data\AppDbContext.cs</FileName>
-    </TypeIdentifier>
-  </Class>
-  <Class Name="Microsoft.AspNetCore.Identity.EntityFrameworkCore.IdentityDbContext&lt;TUser&gt;">
-    <Position X="12" Y="11.5" Width="1.5" />
-    <TypeIdentifier />
-  </Class>
-  <Class Name="Application.Services.DataManager">
-    <Position X="18.25" Y="9.75" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AAEAAAAAAAAAAAAAAAAABAAAgAAAAAAAAAAAAACAAAQ=</HashCode>
-      <FileName>Services\DataManager.cs</FileName>
-    </TypeIdentifier>
-    <ShowAsAssociation>
-      <Property Name="StockProducts" />
-      <Property Name="Stocks" />
-      <Property Name="Products" />
-      <Property Name="Orders" />
-      <Property Name="Sales" />
-    </ShowAsAssociation>
-  </Class>
-  <Class Name="Application.Data.Repository.EFClientStore" BaseTypeListCollapsed="true">
-    <Position X="13.75" Y="9.75" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AAAAAIAAAAAAAABAAQAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
-      <FileName>Data\Repository\EFClientStore.cs</FileName>
-    </TypeIdentifier>
-    <Lollipop Position="0.2" />
-  </Class>
-  <Class Name="Application.Data.Repository.EFCompanyStore" BaseTypeListCollapsed="true">
-    <Position X="13.75" Y="15.25" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AAAAAIAAAAAAAABAAQAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
-      <FileName>Data\Repository\EFCompanyStore.cs</FileName>
-    </TypeIdentifier>
-    <Lollipop Position="0.2" />
-  </Class>
-  <Class Name="Application.Data.Repository.EFEmployeeStore" BaseTypeListCollapsed="true">
-    <Position X="15.5" Y="9.75" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AAAAAIAAAAAAAABAAQAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
-      <FileName>Data\Repository\EFEmployeeStore.cs</FileName>
-    </TypeIdentifier>
-    <Lollipop Position="0.2" />
-  </Class>
-  <Class Name="Application.Data.Repository.EFOrderStore" BaseTypeListCollapsed="true">
-    <Position X="17.25" Y="14.25" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AAAAAIAQAAAQAABAAQAAAAAAAAEgAAAAAIAAAAAAAAA=</HashCode>
-      <FileName>Data\Repository\EFOrderStore.cs</FileName>
-    </TypeIdentifier>
-    <Lollipop Position="0.2" />
-  </Class>
-  <Class Name="Application.Data.Repository.EFProductsStore" BaseTypeListCollapsed="true">
-    <Position X="15.5" Y="14.75" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AAAAAIAAAAAAAABAAQAAAAAAAAEAAAAAAIAAAAAAAAA=</HashCode>
-      <FileName>Data\Repository\EFProductsStore.cs</FileName>
-    </TypeIdentifier>
-    <Lollipop Position="0.2" />
-  </Class>
-  <Class Name="Application.Data.Repository.EFSalesStore" BaseTypeListCollapsed="true">
-    <Position X="19" Y="14.75" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AAAAAIAAAAAAAABAAQAAAAAAAAAAAAAAAIAAACAAAAA=</HashCode>
-      <FileName>Data\Repository\EFSalesStore.cs</FileName>
-    </TypeIdentifier>
-    <Lollipop Position="0.2" />
-  </Class>
-  <Class Name="Application.Data.Repository.EFStockProductsStore" BaseTypeListCollapsed="true">
-    <Position X="15.5" Y="12" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AAAAAIAAAAAAAAAAAQAAAAAAAAEAAAAAAIAAAAAAAAA=</HashCode>
-      <FileName>Data\Repository\EFStockProductsStore.cs</FileName>
-    </TypeIdentifier>
-    <Lollipop Position="0.2" />
-  </Class>
-  <Class Name="Application.Data.Repository.EFStockStore" BaseTypeListCollapsed="true">
-    <Position X="13.75" Y="12" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AAAAAIAAAAAAAABAAQAAAAAAAAEAAAAAAIAAAAAAAAA=</HashCode>
-      <FileName>Data\Repository\EFStockStore.cs</FileName>
-    </TypeIdentifier>
-    <Lollipop Position="0.2" />
-  </Class>
-  <Class Name="Microsoft.AspNetCore.Identity.EntityFrameworkCore.IdentityDbContext&lt;TUser, TRole, TKey&gt;">
-    <Position X="12" Y="9.75" Width="1.5" />
-    <TypeIdentifier />
-  </Class>
-  <Class Name="Application.ViewModel.Catalog.CartInfoViewModel">
-    <Position X="24.25" Y="8.5" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAgAAAAAA=</HashCode>
-      <FileName>ViewModel\Catalog\CartInfoViewModel.cs</FileName>
-    </TypeIdentifier>
-  </Class>
-  <Class Name="Application.ViewModel.Catalog.CatalogItemViewModel">
-    <Position X="22.5" Y="13.25" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAAAgIAAAAAAQAAAAAQAAAAAAAA=</HashCode>
-      <FileName>ViewModel\Catalog\CatalogItemViewModel.cs</FileName>
-    </TypeIdentifier>
-  </Class>
-  <Class Name="Application.ViewModel.Catalog.ContactInfoViewModel">
-    <Position X="24.25" Y="10" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAIAAAAAAAAAAAAAAAAAAAAAAIAAAAAA=</HashCode>
-      <FileName>ViewModel\Catalog\ContactInfoViewModel.cs</FileName>
-    </TypeIdentifier>
-  </Class>
-  <Class Name="Application.ViewModel.Catalog.DeliveryViewModel">
-    <Position X="27.75" Y="8.5" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAIJAAAEAAAAAAAAAAAAAIAAAAAAAA=</HashCode>
-      <FileName>ViewModel\Catalog\DeliveryViewModel.cs</FileName>
-    </TypeIdentifier>
-  </Class>
-  <Class Name="Application.ViewModel.Catalog.PaymentViewModel">
-    <Position X="24.25" Y="13.5" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAAQAACAAAAAAAAAAAAAAAAAAAA=</HashCode>
-      <FileName>ViewModel\Catalog\PaymentViewModel.cs</FileName>
-    </TypeIdentifier>
-  </Class>
-  <Class Name="Application.ViewModel.Sales.SaleProductViewModel">
-    <Position X="26" Y="13" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AAAAAAAAAQAgAAAAAAAAAAQAAAACAAAAAAAAgAAAAAA=</HashCode>
-      <FileName>ViewModel\Sales\SaleProductViewModel.cs</FileName>
-    </TypeIdentifier>
-  </Class>
-  <Class Name="Application.ViewModel.Sales.SalesAnalyticsViewModel">
-    <Position X="24.25" Y="15.25" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AAAEAABAAAAAAAQAAAAAAAAAAAAAAAAACAAAAAAAAAI=</HashCode>
-      <FileName>ViewModel\Sales\SalesAnalyticsViewModel.cs</FileName>
-    </TypeIdentifier>
-  </Class>
-  <Class Name="Application.ViewModel.Sales.SaleViewModel">
-    <Position X="29.5" Y="11.75" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>CAACAAAAAABAAAQAABCAAAiAAAAgAAAAAAAAgAEEAAQ=</HashCode>
-      <FileName>ViewModel\Sales\SaleViewModel.cs</FileName>
-    </TypeIdentifier>
-  </Class>
-  <Class Name="Application.ViewModel.Data.ProductViewModel">
-    <Position X="22.5" Y="8.5" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AAACAAAAAAAgAAAAAAAAAAQAAAAACAAAIAAAAAAAAAA=</HashCode>
-      <FileName>ViewModel\Data\ProductViewModel.cs</FileName>
-    </TypeIdentifier>
-  </Class>
-  <Class Name="Application.ViewModel.Data.QuantityProductViewModel">
-    <Position X="22.5" Y="11.25" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAA=</HashCode>
-      <FileName>ViewModel\Data\ProductViewModel.cs</FileName>
-    </TypeIdentifier>
-  </Class>
-  <Class Name="Application.ViewModel.Data.StockViewModel">
-    <Position X="20.75" Y="13.75" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AAACAAAAAAAAAAAAABIAAAQAAAAAAAAAgAAAAAAAAAA=</HashCode>
-      <FileName>ViewModel\Data\StockViewModel.cs</FileName>
-    </TypeIdentifier>
-  </Class>
-  <Class Name="Application.ViewModel.Data.QuantityStockViewModel" Collapsed="true">
-    <Position X="20.75" Y="16.5" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAA=</HashCode>
-      <FileName>ViewModel\Data\StockViewModel.cs</FileName>
-    </TypeIdentifier>
-  </Class>
-  <Class Name="Application.ViewModel.Orders.DateViewModel">
-    <Position X="26" Y="8.5" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAAAAAAA=</HashCode>
-      <FileName>ViewModel\Orders\DateViewModel.cs</FileName>
-    </TypeIdentifier>
-  </Class>
-  <Class Name="Application.ViewModel.Orders.OrderStateViewModel">
-    <Position X="26" Y="9.75" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAA=</HashCode>
-      <FileName>ViewModel\Orders\OrderStateViewModel.cs</FileName>
-    </TypeIdentifier>
-  </Class>
-  <Class Name="Application.ViewModel.Orders.OrderViewModel">
-    <Position X="27.75" Y="13" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>CAAGAAAAAAAgAAAIAAAQAACAAAABAAAAQQAAhAAAAAA=</HashCode>
-      <FileName>ViewModel\Orders\OrderViewModel.cs</FileName>
-    </TypeIdentifier>
-  </Class>
-  <Class Name="Application.ViewModel.Users.ChangePasswordViewModel">
-    <Position X="26" Y="11.25" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAEAAAAACAAAAAAAAIAA=</HashCode>
-      <FileName>ViewModel\Users\ChangePasswordViewModel.cs</FileName>
-    </TypeIdentifier>
-  </Class>
-  <Class Name="Application.ViewModel.Users.ClientViewModel">
-    <Position X="27.75" Y="11" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AAAAAEAAACAAAAAAAAAAAAAAAAAAAAAAAAAAIAAAAAg=</HashCode>
-      <FileName>ViewModel\Users\ClientViewModel.cs</FileName>
-    </TypeIdentifier>
-  </Class>
-  <Class Name="Application.ViewModel.Users.CompanyViewModel">
-    <Position X="29.5" Y="8.5" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AAAAAAAAACAAAAgAAAAAAAQAAAAAAAAAABAAIAAAgCA=</HashCode>
-      <FileName>ViewModel\Users\CompanyViewModel.cs</FileName>
-    </TypeIdentifier>
-  </Class>
-  <Class Name="Application.ViewModel.Users.EmployeeViewModel">
-    <Position X="26" Y="15" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AAACAEAAACAAAAAAEAAAAAAAAAAAAAAAAAAAIAAAAAg=</HashCode>
-      <FileName>ViewModel\Users\EmployeeViewModel.cs</FileName>
-    </TypeIdentifier>
-  </Class>
-  <Class Name="Application.ViewModel.Users.LoginViewModel">
-    <Position X="24.25" Y="11.75" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AAAAAAAAACAAAAAAAAAAAAAAAAAAAAACAAAAAAAgAAA=</HashCode>
-      <FileName>ViewModel\Users\LoginViewModel.cs</FileName>
-    </TypeIdentifier>
-  </Class>
-  <Class Name="Application.ViewModel.Users.PasswordViewModel">
-    <Position X="22.5" Y="15.75" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAAAAAAAAIAA=</HashCode>
-      <FileName>ViewModel\Users\PasswordViewModel.cs</FileName>
-    </TypeIdentifier>
-  </Class>
   <Class Name="Application.Attributes.ValidateDateRange">
-    <Position X="9.75" Y="13.25" Width="1.5" />
+    <Position X="24" Y="11.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Attributes\ValidateDateRange.cs</FileName>
     </TypeIdentifier>
   </Class>
+  <Class Name="Application.Controllers.AuthController">
+    <Position X="35.5" Y="2" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAABAAAAAAAgCAAAABAAAAAAAABAAAAAABQAAAAAAA=</HashCode>
+      <FileName>Controllers\AuthController.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Application.Controllers.ClientsController">
+    <Position X="30.25" Y="2" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAABAABAAAAAAAAAAIACAAAAAEAgEAAAAAhoABBAAA=</HashCode>
+      <FileName>Controllers\ClientsController.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Application.Controllers.EmployeesController">
+    <Position X="33.75" Y="2" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAgBAAAAAIIhBCAAAIAAAAAgAAAIAAIAAAgAAAAAAA=</HashCode>
+      <FileName>Controllers\EmployeesController.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Application.Controllers.OrdersController">
+    <Position X="26.75" Y="2" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AQAICQESAAAQAAIAAAAAAAAAAAAggAAACGAwAAAAAAA=</HashCode>
+      <FileName>Controllers\OrdersController.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Application.Controllers.ProductsController">
+    <Position X="28.5" Y="2" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>IAAAAAQAAKAAAAAACQQAAAiAAAAAAAAAQAAACAAAAAA=</HashCode>
+      <FileName>Controllers\ProductsController.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Application.Controllers.StocksController">
+    <Position X="25" Y="2" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAgAAAIgJgAABAAIAIAAAAACCAAAAiAAIAEAAAgQAA=</HashCode>
+      <FileName>Controllers\StocksController.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Server.Controllers.SalesController">
+    <Position X="32" Y="2" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AABAIBAAIBABAAIAAABAEAAAAAIAAgEAAgAAAgAAAIA=</HashCode>
+      <FileName>Controllers\SalesController.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Application.Data.AppDbConfigure">
+    <Position X="1.75" Y="7.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAEAAAAAAAAIAAAAAAAAAAAA=</HashCode>
+      <FileName>Data\AppDbConfigure.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Application.Data.AppDbContext">
+    <Position X="1.75" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAEAAAAhAQAAAAAAECAABAAAmAAAAAAAAAAAAACAAAQ=</HashCode>
+      <FileName>Data\AppDbContext.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Application.Exceptions.BusinessException">
+    <Position X="34.75" Y="15.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Exceptions\BusinessExceptions.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Application.Exceptions.ProductNotFoundException">
+    <Position X="22.5" Y="17.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Exceptions\BusinessExceptions.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Application.Exceptions.ClientNotFoundException">
+    <Position X="24.5" Y="17.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Exceptions\BusinessExceptions.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Application.Exceptions.EmployeeNotFoundException">
+    <Position X="26.5" Y="17.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Exceptions\BusinessExceptions.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Application.Exceptions.OrderNotFoundException">
+    <Position X="28.5" Y="17.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Exceptions\BusinessExceptions.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Application.Exceptions.StockNotFoundException">
+    <Position X="30.5" Y="17.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Exceptions\BusinessExceptions.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Application.Exceptions.InsufficientStockException">
+    <Position X="32.5" Y="15.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Exceptions\BusinessExceptions.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Application.Exceptions.InvalidOrderStateException">
+    <Position X="20.5" Y="15.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Exceptions\BusinessExceptions.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Application.Exceptions.DeliveryNotFoundException">
+    <Position X="20.5" Y="17.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Exceptions\BusinessExceptions.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Application.Exceptions.InvalidDateRangeException">
+    <Position X="22.5" Y="15.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Exceptions\BusinessExceptions.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Application.Exceptions.InvalidAnalyticsParametersException">
+    <Position X="24.5" Y="15.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Exceptions\BusinessExceptions.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Application.Exceptions.ReportGenerationException">
+    <Position X="26.5" Y="15.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Exceptions\BusinessExceptions.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Application.Exceptions.AnalyticsDataNotFoundException">
+    <Position X="28.5" Y="15.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Exceptions\BusinessExceptions.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Application.Exceptions.SaleNotFoundException">
+    <Position X="30.5" Y="15.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Exceptions\BusinessExceptions.cs</FileName>
+    </TypeIdentifier>
+  </Class>
   <Class Name="Application.Extensions.EnumHelper">
-    <Position X="9.75" Y="14.75" Width="1.5" />
+    <Position X="22.25" Y="12.25" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Extentions\EnumHelper.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="Application.Areas.Identity.Data.AppUser">
-    <Position X="8" Y="14.25" Width="1.5" />
+  <Class Name="Application.Middleware.ErrorHandlingMiddleware">
+    <Position X="20.5" Y="11.25" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAACAAAAAAAAAAABAAAAAQ=</HashCode>
-      <FileName>Areas\Identity\Data\AppUser.cs</FileName>
+      <HashCode>AAAAAAAAQAAAAAAAAAAAAAAAIAAAAAAwAAAAAAAAAAA=</HashCode>
+      <FileName>Middleware\ErrorHandlingMiddleware.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="Application.Areas.Identity.Data.Client">
-    <Position X="2.75" Y="14.25" Width="1.5" />
+  <Class Name="Server.Migrations.AppDbContextModelSnapshot">
+    <Position X="1.75" Y="5.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAABAEAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAIAAAAAg=</HashCode>
-      <FileName>Areas\Identity\Data\Client.cs</FileName>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAA=</HashCode>
+      <FileName>Migrations\AppDbContextModelSnapshot.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="Application.Areas.Identity.Data.Company">
-    <Position X="4.5" Y="14.25" Width="1.5" />
+  <Class Name="Application.Services.ClientService" BaseTypeListCollapsed="true">
+    <Position X="22.75" Y="2.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAABAAAAACAAAAgAAAAAAAwAAAAAAAAAABAAIAAAgCA=</HashCode>
-      <FileName>Areas\Identity\Data\Company.cs</FileName>
+      <HashCode>AAAAAAAIAIAAAAAACBABAAAIAAAAACAAAAIABAAAAAI=</HashCode>
+      <FileName>Services\Clients\ClientService.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Application.Services.EmployeeService" BaseTypeListCollapsed="true">
+    <Position X="21" Y="2.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AABAAAAAAAEAEEAAAAAJAAAIBACAAAAAACAAEAAAAAA=</HashCode>
+      <FileName>Services\Employees\EmployeeService.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="Application.Services.OrderService" BaseTypeListCollapsed="true">
+    <Position X="19.25" Y="2.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>SAAAABABAAgCAAAIEEAhgAAAAAAGAAQAAgCAILAYAAA=</HashCode>
+      <FileName>Services\Orders\OrderService.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Application.Services.ProductService" BaseTypeListCollapsed="true">
+    <Position X="17.5" Y="2.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAIAAAAAIAAAAAAAgCkJAAAAAAABAAAAAAAAAAYAAAI=</HashCode>
+      <FileName>Services\Products\ProductService.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Application.Services.JwtService" BaseTypeListCollapsed="true">
+    <Position X="12.25" Y="2.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEQAAAACAA=</HashCode>
+      <FileName>Services\JwtService.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Application.Services.MappingProfile">
+    <Position X="24" Y="10" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Services\MappingProfile.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="Application.Areas.Identity.Data.Employee">
-    <Position X="6.25" Y="14.25" Width="1.5" />
+  <Class Name="Server.Services.Repository.ClientRepository">
+    <Position X="4" Y="13.25" Width="1.5" />
+    <InheritanceLine Type="Server.Services.Repository.Repository&lt;TEntity, TKey&gt;" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="2.5" Y="12.5" />
+        <Point X="2.5" Y="12.125" />
+        <Point X="3.625" Y="12.125" />
+        <Point X="3.625" Y="12.875" />
+        <Point X="5.875" Y="12.875" />
+        <Point X="5.875" Y="13.625" />
+        <Point X="5.5" Y="13.625" />
+      </Path>
+    </InheritanceLine>
     <TypeIdentifier>
-      <HashCode>AAABAEAAAAAAAAAAEAAAAAgAAAAAAAAAAAAAIAAAAAg=</HashCode>
-      <FileName>Areas\Identity\Data\Employee.cs</FileName>
+      <HashCode>AAAAAAAAAgAAAAAIAAACAAAIAAAAAAAAAAAABAQAAQA=</HashCode>
+      <FileName>Services\Repository\ClientRepository.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Server.Services.Repository.DeliveryRepository">
+    <Position X="8.5" Y="13.25" Width="1.5" />
+    <InheritanceLine Type="Server.Services.Repository.Repository&lt;TEntity, TKey&gt;" FixedFromPoint="true">
+      <Path>
+        <Point X="2.5" Y="12.5" />
+        <Point X="2.5" Y="12.125" />
+        <Point X="3.625" Y="12.125" />
+        <Point X="3.625" Y="12.875" />
+        <Point X="8.125" Y="12.875" />
+        <Point X="8.125" Y="15.435" />
+        <Point X="9.25" Y="15.435" />
+        <Point X="9.25" Y="15.06" />
+      </Path>
+    </InheritanceLine>
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAgAAAAAAAAAIAAAAAAAAAAAQAAA=</HashCode>
+      <FileName>Services\Repository\DeliveryRepository.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Server.Services.Repository.EmployeeRepository">
+    <Position X="13" Y="13.25" Width="1.5" />
+    <InheritanceLine Type="Server.Services.Repository.Repository&lt;TEntity, TKey&gt;" FixedFromPoint="true">
+      <Path>
+        <Point X="2.5" Y="12.5" />
+        <Point X="2.5" Y="12.125" />
+        <Point X="3.625" Y="12.125" />
+        <Point X="3.625" Y="12.875" />
+        <Point X="12.625" Y="12.875" />
+        <Point X="12.625" Y="16.012" />
+        <Point X="13.75" Y="16.012" />
+        <Point X="13.75" Y="15.637" />
+      </Path>
+    </InheritanceLine>
+    <TypeIdentifier>
+      <HashCode>AAABAAAAAgAAAAAIAAAAAgAIAAAAAAAAAAAAAAQAAAA=</HashCode>
+      <FileName>Services\Repository\EmployeeRepository.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Server.Services.Repository.OrderRepository">
+    <Position X="6.25" Y="13.25" Width="1.5" />
+    <InheritanceLine Type="Server.Services.Repository.Repository&lt;TEntity, TKey&gt;" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="2.5" Y="12.5" />
+        <Point X="2.5" Y="12.125" />
+        <Point X="3.625" Y="12.125" />
+        <Point X="3.625" Y="12.875" />
+        <Point X="8.125" Y="12.875" />
+        <Point X="8.125" Y="13.5" />
+        <Point X="7.75" Y="13.5" />
+      </Path>
+    </InheritanceLine>
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAgAAIKAAAAAAACAAAAAAAQAAAAAAQAAA=</HashCode>
+      <FileName>Services\Repository\OrderRepository.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Server.Services.Repository.ProductRepository">
+    <Position X="10.75" Y="13.25" Width="1.5" />
+    <InheritanceLine Type="Server.Services.Repository.Repository&lt;TEntity, TKey&gt;" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="2.5" Y="12.5" />
+        <Point X="2.5" Y="12.125" />
+        <Point X="3.625" Y="12.125" />
+        <Point X="3.625" Y="12.875" />
+        <Point X="12.625" Y="12.875" />
+        <Point X="12.625" Y="13.625" />
+        <Point X="12.25" Y="13.625" />
+      </Path>
+    </InheritanceLine>
+    <TypeIdentifier>
+      <HashCode>AAAABAAAAAAAAAAKAgAAAAAAAAABAAAAEAAAAAQAAAA=</HashCode>
+      <FileName>Services\Repository\ProductRepository.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Server.Services.Repository.Repository&lt;TEntity, TKey&gt;">
+    <Position X="1.75" Y="12.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAEAAIAAAAAABEAAAAAAIAEAAAAAAAgAAAAAIAAAIIA=</HashCode>
+      <FileName>Services\Repository\Repository.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Server.Services.Repository.SaleRepository">
+    <Position X="15.25" Y="13.25" Width="1.5" />
+    <InheritanceLine Type="Server.Services.Repository.Repository&lt;TEntity, TKey&gt;" ManuallyRouted="true" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="2.5" Y="12.5" />
+        <Point X="2.5" Y="12.125" />
+        <Point X="3.625" Y="12.125" />
+        <Point X="3.625" Y="12.875" />
+        <Point X="17.125" Y="12.875" />
+        <Point X="17.125" Y="13.438" />
+        <Point X="16.75" Y="13.438" />
+      </Path>
+    </InheritanceLine>
+    <TypeIdentifier>
+      <HashCode>ACAABoAAAIBAAAAGEgAAAAAACAAKAgEoQAAAKCAQAAA=</HashCode>
+      <FileName>Services\Repository\SaleRepository.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Server.Services.Repository.StockRepository">
+    <Position X="17.5" Y="13.25" Width="1.5" />
+    <InheritanceLine Type="Server.Services.Repository.Repository&lt;TEntity, TKey&gt;" FixedFromPoint="true">
+      <Path>
+        <Point X="2.5" Y="12.5" />
+        <Point X="2.5" Y="12.125" />
+        <Point X="3.625" Y="12.125" />
+        <Point X="3.625" Y="12.875" />
+        <Point X="17.125" Y="12.875" />
+        <Point X="17.125" Y="16.589" />
+        <Point X="18.25" Y="16.589" />
+        <Point X="18.25" Y="16.214" />
+      </Path>
+    </InheritanceLine>
+    <TypeIdentifier>
+      <HashCode>AAIABAACAAAAAAAIAAAAAAAAAAABAAQQAAAAAAQgAAA=</HashCode>
+      <FileName>Services\Repository\StockRepository.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Server.Services.Sales.SaleService" BaseTypeListCollapsed="true">
+    <Position X="14" Y="2.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>QCECBoAiANBAAAAGAgABAgiACAAAAgEgAAAAIBAQIAg=</HashCode>
+      <FileName>Services\Sales\SaleService.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Application.Services.Stocks.StockService" BaseTypeListCollapsed="true">
+    <Position X="15.75" Y="2.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>BCiAAQQGIAAAAAAAAQABAAEAEAADAAQAAgAIEAAIAAA=</HashCode>
+      <FileName>Services\Stocks\StockService.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Application.Utils.SystemTime">
+    <Position X="22.25" Y="10" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AIAQAAAAAAAABAABAAAAAAAAACAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Utils\SystemTime.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Interface Name="Application.Services.IOrderStore" Collapsed="true">
-    <Position X="20.75" Y="9.75" Width="1.5" />
+  <Class Name="Application.Program">
+    <Position X="20.5" Y="10" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAIAQAAAQAABAAAAAAAAAAAEgAAAAAIAAAAAAAAA=</HashCode>
-      <FileName>Services\IOrderStore.cs</FileName>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAA=</HashCode>
+      <FileName>Program.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Application.Models.Delivery">
+    <Position X="3.5" Y="1.75" Width="1.5" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="Application.Models.Order">
+    <Position X="3.5" Y="4.5" Width="1.5" />
+    <NestedTypes>
+      <Class Name="Application.Models.Order.PaymentTypes" Collapsed="true">
+        <TypeIdentifier />
+      </Class>
+      <Class Name="Application.Models.Order.States" Collapsed="true">
+        <TypeIdentifier />
+      </Class>
+    </NestedTypes>
+    <TypeIdentifier />
+  </Class>
+  <Class Name="Application.Models.OrderProduct">
+    <Position X="7" Y="1.75" Width="1.5" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="Server.Models.Sale">
+    <Position X="7" Y="4.5" Width="1.5" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="Server.Models.SaleProduct">
+    <Position X="8.75" Y="1.75" Width="1.5" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="Application.Models.Product">
+    <Position X="8.75" Y="5" Width="1.5" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="Application.Models.Stock">
+    <Position X="5.25" Y="1.75" Width="1.5" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="Application.Models.StockProducts">
+    <Position X="5.25" Y="4.5" Width="1.5" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="Application.Models.AppUser">
+    <Position X="5.25" Y="7" Width="1.5" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="Application.Models.Client">
+    <Position X="10.5" Y="4.25" Width="1.5" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="Application.Models.Employee">
+    <Position X="10.5" Y="1.75" Width="1.5" />
+    <TypeIdentifier />
+  </Class>
+  <Interface Name="Application.Services.IClientService" Collapsed="true">
+    <Position X="22.75" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAIAAAAAACBAAAAAIAAAAACAAAAIABAAAAAI=</HashCode>
+      <FileName>Services\Clients\IClientService.cs</FileName>
     </TypeIdentifier>
   </Interface>
-  <Interface Name="Application.Services.IProductsStore" Collapsed="true">
-    <Position X="20.75" Y="10.5" Width="1.5" />
+  <Interface Name="Application.Services.IEmployeeService" Collapsed="true">
+    <Position X="21" Y="1.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAIAAAAAAAABAAAAAAAAAAAEAAAAAAIAAAAAAAAA=</HashCode>
-      <FileName>Services\IProductsStore.cs</FileName>
+      <HashCode>AABAAAAAAAEAEEAAAAAIAAAIBACAAAAAAAAAEAAAAAA=</HashCode>
+      <FileName>Services\Employees\IEmployeeService.cs</FileName>
     </TypeIdentifier>
   </Interface>
-  <Interface Name="Application.Services.ISalesStore" Collapsed="true">
-    <Position X="20.75" Y="11.25" Width="1.5" />
+  <Interface Name="Application.Services.IOrderService" Collapsed="true">
+    <Position X="19.25" Y="1.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAIAAAAAAAABAAAAAAAAAAAAAAAAAAIAAACAAAAA=</HashCode>
-      <FileName>Services\ISalesStore.cs</FileName>
+      <HashCode>SAAAAAABAAgCAAAIEEAggAAAAAAEAAQAAgCAIKAYAAA=</HashCode>
+      <FileName>Services\Orders\IOrderService.cs</FileName>
     </TypeIdentifier>
   </Interface>
-  <Interface Name="Application.Services.IStockProductsStore" Collapsed="true">
-    <Position X="20.75" Y="12" Width="1.5" />
+  <Interface Name="Application.Services.IProductService" Collapsed="true">
+    <Position X="17.5" Y="1.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAIAAAAAAAAAAAAAAAAAAAAEAAAAAAIAAAAAAAAA=</HashCode>
-      <FileName>Services\IStockProductsStore.cs</FileName>
+      <HashCode>AAIAAAAAIAAAAAAAgCkIAAAAAAABAAAAAAAAAAYAAAI=</HashCode>
+      <FileName>Services\Products\IProductService.cs</FileName>
     </TypeIdentifier>
   </Interface>
-  <Interface Name="Application.Services.IStockStore" Collapsed="true">
-    <Position X="20.75" Y="12.75" Width="1.5" />
+  <Interface Name="Application.Services.IJwtService" Collapsed="true">
+    <Position X="12.25" Y="1.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAIAAAAAAAABAAAAAAAAAAAEAAAAAAIAAAAAAAAA=</HashCode>
-      <FileName>Services\IStockStore.cs</FileName>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAACAA=</HashCode>
+      <FileName>Services\JwtService.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="Server.Services.Repository.IClientRepository" Collapsed="true">
+    <Position X="4" Y="11.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAgAAAAAIAAACAAAIAAAAAAAAAAAABAQAAQA=</HashCode>
+      <FileName>Services\Repository\IClientRepository.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="Server.Services.Repository.IDeliveryRepository" Collapsed="true">
+    <Position X="8.5" Y="11.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAgAAAAAAAAAIAAAAAAAAAAAQAAA=</HashCode>
+      <FileName>Services\Repository\IDeliveryRepository.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="Server.Services.Repository.IEmployeeRepository" Collapsed="true">
+    <Position X="13" Y="11.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAABAAAAAgAAAAAIAAAAAgAIAAAAAAAAAAAAAAQAAAA=</HashCode>
+      <FileName>Services\Repository\IEmployeeRepository.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="Server.Services.Repository.IOrderRepository" Collapsed="true">
+    <Position X="6.25" Y="11.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAgAAIKAAAAAAACAAAAAAAQAAAAAAQAAA=</HashCode>
+      <FileName>Services\Repository\IOrderRepository.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="Server.Services.Repository.IRepository&lt;TEntity, TKey&gt;" Collapsed="true">
+    <Position X="1.75" Y="11" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAEAAIAAAAAAAEAAAAAAAAEAAAAAAAgAAAAAIAAAIIA=</HashCode>
+      <FileName>Services\Repository\IRepository.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="Server.Services.Repository.ISaleRepository" Collapsed="true">
+    <Position X="15.25" Y="11.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ACAABoAAAIBAAAAGEgAAAAAACAAKAgEoQAAAKCAQAAA=</HashCode>
+      <FileName>Services\Repository\ISaleRepository.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="Application.Services.Repository.IProductRepository" Collapsed="true">
+    <Position X="10.75" Y="11.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAABAAAAAAAAAAKAgAAAAAAAAABAAAAEAAAAAQAAAA=</HashCode>
+      <FileName>Services\Repository\IProductRepository.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="Application.Services.Repository.IStockRepository" Collapsed="true">
+    <Position X="17.5" Y="11.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAIABAACAAAAAAAIAAAAAAAAAAABAAQQAAAAAAQgAAA=</HashCode>
+      <FileName>Services\Repository\IStockRepository.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="Server.Services.Sales.ISaleService" Collapsed="true">
+    <Position X="14" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>QCECBoAiANBAAAAGAgAAAAAACAAAAgEgAAAAIAAQIAg=</HashCode>
+      <FileName>Services\Sales\ISaleService.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="Application.Services.Stocks.IStockService" Collapsed="true">
+    <Position X="15.75" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>BCiAAQQGAAAAAAAAAQAAAAEAEAABAAQAAgAIEAAIAAA=</HashCode>
+      <FileName>Services\Stocks\IStockService.cs</FileName>
     </TypeIdentifier>
   </Interface>
   <Font Name="Segoe UI" Size="9" />

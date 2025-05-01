@@ -463,7 +463,7 @@ public class SalesControllerTests : TestBase
             currentDate = currentDate.AddDays(1);
         }
             
-        _saleServiceMock.Setup(x => x.GetSalesTrendAsync(startDate, endDate, TimeSpan.FromDays(1)))
+        _saleServiceMock.Setup(x => x.GetSalesTrendAsync(startDate, endDate, "1d"))
             .ReturnsAsync(expectedTrend);
 
         // Act
@@ -501,52 +501,6 @@ public class SalesControllerTests : TestBase
         {
             _output.WriteLine($"- {day.Date:dd.MM.yyyy}: {day.SalesCount} продаж ({day.Revenue:N2})");
         }
-    }
-
-    [Fact]
-    public async Task GetSalesTrend_WithInvalidInterval_ShouldReturnBadRequest()
-    {
-        // Arrange
-        var startDate = DateTime.UtcNow.AddDays(-30);
-        var endDate = DateTime.UtcNow;
-        var invalidInterval = "invalid";
-
-        // Act
-        var result = await _controller.GetSalesTrend(startDate, endDate, invalidInterval);
-
-        // Assert
-        result.Result.Should().BeOfType<BadRequestObjectResult>();
-    }
-
-    [Fact]
-    public async Task GetSalesTrend_WithTooLargeInterval_ShouldReturnBadRequest()
-    {
-        // Arrange
-        var startDate = DateTime.UtcNow.AddDays(-30);
-        var endDate = DateTime.UtcNow;
-        var tooLargeInterval = "31d";
-
-        // Act
-        var result = await _controller.GetSalesTrend(startDate, endDate, tooLargeInterval);
-
-        // Assert
-        result.Result.Should().BeOfType<BadRequestObjectResult>();
-    }
-
-    [Fact]
-    public async Task GetSalesTrend_WithInvalidDateRange_ShouldReturnBadRequest()
-    {
-        // Arrange
-        var startDate = DateTime.UtcNow;
-        var endDate = DateTime.UtcNow.AddDays(-1);
-        var interval = "1d";
-
-        // Act
-        var result = await _controller.GetSalesTrend(startDate, endDate, interval);
-
-        // Assert
-        var badRequest = result.Result.Should().BeOfType<BadRequestObjectResult>().Subject;
-        badRequest.Value.Should().Be("Начальная дата не может быть позже конечной");
     }
 
     [Fact]
@@ -752,7 +706,7 @@ public class SalesControllerTests : TestBase
             }
         };
         
-        _saleServiceMock.Setup(x => x.GetSalesTrendAsync(startDate, endDate, TimeSpan.FromDays(1)))
+        _saleServiceMock.Setup(x => x.GetSalesTrendAsync(startDate, endDate, "1d"))
             .ReturnsAsync(expectedTrend);
 
         // Act

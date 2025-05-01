@@ -105,9 +105,9 @@ namespace Application
             {
                 c.SwaggerDoc("v1", new OpenApiInfo
                 {
-                    Title = "Application API",
+                    Title = "RSAS WEB API",
                     Version = "v1",
-                    Description = "API для системы управления заказами и складом"
+                    Description = "API для системы анализа заказов и продаж"
                 });
 
                 c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
@@ -131,10 +131,10 @@ namespace Application
                     {
                         builder
                             .WithOrigins(
-                                "http://localhost:5001", // Development
-                                "http://localhost:3000", // React development
-                                "https://localhost:5001", // Development HTTPS
-                                "https://localhost:3000" // React development HTTPS
+                                "http://localhost:5001",
+                                "http://localhost:3000",
+                                "https://localhost:5001",
+                                "https://localhost:3000"
                             )
                             .AllowAnyMethod()
                             .AllowAnyHeader()

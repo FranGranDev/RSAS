@@ -80,7 +80,7 @@
                         </div>
                         <div class="d-flex justify-content-between align-items-center mb-3">
                             <h5 class="mb-0">Итого:</h5>
-                            <h5 class="mb-0">@Model.Cart.TotalQuantity.ToString("N2") @CurrencySettings.Symbol</h5>
+                            <h5 class="mb-0">@Model.Cart.TotalPrice.ToString("N2") @CurrencySettings.Symbol</h5>
                         </div>
                         <a class="btn btn-primary w-100" asp-page="/Client/Order/Create">
                             <i class="bi bi-bag-check me-2"></i>Оформить заказ

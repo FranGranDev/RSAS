@@ -1,9 +1,35 @@
+// Глобальные переменные
+let currentTab = 'dashboard';
+window.dateRangePicker = null; // Делаем глобально доступным
+
+// Инициализация страницы
 $(document).ready(function() {
+    console.log('Инициализация страницы аналитики');
+    
     // Устанавливаем русскую локаль для moment.js
     moment.locale('ru');
 
     // Инициализация daterangepicker
-    $('#dateRangePicker').daterangepicker({
+    initDateRangePicker();
+    
+    // Подписка на события
+    initEventListeners();
+    
+    // Загрузка начальных данных
+    loadCurrentTabData();
+});
+
+// Инициализация daterangepicker
+function initDateRangePicker() {
+    console.log('Инициализация daterangepicker');
+    const $dateRangePicker = $('#dateRangePicker');
+    
+    if (!$dateRangePicker.length) {
+        console.error('Элемент dateRangePicker не найден');
+        return;
+    }
+
+    window.dateRangePicker = $dateRangePicker.daterangepicker({
         startDate: moment().subtract(29, 'days'),
         endDate: moment(),
         ranges: {
@@ -28,27 +54,50 @@ $(document).ready(function() {
         alwaysShowCalendars: true,
         autoApply: false,
         opens: 'right'
+    }, function(start, end) {
+        console.log('Выбран период:', start.format('DD.MM.YYYY'), '-', end.format('DD.MM.YYYY'));
     });
 
+    console.log('daterangepicker инициализирован');
+}
+
+// Инициализация обработчиков событий
+function initEventListeners() {
     // Обработчик изменения периода
     $('#dateRangePicker').on('apply.daterangepicker', function(ev, picker) {
-        loadData();
+        console.log('Период изменен:', picker.startDate.format('DD.MM.YYYY'), '-', picker.endDate.format('DD.MM.YYYY'));
+        loadCurrentTabData();
     });
 
-    // Загрузка начальных данных
-    loadData();
-});
+    // Обработчик переключения вкладок
+    $('.nav-tabs .nav-link').on('shown.bs.tab', function (e) {
+        const tabId = $(e.target).attr('href').substring(1);
+        console.log('Переключение на вкладку:', tabId);
+        currentTab = tabId;
+        loadCurrentTabData();
+    });
 
-function loadData() {
-    const dates = $('#dateRangePicker').data('daterangepicker');
+    // Обработчик кнопки обновления
+    $('#refreshData').click(function() {
+        console.log('Обновление данных');
+        loadCurrentTabData();
+    });
+}
+
+// Загрузка данных для текущей вкладки
+function loadCurrentTabData() {
+    const dates = dateRangePicker.data('daterangepicker');
+    if (!dates) {
+        console.error('daterangepicker не инициализирован');
+        return;
+    }
+
     const startDate = dates.startDate.format('YYYY-MM-DD');
     const endDate = dates.endDate.format('YYYY-MM-DD');
+    console.log('Загрузка данных для вкладки', currentTab, 'за период:', startDate, '-', endDate);
 
-    // Загрузка данных для активной вкладки
-    const activeTab = document.querySelector('.nav-tabs .nav-link.active');
-    const tabId = activeTab.getAttribute('href').substring(1);
-
-    switch (tabId) {
+    // Загрузка данных в зависимости от текущей вкладки
+    switch (currentTab) {
         case 'dashboard':
             loadDashboardData(startDate, endDate);
             break;
@@ -64,51 +113,71 @@ function loadData() {
     }
 }
 
-function refreshData() {
-    loadData();
-}
-
+// Функции загрузки данных для каждой вкладки
 function loadDashboardData(startDate, endDate) {
-    // Загрузка KPI карточек
-    $.get(`?handler=Dashboard&startDate=${startDate}&endDate=${endDate}`, function(data) {
-        $('#kpi-cards-container').html($(data).find('#kpi-cards-container').html());
-        $('#top-products-container').html($(data).find('#top-products-container').html());
-        loadTrendData(); // Загрузка данных для графика
-    }).fail(function() {
+    $.get(`?handler=DashboardView&startDate=${startDate}&endDate=${endDate}`, function(data) {
+        // Очищаем содержимое перед вставкой новых данных
+        $('#analytics-content').empty();
+        $('#analytics-content').html(data);
+        // Инициализация графиков дашборда
+        if (typeof initDashboardCharts === 'function') {
+            initDashboardCharts();
+        }
+    }).fail(function(xhr) {
+        console.error('Ошибка при загрузке данных дашборда:', xhr);
         notification.showError('Ошибка при загрузке данных дашборда');
     });
 }
 
 function loadSalesData(startDate, endDate) {
-    $.get(`?handler=Sales&startDate=${startDate}&endDate=${endDate}`, function(data) {
-        $('#sales').html(data);
-    }).fail(function() {
+    $.get(`?handler=SalesView&startDate=${startDate}&endDate=${endDate}`, function(data) {
+        // Очищаем содержимое перед вставкой новых данных
+        $('#analytics-content').empty();
+        $('#analytics-content').html(data);
+        // Инициализация графиков продаж
+        if (typeof initSalesCharts === 'function') {
+            initSalesCharts();
+        }
+    }).fail(function(xhr) {
+        console.error('Ошибка при загрузке данных продаж:', xhr);
         notification.showError('Ошибка при загрузке данных продаж');
     });
 }
 
 function loadOrdersData(startDate, endDate) {
-    $.get(`?handler=Orders&startDate=${startDate}&endDate=${endDate}`, function(data) {
-        $('#orders').html(data);
-    }).fail(function() {
+    $.get(`?handler=OrdersView&startDate=${startDate}&endDate=${endDate}`, function(data) {
+        // Очищаем содержимое перед вставкой новых данных
+        $('#analytics-content').empty();
+        $('#analytics-content').html(data);
+        // Инициализация графиков заказов
+        if (typeof initOrdersCharts === 'function') {
+            initOrdersCharts();
+        }
+    }).fail(function(xhr) {
+        console.error('Ошибка при загрузке данных заказов:', xhr);
         notification.showError('Ошибка при загрузке данных заказов');
     });
 }
 
 function loadReportsData(startDate, endDate) {
-    $.get(`?handler=Reports&startDate=${startDate}&endDate=${endDate}`, function(data) {
-        $('#reports').html(data);
-    }).fail(function() {
-        notification.showError('Ошибка при загрузке данных отчетов');
+    $.get(`?handler=ReportsView&startDate=${startDate}&endDate=${endDate}`, function(data) {
+        // Очищаем содержимое перед вставкой новых данных
+        $('#analytics-content').empty();
+        $('#analytics-content').html(data);
+        // Инициализация отчетов
+        if (typeof initReports === 'function') {
+            initReports();
+        }
+    }).fail(function(xhr) {
+        console.error('Ошибка при загрузке отчетов:', xhr);
+        notification.showError('Ошибка при загрузке отчетов');
     });
 }
 
-// Обработчик переключения вкладок
-$('.nav-tabs .nav-link').on('shown.bs.tab', function (e) {
-    loadData();
-});
-
-// Обработчик кнопки обновления
-$('#refreshData').click(function() {
-    loadData();
-});
+// Вспомогательные функции
+function formatCurrency(value) {
+    const currencySymbol = $('#currencySymbol').val() || 'р.';
+    return new Intl.NumberFormat('ru-RU', { 
+        maximumFractionDigits: 0
+    }).format(value) + ' ' + currencySymbol;
+}

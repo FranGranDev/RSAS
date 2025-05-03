@@ -195,7 +195,7 @@ namespace Server.Services.Sales
             var totalRevenue = await GetTotalRevenueAsync(startDate, endDate);
             var totalSalesCount = await GetTotalSalesCountAsync(startDate, endDate);
             var averageOrderAmount = await GetAverageSaleAmountAsync(startDate, endDate);
-            var topProducts = await GetTopProductsAsync(5, startDate, endDate);
+            var topProducts = await GetTopProductsAsync(100, startDate, endDate);
 
             return new DashboardAnalyticsDto
             {

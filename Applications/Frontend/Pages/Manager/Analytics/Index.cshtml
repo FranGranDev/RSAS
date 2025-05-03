@@ -40,7 +40,7 @@
             <div class="tab-content mt-3">
                 <div id="analytics-content">
                     @await Html.PartialAsync("Shared/Analytics/Dashboard/_Dashboard", ViewData["DashboardData"])
-                                                                                                                          </div>
+                </div>
             </div>
         </div>
     </div>
@@ -48,6 +48,8 @@
 
 @section Scripts {
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/moment@2.29.1/moment.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/daterangepicker@3.1.0/daterangepicker.min.js"></script>
     <script src="~/js/analytics.js"></script>
     <script src="~/js/analytics-dashboard.js"></script>
 }

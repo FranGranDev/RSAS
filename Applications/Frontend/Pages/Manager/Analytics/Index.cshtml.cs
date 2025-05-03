@@ -35,7 +35,7 @@ public class IndexModel : PageModel
         }
     }
 
-    public async Task<IActionResult> OnGetDashboardAsync(DateTime? startDate, DateTime? endDate)
+    public async Task<IActionResult> OnGetDashboardViewAsync(DateTime? startDate, DateTime? endDate)
     {
         try
         {
@@ -44,17 +44,94 @@ public class IndexModel : PageModel
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Ошибка при загрузке данных дашборда");
+            _logger.LogError(ex, "Ошибка при загрузке представления дашборда");
             return StatusCode(500);
         }
     }
 
-    public async Task<IActionResult> OnGetSalesAsync(DateTime? startDate, DateTime? endDate)
+    public async Task<IActionResult> OnGetTopProductsViewAsync(DateTime? startDate, DateTime? endDate)
     {
         try
         {
-            var salesData = await _analyticsService.GetSalesAnalyticsAsync(startDate, endDate);
-            return Partial("Shared/Analytics/Sales/_Sales", salesData);
+            var topProducts = await _analyticsService.GetTopProductsAsync(
+                10,
+                startDate ?? DateTime.UtcNow.AddDays(-30),
+                endDate ?? DateTime.UtcNow);
+            
+            return Partial("Shared/Analytics/Dashboard/_TopProductsChart", topProducts);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Ошибка при загрузке представления топ товаров");
+            return StatusCode(500);
+        }
+    }
+    
+    public async Task<IActionResult> OnGetSalesViewAsync(DateTime? startDate, DateTime? endDate)
+    {
+        try
+        {
+            //Not implemented yet
+            return Partial("Shared/Analytics/Sales/_Sales", null);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Ошибка при загрузке представления продаж");
+            return StatusCode(500);
+        }
+    }
+    
+    public async Task<IActionResult> OnGetReportsViewAsync(DateTime? startDate, DateTime? endDate)
+    {
+        try
+        {
+            //Not implemented yet
+            return Partial("Shared/Analytics/Reports/_Reports", null);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Ошибка при загрузке представления отчетов");
+            return StatusCode(500);
+        }
+    }
+
+    public async Task<IActionResult> OnGetOrdersViewAsync(DateTime? startDate, DateTime? endDate)
+    {
+        try
+        {
+            //Not implemented yet
+            return Partial("Shared/Analytics/Orders/_Orders", null);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Ошибка при загрузке представления заказов");
+            return StatusCode(500);
+        }
+    }
+    
+    public async Task<IActionResult> OnGetTopProductsDataAsync(DateTime? startDate, DateTime? endDate)
+    {
+        try
+        {
+            var topProducts = await _analyticsService.GetTopProductsAsync(
+                10,
+                startDate ?? DateTime.UtcNow.AddDays(-30),
+                endDate ?? DateTime.UtcNow);
+            return new JsonResult(topProducts);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Ошибка при загрузке данных топ товаров");
+            return StatusCode(500);
+        }
+    }
+
+    public async Task<IActionResult> OnGetSalesDataAsync(DateTime? startDate, DateTime? endDate)
+    {
+        try
+        {
+            //Not implemented yet
+            return new JsonResult(null);
         }
         catch (Exception ex)
         {
@@ -63,12 +140,12 @@ public class IndexModel : PageModel
         }
     }
 
-    public async Task<IActionResult> OnGetOrdersAsync(DateTime? startDate, DateTime? endDate)
+    public async Task<IActionResult> OnGetOrdersDataAsync(DateTime? startDate, DateTime? endDate)
     {
         try
         {
-            var ordersData = await _analyticsService.GetOrdersAnalyticsAsync(startDate, endDate);
-            return Partial("Shared/Analytics/Orders/_Orders", ordersData);
+            //Not implemented yet
+            return new JsonResult(null);
         }
         catch (Exception ex)
         {
@@ -77,12 +154,12 @@ public class IndexModel : PageModel
         }
     }
 
-    public async Task<IActionResult> OnGetReportsAsync(DateTime? startDate, DateTime? endDate)
+    public async Task<IActionResult> OnGetReportsDataAsync(DateTime? startDate, DateTime? endDate)
     {
         try
         {
-            var reportsData = await _analyticsService.GetExtendedAnalyticsAsync(startDate, endDate);
-            return Partial("Shared/Analytics/Reports/_Reports", reportsData);
+            //Not implemented yet
+            return new JsonResult(null);
         }
         catch (Exception ex)
         {
@@ -91,7 +168,7 @@ public class IndexModel : PageModel
         }
     }
 
-    public async Task<IActionResult> OnGetTrendAsync(DateTime? startDate, DateTime? endDate, string interval = "1d")
+    public async Task<IActionResult> OnGetTrendDataAsync(DateTime? startDate, DateTime? endDate, string interval = "1d")
     {
         try
         {

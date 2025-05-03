@@ -1,10 +1,9 @@
-@model Application.DTOs.DashboardAnalyticsDto
-@using Frontend.Models
+@model Frontend.Models.Analytics.DashboardViewModel
 
 <div class="dashboard-container">
     <!-- Контейнер для KPI карточек -->
     <div id="kpi-cards-container">
-        @await Html.PartialAsync("Shared/Analytics/Dashboard/_KpiCards", Model)
+        @await Html.PartialAsync("Shared/Analytics/Dashboard/_KpiCards", Model.Dashboard)
     </div>
 
     <!-- Контейнер для графика -->
@@ -12,8 +11,8 @@
         @await Html.PartialAsync("Shared/Analytics/Dashboard/_TrendChart")
     </div>
 
-    <!-- Контейнер для таблицы топ товаров -->
+    <!-- Контейнер для графика топ товаров -->
     <div id="top-products-container">
-        @await Html.PartialAsync("Shared/Analytics/Dashboard/_TopProducts", Model)
+        @await Html.PartialAsync("Shared/Analytics/Dashboard/_TopProductsChart", Model.Dashboard.TopProducts)
     </div>
 </div> 

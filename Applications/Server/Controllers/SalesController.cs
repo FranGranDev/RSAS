@@ -172,53 +172,12 @@ namespace Server.Controllers
         }
 
         /// <summary>
-        /// Получить прогноз по категориям
-        /// </summary>
-        [HttpGet("forecast/categories")]
-        [Authorize(Policy = "RequireManagerRole")]
-        public async Task<ActionResult<IEnumerable<CategoryForecastDto>>> GetCategoryForecast(
-            [FromQuery] int days = 30,
-            [FromQuery] DateTime? startDate = null,
-            [FromQuery] DateTime? endDate = null)
-        {
-            if (days <= 0)
-            {
-                return BadRequest("Количество дней должно быть больше 0");
-            }
-
-            if (days > 365)
-            {
-                return BadRequest("Прогноз не может быть больше чем на год");
-            }
-
-            if (startDate.HasValue && endDate.HasValue && startDate > endDate)
-            {
-                return BadRequest("Начальная дата не может быть позже конечной");
-            }
-
-            if (startDate.HasValue && startDate > DateTime.UtcNow)
-            {
-                return BadRequest("Начальная дата не может быть в будущем");
-            }
-
-            try
-            {
-                var forecast = await _saleService.GetCategoryForecastAsync(days, startDate, endDate);
-                return Ok(forecast);
-            }
-            catch (InvalidDateRangeException ex)
-            {
-                return BadRequest(ex.Message);
-            }
-        }
-
-        /// <summary>
         /// Получить прогноз спроса
         /// </summary>
-        [HttpGet("forecast/demand")]
+        [HttpGet("forecast/demand/days/{days}")]
         [Authorize(Policy = "RequireManagerRole")]
         public async Task<ActionResult<IEnumerable<DemandForecastDto>>> GetDemandForecast(
-            [FromQuery] int days = 30,
+            [FromRoute] int days = 30,
             [FromQuery] DateTime? startDate = null,
             [FromQuery] DateTime? endDate = null)
         {
@@ -256,10 +215,10 @@ namespace Server.Controllers
         /// <summary>
         /// Получить анализ влияния сезонности
         /// </summary>
-        [HttpGet("seasonality")]
+        [HttpGet("seasonality/years/{years}")]
         [Authorize(Policy = "RequireManagerRole")]
         public async Task<ActionResult<IEnumerable<SeasonalityImpactDto>>> GetSeasonalityImpact(
-            [FromQuery] int years = 3,
+            [FromRoute] int years = 3,
             [FromQuery] DateTime? startDate = null,
             [FromQuery] DateTime? endDate = null)
         {
@@ -543,10 +502,41 @@ namespace Server.Controllers
 
             try
             {
-                var trend = await _saleService.GetSalesTrendAsync(startDate ?? DateTime.UtcNow.AddDays(-30), 
-                                                                endDate ?? DateTime.UtcNow, 
-                                                                interval);
+                var trend = await _saleService.GetSalesTrendAsync(
+                    startDate ?? DateTime.UtcNow.AddDays(-30), 
+                    endDate ?? DateTime.UtcNow, 
+                    interval);
                 return Ok(trend);
+            }
+            catch (InvalidDateRangeException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// Получить ABC-анализ по выручке
+        /// </summary>
+        [HttpGet("abc-analysis")]
+        [Authorize(Policy = "RequireManagerRole")]
+        public async Task<ActionResult<IEnumerable<ProductAbcAnalysisDto>>> GetProductAbcAnalysis(
+            [FromQuery] DateTime? startDate = null,
+            [FromQuery] DateTime? endDate = null)
+        {
+            if (startDate.HasValue && endDate.HasValue && startDate > endDate)
+            {
+                return BadRequest("Начальная дата не может быть позже конечной");
+            }
+
+            if (startDate.HasValue && startDate > DateTime.UtcNow)
+            {
+                return BadRequest("Начальная дата не может быть в будущем");
+            }
+
+            try
+            {
+                var analysis = await _saleService.GetProductAbcAnalysisAsync(startDate, endDate);
+                return Ok(analysis);
             }
             catch (InvalidDateRangeException ex)
             {

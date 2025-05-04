@@ -2,10 +2,32 @@
 let currentTab = 'dashboard';
 window.dateRangePicker = null; // Делаем глобально доступным
 
+// Конфигурация вкладок
+const tabConfig = {
+    dashboard: {
+        viewHandler: 'DashboardView',
+        initFunction: 'initDashboardCharts',
+        destroyFunction: 'destroyDashboardCharts'
+    },
+    sales: {
+        viewHandler: 'SalesView',
+        initFunction: 'initSalesCharts',
+        destroyFunction: 'destroySalesCharts'
+    },
+    orders: {
+        viewHandler: 'OrdersView',
+        initFunction: 'initOrdersCharts',
+        destroyFunction: 'destroyOrdersCharts'
+    },
+    reports: {
+        viewHandler: 'ReportsView',
+        initFunction: 'initReports',
+        destroyFunction: 'destroyReports'
+    }
+};
+
 // Инициализация страницы
 $(document).ready(function() {
-    console.log('Инициализация страницы аналитики');
-    
     // Устанавливаем русскую локаль для moment.js
     moment.locale('ru');
 
@@ -21,7 +43,6 @@ $(document).ready(function() {
 
 // Инициализация daterangepicker
 function initDateRangePicker() {
-    console.log('Инициализация daterangepicker');
     const $dateRangePicker = $('#dateRangePicker');
     
     if (!$dateRangePicker.length) {
@@ -37,6 +58,7 @@ function initDateRangePicker() {
             'Вчера': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
             'Последние 7 дней': [moment().subtract(6, 'days'), moment()],
             'Последние 30 дней': [moment().subtract(29, 'days'), moment()],
+            'Последний год': [moment().subtract(364, 'days'), moment()],
             'Этот месяц': [moment().startOf('month'), moment().endOf('month')],
             'Прошлый месяц': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
         },
@@ -54,32 +76,38 @@ function initDateRangePicker() {
         alwaysShowCalendars: true,
         autoApply: false,
         opens: 'right'
-    }, function(start, end) {
-        console.log('Выбран период:', start.format('DD.MM.YYYY'), '-', end.format('DD.MM.YYYY'));
     });
-
-    console.log('daterangepicker инициализирован');
 }
 
 // Инициализация обработчиков событий
 function initEventListeners() {
     // Обработчик изменения периода
     $('#dateRangePicker').on('apply.daterangepicker', function(ev, picker) {
-        console.log('Период изменен:', picker.startDate.format('DD.MM.YYYY'), '-', picker.endDate.format('DD.MM.YYYY'));
         loadCurrentTabData();
     });
 
     // Обработчик переключения вкладок
     $('.nav-tabs .nav-link').on('shown.bs.tab', function (e) {
         const tabId = $(e.target).attr('href').substring(1);
-        console.log('Переключение на вкладку:', tabId);
+        
+        // Вызываем функцию очистки для предыдущей вкладки
+        const prevConfig = tabConfig[currentTab];
+        if (prevConfig && typeof window[prevConfig.destroyFunction] === 'function') {
+            window[prevConfig.destroyFunction]();
+        }
+        
         currentTab = tabId;
         loadCurrentTabData();
     });
 
     // Обработчик кнопки обновления
     $('#refreshData').click(function() {
-        console.log('Обновление данных');
+        // Получаем текущую активную вкладку
+        const activeTab = $('.nav-tabs .nav-link.active').attr('href').substring(1);
+        if (activeTab !== currentTab) {
+            // Если активная вкладка не совпадает с currentTab, обновляем currentTab
+            currentTab = activeTab;
+        }
         loadCurrentTabData();
     });
 }
@@ -94,83 +122,27 @@ function loadCurrentTabData() {
 
     const startDate = dates.startDate.format('YYYY-MM-DD');
     const endDate = dates.endDate.format('YYYY-MM-DD');
-    console.log('Загрузка данных для вкладки', currentTab, 'за период:', startDate, '-', endDate);
 
-    // Загрузка данных в зависимости от текущей вкладки
-    switch (currentTab) {
-        case 'dashboard':
-            loadDashboardData(startDate, endDate);
-            break;
-        case 'sales':
-            loadSalesData(startDate, endDate);
-            break;
-        case 'orders':
-            loadOrdersData(startDate, endDate);
-            break;
-        case 'reports':
-            loadReportsData(startDate, endDate);
-            break;
+    // Получаем конфигурацию текущей вкладки
+    const config = tabConfig[currentTab];
+    if (!config) {
+        console.error(`Конфигурация для вкладки ${currentTab} не найдена`);
+        return;
     }
-}
 
-// Функции загрузки данных для каждой вкладки
-function loadDashboardData(startDate, endDate) {
-    $.get(`?handler=DashboardView&startDate=${startDate}&endDate=${endDate}`, function(data) {
+    // Загрузка представления
+    $.get(`?handler=${config.viewHandler}&startDate=${startDate}&endDate=${endDate}`, function(data) {
         // Очищаем содержимое перед вставкой новых данных
         $('#analytics-content').empty();
         $('#analytics-content').html(data);
-        // Инициализация графиков дашборда
-        if (typeof initDashboardCharts === 'function') {
-            initDashboardCharts();
+        
+        // Инициализация графиков/данных для текущей вкладки
+        if (typeof window[config.initFunction] === 'function') {
+            window[config.initFunction](startDate, endDate);
         }
     }).fail(function(xhr) {
-        console.error('Ошибка при загрузке данных дашборда:', xhr);
-        notification.showError('Ошибка при загрузке данных дашборда');
-    });
-}
-
-function loadSalesData(startDate, endDate) {
-    $.get(`?handler=SalesView&startDate=${startDate}&endDate=${endDate}`, function(data) {
-        // Очищаем содержимое перед вставкой новых данных
-        $('#analytics-content').empty();
-        $('#analytics-content').html(data);
-        // Инициализация графиков продаж
-        if (typeof initSalesCharts === 'function') {
-            initSalesCharts();
-        }
-    }).fail(function(xhr) {
-        console.error('Ошибка при загрузке данных продаж:', xhr);
-        notification.showError('Ошибка при загрузке данных продаж');
-    });
-}
-
-function loadOrdersData(startDate, endDate) {
-    $.get(`?handler=OrdersView&startDate=${startDate}&endDate=${endDate}`, function(data) {
-        // Очищаем содержимое перед вставкой новых данных
-        $('#analytics-content').empty();
-        $('#analytics-content').html(data);
-        // Инициализация графиков заказов
-        if (typeof initOrdersCharts === 'function') {
-            initOrdersCharts();
-        }
-    }).fail(function(xhr) {
-        console.error('Ошибка при загрузке данных заказов:', xhr);
-        notification.showError('Ошибка при загрузке данных заказов');
-    });
-}
-
-function loadReportsData(startDate, endDate) {
-    $.get(`?handler=ReportsView&startDate=${startDate}&endDate=${endDate}`, function(data) {
-        // Очищаем содержимое перед вставкой новых данных
-        $('#analytics-content').empty();
-        $('#analytics-content').html(data);
-        // Инициализация отчетов
-        if (typeof initReports === 'function') {
-            initReports();
-        }
-    }).fail(function(xhr) {
-        console.error('Ошибка при загрузке отчетов:', xhr);
-        notification.showError('Ошибка при загрузке отчетов');
+        console.error(`Ошибка при загрузке данных ${currentTab}:`, xhr);
+        notification.showError(`Ошибка при загрузке данных ${currentTab}`);
     });
 }
 

@@ -555,40 +555,6 @@ public class SalesControllerTests : TestBase
     }
 
     [Fact]
-    public async Task GetCategoryForecast_WithInvalidDays_ShouldReturnBadRequest()
-    {
-        // Arrange
-        var days = 0;
-        var startDate = DateTime.UtcNow.AddDays(-30);
-        var endDate = DateTime.UtcNow;
-
-        // Act
-        var result = await _controller.GetCategoryForecast(days, startDate, endDate);
-
-        // Assert
-        result.Result.Should().BeOfType<BadRequestObjectResult>();
-        var badRequest = result.Result as BadRequestObjectResult;
-        badRequest.Value.Should().Be("Количество дней должно быть больше 0");
-    }
-
-    [Fact]
-    public async Task GetCategoryForecast_WithTooManyDays_ShouldReturnBadRequest()
-    {
-        // Arrange
-        var days = 366;
-        var startDate = DateTime.UtcNow.AddDays(-30);
-        var endDate = DateTime.UtcNow;
-
-        // Act
-        var result = await _controller.GetCategoryForecast(days, startDate, endDate);
-
-        // Assert
-        result.Result.Should().BeOfType<BadRequestObjectResult>();
-        var badRequest = result.Result as BadRequestObjectResult;
-        badRequest.Value.Should().Be("Прогноз не может быть больше чем на год");
-    }
-
-    [Fact]
     public async Task GetById_WithNonExistentId_ShouldReturnNotFound()
     {
         // Arrange

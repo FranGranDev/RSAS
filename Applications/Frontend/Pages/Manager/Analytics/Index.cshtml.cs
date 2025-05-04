@@ -1,4 +1,5 @@
 using Application.DTOs;
+using Frontend.Models.Analytics;
 using Frontend.Services.Api;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -71,8 +72,18 @@ public class IndexModel : PageModel
     {
         try
         {
-            //Not implemented yet
-            return Partial("Shared/Analytics/Sales/_Sales", null);
+            var salesData = await _analyticsService.GetSalesAnalyticsAsync(startDate, endDate);
+            var extendedAnalytics = await _analyticsService.GetExtendedSalesAnalyticsAsync(startDate, endDate);
+            var abcAnalysis = await _analyticsService.GetProductAbcAnalysisAsync(startDate, endDate);
+            
+            var viewModel = new SalesViewModel
+            {
+                SalesAnalytics = salesData,
+                ExtendedAnalytics = extendedAnalytics,
+                AbcAnalysis = abcAnalysis
+            };
+            
+            return Partial("Shared/Analytics/Sales/_Sales", viewModel);
         }
         catch (Exception ex)
         {
@@ -130,8 +141,8 @@ public class IndexModel : PageModel
     {
         try
         {
-            //Not implemented yet
-            return new JsonResult(null);
+            var salesData = await _analyticsService.GetSalesAnalyticsAsync(startDate, endDate);
+            return new JsonResult(salesData);
         }
         catch (Exception ex)
         {
@@ -139,17 +150,47 @@ public class IndexModel : PageModel
             return StatusCode(500);
         }
     }
-
-    public async Task<IActionResult> OnGetOrdersDataAsync(DateTime? startDate, DateTime? endDate)
+    
+    public async Task<IActionResult> OnGetForecastDataAsync(DateTime? startDate, DateTime? endDate)
     {
         try
         {
-            //Not implemented yet
-            return new JsonResult(null);
+            var forecastData = await _analyticsService.GetDemandForecastAsync(30,
+                startDate ?? DateTime.UtcNow.AddDays(-30),
+                endDate ?? DateTime.UtcNow);
+            return new JsonResult(forecastData);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Ошибка при загрузке данных заказов");
+            _logger.LogError(ex, "Ошибка при загрузке данных прогноза");
+            return StatusCode(500);
+        }
+    }
+
+    public async Task<IActionResult> OnGetCategorySalesDataAsync(DateTime? startDate, DateTime? endDate)
+    {
+        try
+        {
+            var categorySales = await _analyticsService.GetCategorySalesAsync(startDate, endDate);
+            return new JsonResult(categorySales);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Ошибка при загрузке данных продаж по категориям");
+            return StatusCode(500);
+        }
+    }
+
+    public async Task<IActionResult> OnGetAbcAnalysisDataAsync(DateTime? startDate, DateTime? endDate)
+    {
+        try
+        {
+            var abcAnalysis = await _analyticsService.GetProductAbcAnalysisAsync(startDate, endDate);
+            return new JsonResult(abcAnalysis);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Ошибка при загрузке данных ABC анализа");
             return StatusCode(500);
         }
     }

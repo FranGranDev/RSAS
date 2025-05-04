@@ -48,11 +48,6 @@ namespace Server.Services.Repository
         Task<KpiDto> GetKpiAsync(DateTime? startDate = null, DateTime? endDate = null);
 
         // Прогнозирование
-        Task<IEnumerable<CategoryForecastDto>> GetCategoryForecastAsync(
-            int days = 30,
-            DateTime? startDate = null,
-            DateTime? endDate = null);
-            
         Task<IEnumerable<DemandForecastDto>> GetDemandForecastAsync(
             int days = 30,
             DateTime? startDate = null,

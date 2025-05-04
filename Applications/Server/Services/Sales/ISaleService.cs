@@ -72,11 +72,7 @@ namespace Server.Services.Sales
             string? userName = null);
 
         // Прогнозирование
-        Task<IEnumerable<CategoryForecastDto>> GetCategoryForecastAsync(
-            int days = 30,
-            DateTime? startDate = null,
-            DateTime? endDate = null);
-            
+        
         Task<IEnumerable<DemandForecastDto>> GetDemandForecastAsync(
             int days = 30,
             DateTime? startDate = null,
@@ -84,6 +80,13 @@ namespace Server.Services.Sales
             
         Task<IEnumerable<SeasonalityImpactDto>> GetSeasonalityImpactAsync(
             int years = 3,
+            DateTime? startDate = null,
+            DateTime? endDate = null);
+
+        /// <summary>
+        /// Получить ABC-анализ по выручке
+        /// </summary>
+        Task<IEnumerable<ProductAbcAnalysisDto>> GetProductAbcAnalysisAsync(
             DateTime? startDate = null,
             DateTime? endDate = null);
     }

@@ -188,7 +188,7 @@ namespace Application.DTOs
         public string Language { get; set; } = "ru-RU";
 
         [Display(Name = "Валюта")]
-        public string Currency { get; set; } = "RUB";
+        public string Currency { get; set; } = "BYN";
 
         [Display(Name = "Формат даты")]
         public string DateFormat { get; set; } = "dd.MM.yyyy";
@@ -432,27 +432,6 @@ namespace Application.DTOs
     }
 
     /// <summary>
-    /// DTO для прогноза по категориям
-    /// </summary>
-    public class CategoryForecastDto
-    {
-        [Display(Name = "Категория")]
-        public string Category { get; set; } = string.Empty;
-
-        [Display(Name = "Прогноз продаж")]
-        public decimal ForecastedSales { get; set; }
-
-        [Display(Name = "Доверительный интервал (нижний)")]
-        public decimal LowerBound { get; set; }
-
-        [Display(Name = "Доверительный интервал (верхний)")]
-        public decimal UpperBound { get; set; }
-
-        [Display(Name = "Точность прогноза")]
-        public decimal Confidence { get; set; }
-    }
-
-    /// <summary>
     /// DTO для прогноза спроса
     /// </summary>
     public class DemandForecastDto
@@ -466,6 +445,9 @@ namespace Application.DTOs
         [Display(Name = "Прогноз спроса")]
         public int ForecastedQuantity { get; set; }
 
+        [Display(Name = "Прогноз выручки")]
+        public decimal ForecastedRevenue { get; set; }
+                
         [Display(Name = "Доверительный интервал (нижний)")]
         public int LowerBound { get; set; }
 
@@ -477,6 +459,12 @@ namespace Application.DTOs
 
         [Display(Name = "Рекомендуемый заказ")]
         public int RecommendedOrder { get; set; }
+
+        [Display(Name = "Уверенность в прогнозе")]
+        public decimal Confidence { get; set; }
+
+        [Display(Name = "Сообщение")]
+        public string Message { get; set; } = string.Empty;
     }
 
     /// <summary>
@@ -498,5 +486,26 @@ namespace Application.DTOs
 
         [Display(Name = "Влияние на продажи")]
         public decimal Impact { get; set; }
+    }
+
+    /// <summary>
+    /// DTO для ABC-анализа по выручке
+    /// </summary>
+    public class ProductAbcAnalysisDto
+    {
+        [Display(Name = "Название товара")]
+        public string ProductName { get; set; } = string.Empty;
+
+        [Display(Name = "Выручка")]
+        public decimal Revenue { get; set; }
+
+        [Display(Name = "Доля в общей выручке")]
+        public decimal Share { get; set; }
+
+        [Display(Name = "Накопительная доля")]
+        public decimal CumulativeShare { get; set; }
+
+        [Display(Name = "Категория")]
+        public string Category { get; set; } = string.Empty;
     }
 } 

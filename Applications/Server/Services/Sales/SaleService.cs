@@ -457,18 +457,6 @@ namespace Server.Services.Sales
             return report;
         }
 
-        public async Task<IEnumerable<CategoryForecastDto>> GetCategoryForecastAsync(
-            int days = 30,
-            DateTime? startDate = null,
-            DateTime? endDate = null)
-        {
-            if (days <= 0)
-                throw new InvalidAnalyticsParametersException("Количество дней должно быть больше 0");
-
-            ValidateDateRange(startDate, endDate);
-            return await _saleRepository.GetCategoryForecastAsync(days, startDate, endDate);
-        }
-
         public async Task<IEnumerable<DemandForecastDto>> GetDemandForecastAsync(
             int days = 30,
             DateTime? startDate = null,
@@ -491,6 +479,55 @@ namespace Server.Services.Sales
 
             ValidateDateRange(startDate, endDate);
             return await _saleRepository.GetSeasonalityImpactAsync(years, startDate, endDate);
+        }
+
+        public async Task<IEnumerable<ProductAbcAnalysisDto>> GetProductAbcAnalysisAsync(
+            DateTime? startDate = null,
+            DateTime? endDate = null)
+        {
+            ValidateDateRange(startDate, endDate);
+
+            // Получаем все продажи за период
+            var sales = await _saleRepository.GetByDateRangeAsync(
+                startDate ?? DateTime.MinValue,
+                endDate ?? DateTime.MaxValue);
+
+            // Группируем по продуктам и считаем выручку
+            var productAnalysis = sales
+                .SelectMany(s => s.Products)
+                .GroupBy(p => p.ProductName)
+                .Select(g => new
+                {
+                    ProductName = g.Key,
+                    Revenue = g.Sum(p => p.ProductPrice * p.Quantity)
+                })
+                .OrderByDescending(x => x.Revenue)
+                .ToList();
+
+            // Считаем общую выручку
+            var totalRevenue = productAnalysis.Sum(x => x.Revenue);
+
+            // Считаем доли и категории
+            decimal cumulativeShare = 0;
+            var result = new List<ProductAbcAnalysisDto>();
+
+            foreach (var product in productAnalysis)
+            {
+                var share = product.Revenue / totalRevenue;
+                cumulativeShare += share;
+
+                result.Add(new ProductAbcAnalysisDto
+                {
+                    ProductName = product.ProductName,
+                    Revenue = product.Revenue,
+                    Share = share,
+                    CumulativeShare = cumulativeShare,
+                    Category = cumulativeShare <= 0.8m ? "A" : 
+                              cumulativeShare <= 0.95m ? "B" : "C"
+                });
+            }
+
+            return result;
         }
 
         private void ValidateDateRange(DateTime? startDate, DateTime? endDate)

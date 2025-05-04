@@ -32,7 +32,7 @@
         </div>
     </nav>
 </header>
-<div class="container">
+<div class="@(ViewData["FullWidth"] != null && (bool)ViewData["FullWidth"] ? "container-fluid" : "container")">
     <main role="main" class="pb-3">
         <partial name="_Notification"/>
         @RenderBody()

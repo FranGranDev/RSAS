@@ -35,7 +35,43 @@ public class AnalyticsService : IAnalyticsService
         return await _apiService.GetAsync<IEnumerable<SalesTrendResultDto>>(
             $"{BaseUri}/trend?startDate={startDate:yyyy-MM-dd}&endDate={endDate:yyyy-MM-dd}&interval={interval}");
     }
-    
+
+    //Sales
+    public async Task<SalesAnalyticsDto> GetSalesAnalyticsAsync(DateTime? startDate = null, DateTime? endDate = null)
+    {
+        var queryParams = BuildDateRangeQueryParams(startDate, endDate);
+        return await _apiService.GetAsync<SalesAnalyticsDto>($"{BaseUri}/analytics{queryParams}");
+    }
+
+    public async Task<ExtendedSalesAnalyticsDto> GetExtendedSalesAnalyticsAsync(DateTime? startDate = null, DateTime? endDate = null)
+    {
+        var queryParams = BuildDateRangeQueryParams(startDate, endDate);
+        return await _apiService.GetAsync<ExtendedSalesAnalyticsDto>($"{BaseUri}/extended{queryParams}");
+    }
+
+    public async Task<IEnumerable<CategorySalesResultDto>> GetCategorySalesAsync(DateTime? startDate = null, DateTime? endDate = null)
+    {
+        var queryParams = BuildDateRangeQueryParams(startDate, endDate);
+        return await _apiService.GetAsync<IEnumerable<CategorySalesResultDto>>($"{BaseUri}/category-sales{queryParams}");
+    }
+
+    public async Task<IEnumerable<SeasonalityImpactDto>> GetSeasonalityImpactAsync(int years = 3, DateTime? startDate = null, DateTime? endDate = null)
+    {
+        var queryParams = BuildDateRangeQueryParams(startDate, endDate);
+        return await _apiService.GetAsync<IEnumerable<SeasonalityImpactDto>>($"{BaseUri}/seasonality/years/{years}{queryParams}");
+    }
+
+    public async Task<IEnumerable<DemandForecastDto>> GetDemandForecastAsync(int days = 30, DateTime? startDate = null, DateTime? endDate = null)
+    {
+        var queryParams = BuildDateRangeQueryParams(startDate, endDate);
+        return await _apiService.GetAsync<IEnumerable<DemandForecastDto>>($"{BaseUri}/forecast/demand/days/{days}{queryParams}");
+    }
+
+    public async Task<IEnumerable<ProductAbcAnalysisDto>> GetProductAbcAnalysisAsync(DateTime? startDate = null, DateTime? endDate = null)
+    {
+        var queryParams = BuildDateRangeQueryParams(startDate, endDate);
+        return await _apiService.GetAsync<IEnumerable<ProductAbcAnalysisDto>>($"{BaseUri}/abc-analysis{queryParams}");
+    }
 
     private static string BuildDateRangeQueryParams(DateTime? startDate, DateTime? endDate)
     {

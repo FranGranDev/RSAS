@@ -183,34 +183,6 @@ public class SaleServiceTests
     }
 
     [Fact]
-    public async Task GetCategoryForecast_WithValidParameters_ShouldReturnCorrectForecast()
-    {
-        // Arrange
-        var days = 30;
-        var expectedForecast = new List<CategoryForecastDto>
-        {
-            new() 
-            { 
-                Category = "Category1", 
-                ForecastedSales = 1000m, 
-                LowerBound = 900m, 
-                UpperBound = 1100m,
-                Confidence = 0.95m
-            }
-        };
-
-        _saleRepositoryMock.Setup(x => x.GetCategoryForecastAsync(days, _startDate, _endDate))
-            .ReturnsAsync(expectedForecast);
-
-        // Act
-        var result = await _saleService.GetCategoryForecastAsync(days, _startDate, _endDate);
-
-        // Assert
-        result.Should().BeEquivalentTo(expectedForecast);
-        _saleRepositoryMock.Verify(x => x.GetCategoryForecastAsync(days, _startDate, _endDate), Times.Once);
-    }
-
-    [Fact]
     public async Task GetDemandForecast_WithValidParameters_ShouldReturnCorrectForecast()
     {
         // Arrange
@@ -266,17 +238,6 @@ public class SaleServiceTests
         // Assert
         result.Should().BeEquivalentTo(expectedImpact);
         _saleRepositoryMock.Verify(x => x.GetSeasonalityImpactAsync(years, _startDate, _endDate), Times.Once);
-    }
-
-    [Fact]
-    public async Task GetCategoryForecast_WithInvalidDays_ShouldThrowException()
-    {
-        // Arrange
-        var days = 0;
-
-        // Act & Assert
-        await Assert.ThrowsAsync<InvalidAnalyticsParametersException>(() =>
-            _saleService.GetCategoryForecastAsync(days, _startDate, _endDate));
     }
 
     [Fact]

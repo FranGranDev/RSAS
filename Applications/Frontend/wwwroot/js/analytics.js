@@ -52,13 +52,13 @@ function initDateRangePicker() {
 
     window.dateRangePicker = $dateRangePicker.daterangepicker({
         startDate: moment().subtract(29, 'days'),
-        endDate: moment(),
+        endDate: moment().endOf('day'),
         ranges: {
-            'Сегодня': [moment(), moment()],
-            'Вчера': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
-            'Последние 7 дней': [moment().subtract(6, 'days'), moment()],
-            'Последние 30 дней': [moment().subtract(29, 'days'), moment()],
-            'Последний год': [moment().subtract(364, 'days'), moment()],
+            'Сегодня': [moment().startOf('day'), moment().endOf('day')],
+            'Вчера': [moment().subtract(1, 'days').startOf('day'), moment().subtract(1, 'days').endOf('day')],
+            'Последние 7 дней': [moment().subtract(6, 'days').startOf('day'), moment().endOf('day')],
+            'Последние 30 дней': [moment().subtract(29, 'days').startOf('day'), moment().endOf('day')],
+            'Последний год': [moment().subtract(364, 'days').startOf('day'), moment().endOf('day')],
             'Этот месяц': [moment().startOf('month'), moment().endOf('month')],
             'Прошлый месяц': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
         },
@@ -120,8 +120,8 @@ function loadCurrentTabData() {
         return;
     }
 
-    const startDate = dates.startDate.format('YYYY-MM-DD');
-    const endDate = dates.endDate.format('YYYY-MM-DD');
+    const startDate = dates.startDate.utc().format('YYYY-MM-DD');
+    const endDate = dates.endDate.utc().format('YYYY-MM-DD');
 
     // Получаем конфигурацию текущей вкладки
     const config = tabConfig[currentTab];

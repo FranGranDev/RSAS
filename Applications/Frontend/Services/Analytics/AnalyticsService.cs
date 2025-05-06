@@ -73,6 +73,12 @@ public class AnalyticsService : IAnalyticsService
         return await _apiService.GetAsync<IEnumerable<ProductAbcAnalysisDto>>($"{BaseUri}/abc-analysis{queryParams}");
     }
 
+    public async Task<OrdersAnalyticsDto> GetOrdersAnalyticsAsync(DateTime? startDate = null, DateTime? endDate = null)
+    {
+        var queryParams = BuildDateRangeQueryParams(startDate, endDate);
+        return await _apiService.GetAsync<OrdersAnalyticsDto>($"{BaseUri}/orders-analytics{queryParams}");
+    }
+
     private static string BuildDateRangeQueryParams(DateTime? startDate, DateTime? endDate)
     {
         var queryParams = new List<string>();

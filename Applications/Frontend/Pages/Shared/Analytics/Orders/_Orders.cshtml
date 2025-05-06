@@ -1,0 +1,67 @@
+@model Frontend.Models.Analytics.OrdersViewModel
+@using Frontend.Models
+
+<div class="orders-container">
+    <!-- KPI карточки -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            @await Html.PartialAsync("Shared/Analytics/Dashboard/_KpiCard", 
+                ("Среднее время реализации", 
+                 Model.OrdersAnalytics.AverageProcessingTime.ToString(@"hh\:mm\:ss"), 
+                 "bi-clock", 
+                 "warning"))
+        </div>
+        <div class="col-md-3">
+            @await Html.PartialAsync("Shared/Analytics/Dashboard/_KpiCard", 
+                ("Количество заказов", 
+                 Model.OrdersAnalytics.OrdersCount.ToString(), 
+                 "bi-cart", 
+                 "success"))
+        </div>
+        <div class="col-md-3">
+            @await Html.PartialAsync("Shared/Analytics/Dashboard/_KpiCard", 
+                ("Средний чек", 
+                 $"{Model.OrdersAnalytics.AverageOrderAmount.ToString(CurrencySettings.Format)} {CurrencySettings.Symbol}", 
+                 "bi-receipt", 
+                 "info"))
+        </div>
+        <div class="col-md-3">
+            @await Html.PartialAsync("Shared/Analytics/Dashboard/_KpiCard", 
+                ("Средний чек по позициям", 
+                 Model.OrdersAnalytics.AverageProductsPerOrder.ToString("N1"), 
+                 "bi-box", 
+                 "primary"))
+        </div>
+    </div>
+
+    <!-- Графики -->
+    <div class="row">
+        <!-- Круговая диаграмма статусов -->
+        <div class="col-md-4">
+            <div class="card h-100">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Статусы заказов</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="orderStatusChart" style="position: relative; height: 400px;"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- График трендов -->
+        <div class="col-md-8">
+            <div class="card h-100">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Тренды заказов</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="orderTrendChart" style="position: relative; height: 400px;"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/analytics-orders.js"></script>
+} 

@@ -64,6 +64,9 @@ namespace Application.DTOs
         [Display(Name = "Средний чек")]
         public decimal AverageOrderAmount { get; set; }
 
+        [Display(Name = "Средний чек по позициям")]
+        public decimal AverageProductsPerOrder { get; set; }
+
         [Display(Name = "Время обработки заказов")]
         public TimeSpan AverageProcessingTime { get; set; }
 
@@ -496,6 +499,12 @@ namespace Application.DTOs
         [Display(Name = "Название товара")]
         public string ProductName { get; set; } = string.Empty;
 
+        [Display(Name = "Категория товара")]
+        public string Category { get; set; } = string.Empty;
+
+        [Display(Name = "Группа ABC")]
+        public string AbcCategory { get; set; } = string.Empty;
+
         [Display(Name = "Выручка")]
         public decimal Revenue { get; set; }
 
@@ -504,8 +513,5 @@ namespace Application.DTOs
 
         [Display(Name = "Накопительная доля")]
         public decimal CumulativeShare { get; set; }
-
-        [Display(Name = "Категория")]
-        public string Category { get; set; } = string.Empty;
     }
 } 

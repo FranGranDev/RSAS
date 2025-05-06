@@ -121,7 +121,14 @@ namespace Server.Services.Sales
         public async Task<decimal> GetAverageSaleAmountAsync(DateTime? startDate = null, DateTime? endDate = null)
         {
             ValidateDateRange(startDate, endDate);
-            return await _saleRepository.GetAverageSaleAmountAsync(startDate, endDate);
+            var sales = await _saleRepository.GetByDateRangeAsync(
+                startDate ?? DateTime.MinValue,
+                endDate ?? DateTime.MaxValue);
+
+            if (!sales.Any())
+                return 0;
+
+            return sales.Average(s => s.TotalAmount);
         }
 
         public async Task<IEnumerable<TopProductResultDto>> GetTopProductsAsync(
@@ -192,6 +199,22 @@ namespace Server.Services.Sales
         {
             ValidateDateRange(startDate, endDate);
             
+            var sales = await _saleRepository.GetByDateRangeAsync(
+                startDate ?? DateTime.MinValue,
+                endDate ?? DateTime.MaxValue);
+
+            if (!sales.Any())
+            {
+                return new DashboardAnalyticsDto
+                {
+                    TotalRevenue = 0,
+                    TotalSalesCount = 0,
+                    AverageOrderAmount = 0,
+                    TopProducts = new List<TopProductResultDto>(),
+                    OrderStatusStats = new OrderStatusStatsDto()
+                };
+            }
+            
             var totalRevenue = await GetTotalRevenueAsync(startDate, endDate);
             var totalSalesCount = await GetTotalSalesCountAsync(startDate, endDate);
             var averageOrderAmount = await GetAverageSaleAmountAsync(startDate, endDate);
@@ -240,12 +263,15 @@ namespace Server.Services.Sales
                 endDate ?? DateTime.MaxValue);
 
             var ordersCount = orders.Count();
-            var averageOrderAmount = orders.Any() 
-                ? orders.Average(o => o.Products.Sum(op => op.ProductPrice * op.Quantity))
-                : 0;
+            var averageOrderAmount = await GetAverageSaleAmountAsync(startDate, endDate);
             var averageProcessingTime = orders.Any() 
                 ? TimeSpan.FromTicks((long)orders.Average(o => (o.ChangeDate - o.OrderDate).Ticks))
                 : TimeSpan.Zero;
+
+            // Рассчитываем среднее количество товаров в заказе
+            var averageProductsPerOrder = (decimal)(orders.Any()
+                ? orders.Average(o => o.Products.Sum(p => p.Quantity))
+                : 0);
 
             // Статистика по статусам
             var statusStats = new OrderStatusStatsDto
@@ -273,6 +299,7 @@ namespace Server.Services.Sales
                 Period = GetPeriodString(startDate, endDate),
                 OrdersCount = ordersCount,
                 AverageOrderAmount = averageOrderAmount,
+                AverageProductsPerOrder = averageProductsPerOrder,
                 AverageProcessingTime = averageProcessingTime,
                 StatusStats = statusStats,
                 CancellationReasons = cancellationReasons
@@ -495,10 +522,12 @@ namespace Server.Services.Sales
             // Группируем по продуктам и считаем выручку
             var productAnalysis = sales
                 .SelectMany(s => s.Products)
-                .GroupBy(p => p.ProductName)
+                .GroupBy(p => new { p.ProductId, p.ProductName, p.ProductCategory })
                 .Select(g => new
                 {
-                    ProductName = g.Key,
+                    ProductId = g.Key.ProductId,
+                    ProductName = g.Key.ProductName,
+                    ProductCategory = g.Key.ProductCategory,
                     Revenue = g.Sum(p => p.ProductPrice * p.Quantity)
                 })
                 .OrderByDescending(x => x.Revenue)
@@ -516,14 +545,29 @@ namespace Server.Services.Sales
                 var share = product.Revenue / totalRevenue;
                 cumulativeShare += share;
 
+                // Определяем категорию ABC
+                string abcCategory;
+                if (cumulativeShare <= 0.8m)
+                {
+                    abcCategory = "A";
+                }
+                else if (cumulativeShare <= 0.95m)
+                {
+                    abcCategory = "B";
+                }
+                else
+                {
+                    abcCategory = "C";
+                }
+
                 result.Add(new ProductAbcAnalysisDto
                 {
                     ProductName = product.ProductName,
+                    Category = product.ProductCategory,
+                    AbcCategory = abcCategory,
                     Revenue = product.Revenue,
                     Share = share,
-                    CumulativeShare = cumulativeShare,
-                    Category = cumulativeShare <= 0.8m ? "A" : 
-                              cumulativeShare <= 0.95m ? "B" : "C"
+                    CumulativeShare = cumulativeShare
                 });
             }
 

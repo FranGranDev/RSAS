@@ -335,55 +335,34 @@ const Sales = {
 
     // Инициализация графика ABC-анализа
     initAbcAnalysisChart: function(data) {
-        const ctx = document.getElementById('abcAnalysisChart');
-        if (!ctx) {
-            console.error('Элемент canvas с id="abcAnalysisChart" не найден');
-            return;
-        }
+        const ctx = document.getElementById('abcAnalysisChart').getContext('2d');
+        
+        // Сохраняем данные для тултипов
+        const tooltipData = data;
+        
+        // Определяем цвета для категорий ABC
+        const categoryColors = {
+            'A': 'rgba(75, 192, 192, 0.8)',  // зеленый
+            'B': 'rgba(255, 206, 86, 0.8)',  // желтый
+            'C': 'rgba(255, 99, 132, 0.8)'   // красный
+        };
 
-        // Уничтожаем предыдущий график, если он существует
-        if (this.abcAnalysisChart) {
-            this.abcAnalysisChart.destroy();
-        }
-
-        this.abcAnalysisChart = new Chart(ctx, {
+        new Chart(ctx, {
             type: 'bar',
             data: {
                 labels: data.map(item => item.productName),
-                datasets: [
-                    {
-                        label: 'Выручка',
-                        data: data.map(item => item.revenue),
-                        backgroundColor: 'rgba(75, 192, 192, 0.8)',
-                        borderColor: 'rgba(75, 192, 192, 1)',
-                        borderWidth: 1,
-                        yAxisID: 'y'
-                    },
-                    {
-                        label: 'Накопительная доля',
-                        data: data.map(item => item.cumulativeShare),
-                        borderColor: 'rgb(255, 99, 132)',
-                        backgroundColor: 'rgba(255, 99, 132, 0.1)',
-                        type: 'line',
-                        yAxisID: 'y1',
-                        fill: true
-                    }
-                ]
+                datasets: [{
+                    label: 'Доля в выручке',
+                    data: data.map(item => item.share * 100),
+                    backgroundColor: data.map(item => categoryColors[item.abcCategory]),
+                    borderColor: data.map(item => categoryColors[item.abcCategory].replace('0.8', '1')),
+                    borderWidth: 1
+                }]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
-                interaction: {
-                    mode: 'index',
-                    intersect: false,
-                },
                 plugins: {
-                    legend: {
-                        position: 'top',
-                        labels: {
-                            color: '#fff'
-                        }
-                    },
                     tooltip: {
                         backgroundColor: 'rgba(255, 255, 255, 0.9)',
                         titleColor: '#000',
@@ -392,29 +371,34 @@ const Sales = {
                         borderWidth: 1,
                         padding: 10,
                         callbacks: {
-                            label: function(context) {
-                                let label = context.dataset.label || '';
-                                if (label) {
-                                    label += ': ';
-                                }
-                                if (context.datasetIndex === 0) {
-                                    label += Sales.formatCurrency(context.parsed.y);
-                                } else {
-                                    label += (context.parsed.y * 100).toFixed(1) + '%';
-                                }
-                                return label;
+                            title: function(tooltipItems) {
+                                const data = tooltipData[tooltipItems[0].dataIndex];
+                                return [
+                                    data.productName,
+                                    `Категория товара: ${data.category}`,
+                                    `Группа ABC: ${data.abcCategory}`
+                                ];
+                            },
+                            label: function(tooltipItem) {
+                                const data = tooltipData[tooltipItem.dataIndex];
+                                return [
+                                    `Выручка: ${Sales.formatCurrency(data.revenue)}`,
+                                    `Доля: ${(data.share * 100).toFixed(1)}%`,
+                                    `Накопительная доля: ${(data.cumulativeShare * 100).toFixed(1)}%`
+                                ];
                             }
                         }
+                    },
+                    legend: {
+                        display: false
                     }
                 },
                 scales: {
                     y: {
-                        type: 'linear',
-                        display: true,
-                        position: 'left',
+                        beginAtZero: true,
                         title: {
                             display: true,
-                            text: 'Выручка',
+                            text: 'Доля в выручке (%)',
                             color: '#fff'
                         },
                         grid: {
@@ -423,30 +407,9 @@ const Sales = {
                         ticks: {
                             color: '#fff',
                             callback: function(value) {
-                                return Sales.formatCurrency(value);
+                                return value + '%';
                             }
                         }
-                    },
-                    y1: {
-                        type: 'linear',
-                        display: true,
-                        position: 'right',
-                        title: {
-                            display: true,
-                            text: 'Накопительная доля',
-                            color: '#fff'
-                        },
-                        grid: {
-                            drawOnChartArea: false
-                        },
-                        ticks: {
-                            color: '#fff',
-                            callback: function(value) {
-                                return (value * 100).toFixed(0) + '%';
-                            }
-                        },
-                        min: 0,
-                        max: 1
                     },
                     x: {
                         grid: {
@@ -456,6 +419,11 @@ const Sales = {
                             color: '#fff',
                             maxRotation: 45,
                             minRotation: 45
+                        },
+                        title: {
+                            display: true,
+                            text: 'Товары',
+                            color: '#fff'
                         }
                     }
                 }

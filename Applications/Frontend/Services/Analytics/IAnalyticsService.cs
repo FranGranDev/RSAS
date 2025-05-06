@@ -19,4 +19,7 @@ public interface IAnalyticsService
     Task<IEnumerable<SeasonalityImpactDto>> GetSeasonalityImpactAsync(int years = 3, DateTime? startDate = null, DateTime? endDate = null);
     Task<IEnumerable<DemandForecastDto>> GetDemandForecastAsync(int days = 30, DateTime? startDate = null, DateTime? endDate = null);
     Task<IEnumerable<ProductAbcAnalysisDto>> GetProductAbcAnalysisAsync(DateTime? startDate = null, DateTime? endDate = null);
+    
+    //Orders
+    Task<OrdersAnalyticsDto> GetOrdersAnalyticsAsync(DateTime? startDate = null, DateTime? endDate = null);
 } 

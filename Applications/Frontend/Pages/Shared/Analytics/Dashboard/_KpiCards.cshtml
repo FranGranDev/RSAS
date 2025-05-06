@@ -2,21 +2,25 @@
 @using Frontend.Models
 
 <div class="row mb-4">
-    @await Html.PartialAsync("Shared/Analytics/Dashboard/_KpiCard", 
-        ("Общая выручка", 
-         $"{Model.TotalRevenue.ToString(CurrencySettings.Format)} {CurrencySettings.Symbol}", 
-         "bi-currency-dollar", 
-         "primary"))
-
-    @await Html.PartialAsync("Shared/Analytics/Dashboard/_KpiCard", 
-        ("Количество продаж", 
-         Model.TotalSalesCount.ToString(), 
-         "bi-cart", 
-         "success"))
-
-    @await Html.PartialAsync("Shared/Analytics/Dashboard/_KpiCard", 
-        ("Средний чек", 
-         $"{Model.AverageOrderAmount.ToString(CurrencySettings.Format)} {CurrencySettings.Symbol}", 
-         "bi-receipt", 
-         "info"))
-</div> 
+    <div class="col-md-4">
+        @await Html.PartialAsync("Shared/Analytics/Dashboard/_KpiCard",
+            ("Общая выручка",
+                $"{Model.TotalRevenue.ToString(CurrencySettings.Format)} {CurrencySettings.Symbol}",
+                "bi-currency-dollar",
+                "primary"))
+    </div>
+    <div class="col-md-4">
+        @await Html.PartialAsync("Shared/Analytics/Dashboard/_KpiCard",
+            ("Количество продаж",
+                Model.TotalSalesCount.ToString(),
+                "bi-cart",
+                "success"))
+    </div>
+    <div class="col-md-4">
+        @await Html.PartialAsync("Shared/Analytics/Dashboard/_KpiCard",
+            ("Средний чек",
+                $"{Model.AverageOrderAmount.ToString(CurrencySettings.Format)} {CurrencySettings.Symbol}",
+                "bi-receipt",
+                "info"))
+    </div>
+</div>

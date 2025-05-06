@@ -110,12 +110,31 @@ public class IndexModel : PageModel
     {
         try
         {
-            //Not implemented yet
-            return Partial("Shared/Analytics/Orders/_Orders", null);
+            var ordersAnalytics = await _analyticsService.GetOrdersAnalyticsAsync(startDate, endDate);
+            var viewModel = new OrdersViewModel
+            {
+                OrdersAnalytics = ordersAnalytics
+            };
+            
+            return Partial("Shared/Analytics/Orders/_Orders", viewModel);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Ошибка при загрузке представления заказов");
+            return StatusCode(500);
+        }
+    }
+
+    public async Task<IActionResult> OnGetOrdersDataAsync(DateTime? startDate, DateTime? endDate)
+    {
+        try
+        {
+            var ordersAnalytics = await _analyticsService.GetOrdersAnalyticsAsync(startDate, endDate);
+            return new JsonResult(ordersAnalytics);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Ошибка при загрузке данных заказов");
             return StatusCode(500);
         }
     }

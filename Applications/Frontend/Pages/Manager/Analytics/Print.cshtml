@@ -1,0 +1,54 @@
+@page
+@model Frontend.Pages.Manager.Analytics.PrintModel
+@{
+    ViewData["Title"] = "Печать отчета";
+    Layout = "_PrintLayout";
+}
+
+<div class="container-fluid mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="mb-0">Отчет</h1>
+        <button class="btn btn-primary no-print" id="downloadReport">
+            <i class="bi bi-download"></i> Скачать
+        </button>
+    </div>
+
+    <div class="mt-1">
+        <partial name="Shared/Analytics/_ReportInfo" model="Model.ReportInfo" />
+    </div>
+
+    <div id="reportContent">
+        @if (Model.Section == "dashboard")
+        {
+            @await Html.PartialAsync("Shared/Analytics/Dashboard/_Dashboard", Model.DashboardData)
+        }
+        else if (Model.Section == "sales")
+        {
+            @await Html.PartialAsync("Shared/Analytics/Sales/_Sales", Model.SalesData)
+        }
+        else if (Model.Section == "orders")
+        {
+            @await Html.PartialAsync("Shared/Analytics/Orders/_Orders", Model.OrdersData)
+        }
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/analytics-dashboard.js"></script>
+    <script src="~/js/analytics-sales.js"></script>
+    <script src="~/js/analytics-orders.js"></script>
+    <script>
+        $(document).ready(function() {
+            const section = '@Model.Section';
+            
+            // Инициализация графиков после загрузки контента
+            if (section === 'dashboard' && typeof initDashboardPrintCharts === 'function') {
+                initDashboardPrintCharts(@Html.Raw(Json.Serialize(Model.DashboardData)));
+            } else if (section === 'sales' && typeof initSalesPrintCharts === 'function') {
+                initSalesPrintCharts(@Html.Raw(Json.Serialize(Model.SalesData)));
+            } else if (section === 'orders' && typeof initOrdersPrintCharts === 'function') {
+                initOrdersPrintCharts(@Html.Raw(Json.Serialize(Model.OrdersData)));
+            }
+        });
+    </script>
+} 

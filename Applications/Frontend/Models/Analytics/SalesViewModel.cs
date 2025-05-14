@@ -7,4 +7,5 @@ public class SalesViewModel
     public SalesAnalyticsDto SalesAnalytics { get; set; }
     public ExtendedSalesAnalyticsDto ExtendedAnalytics { get; set; }
     public IEnumerable<ProductAbcAnalysisDto> AbcAnalysis { get; set; }
+    public IEnumerable<DemandForecastDto> SalesForecast { get; set; }
 } 

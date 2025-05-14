@@ -2,8 +2,7 @@ $(document).ready(function () {
     const ordersGrid = $('#ordersGrid');
     const searchInput = $('#searchInput');
     const statusFilter = $('#statusFilter');
-    const dateFrom = $('#dateFrom');
-    const dateTo = $('#dateTo');
+    const dateRangePicker = $('#dateRangePicker');
     const dateSort = $('#dateSort');
     const pagination = $('#pagination');
     const resetDates = $('#resetDates');
@@ -12,22 +11,42 @@ $(document).ready(function () {
     let itemsPerPage = 6;
     let filteredOrders = Array.from(document.querySelectorAll('.order-card'));
     
-    // Функция установки стандартных дат
-    function setDefaultDates() {
-        const today = new Date();
-        const yearAgo = new Date();
-        yearAgo.setFullYear(today.getFullYear() - 1);
-        
-        dateFrom.val(yearAgo.toISOString().split('T')[0]);
-        dateTo.val(today.toISOString().split('T')[0]);
-    }
+    // Инициализация daterangepicker
+    dateRangePicker.daterangepicker({
+        startDate: moment().subtract(364, 'days'),
+        endDate: moment().endOf('day'),
+        ranges: {
+            'Сегодня': [moment().startOf('day'), moment().endOf('day')],
+            'Вчера': [moment().subtract(1, 'days').startOf('day'), moment().subtract(1, 'days').endOf('day')],
+            'Последние 7 дней': [moment().subtract(6, 'days').startOf('day'), moment().endOf('day')],
+            'Последние 30 дней': [moment().subtract(29, 'days').startOf('day'), moment().endOf('day')],
+            'Последний год': [moment().subtract(364, 'days').startOf('day'), moment().endOf('day')],
+            'Этот месяц': [moment().startOf('month'), moment().endOf('month')],
+            'Прошлый месяц': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+        },
+        locale: {
+            format: 'DD.MM.YYYY',
+            applyLabel: 'Применить',
+            cancelLabel: 'Отмена',
+            fromLabel: 'От',
+            toLabel: 'До',
+            customRangeLabel: 'Произвольный период',
+            daysOfWeek: ['Вс', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб'],
+            monthNames: ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'],
+            firstDay: 1
+        },
+        alwaysShowCalendars: true,
+        autoApply: false,
+        opens: 'right'
+    });
     
     // Функция фильтрации заказов
     function filterOrders() {
         const searchTerm = searchInput.val().toLowerCase();
         const statusValue = statusFilter.val();
-        const dateFromValue = dateFrom.val();
-        const dateToValue = dateTo.val();
+        const dateRange = dateRangePicker.data('daterangepicker');
+        const startDate = dateRange.startDate.toDate();
+        const endDate = dateRange.endDate.toDate();
         
         filteredOrders = Array.from(document.querySelectorAll('.order-card')).filter(card => {
             const id = card.dataset.id;
@@ -36,8 +55,7 @@ $(document).ready(function () {
             
             const matchesSearch = id.includes(searchTerm);
             const matchesStatus = !statusValue || status === statusValue.toLowerCase();
-            const matchesDate = (!dateFromValue || orderDate >= new Date(dateFromValue)) &&
-                              (!dateToValue || orderDate <= new Date(dateToValue + 'T23:59:59'));
+            const matchesDate = orderDate >= startDate && orderDate <= endDate;
             
             return matchesSearch && matchesStatus && matchesDate;
         });
@@ -161,11 +179,11 @@ $(document).ready(function () {
     // Обработчики событий
     searchInput.on('input', filterOrders);
     statusFilter.on('change', filterOrders);
-    dateFrom.on('change', filterOrders);
-    dateTo.on('change', filterOrders);
+    dateRangePicker.on('apply.daterangepicker', filterOrders);
     dateSort.on('change', filterOrders);
     resetDates.on('click', function() {
-        setDefaultDates();
+        dateRangePicker.data('daterangepicker').setStartDate(moment().subtract(364, 'days'));
+        dateRangePicker.data('daterangepicker').setEndDate(moment().endOf('day'));
         filterOrders();
     });
     
@@ -180,6 +198,5 @@ $(document).ready(function () {
     });
     
     // Инициализация
-    setDefaultDates();
     filterOrders();
 }); 

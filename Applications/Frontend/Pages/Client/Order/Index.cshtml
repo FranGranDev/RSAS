@@ -36,8 +36,7 @@
         </div>
         <div class="col-md-4">
             <div class="input-group">
-                <input type="date" class="form-control" id="dateFrom" placeholder="Дата от">
-                <input type="date" class="form-control" id="dateTo" placeholder="Дата до">
+                <input type="text" class="form-control" id="dateRangePicker" placeholder="Выберите период">
                 <button class="btn btn-outline-secondary" type="button" id="resetDates">
                     <i class="bi bi-arrow-counterclockwise"></i>
                 </button>
@@ -67,11 +66,7 @@
 </div>
 
 @section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/moment@2.29.1/moment.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/daterangepicker@3.1.0/daterangepicker.min.js"></script>
     <script src="~/js/order-filter.js"></script>
-    <script>
-        $(document).ready(function() {
-            // Применяем начальную сортировку
-            sortOrders();
-        });
-    </script>
 } 

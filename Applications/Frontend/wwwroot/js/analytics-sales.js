@@ -448,6 +448,27 @@ window.destroySalesCharts = function() {
     Sales.destroyCharts();
 };
 
+// Метод для инициализации графиков на странице печати
+window.initSalesPrintCharts = function(data) {
+    if (!data) {
+        console.error('Данные для инициализации графиков отсутствуют');
+        return;
+    }
+
+    // Используем существующие методы инициализации графиков
+    if (data.salesAnalytics && data.salesAnalytics.categorySales) {
+        Sales.initCategorySalesChart(data.salesAnalytics.categorySales);
+    }
+
+    if (data.salesForecast) {
+        Sales.initForecastChart(data.salesForecast);
+    }
+
+    if (data.abcAnalysis) {
+        Sales.initAbcAnalysisChart(data.abcAnalysis);
+    }
+};
+
 // Инициализация при загрузке страницы
 $(document).ready(function() {
     // Если текущая вкладка - продажи, инициализируем графики

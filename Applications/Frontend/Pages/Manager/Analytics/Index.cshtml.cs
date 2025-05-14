@@ -75,12 +75,14 @@ public class IndexModel : PageModel
             var salesData = await _analyticsService.GetSalesAnalyticsAsync(startDate, endDate);
             var extendedAnalytics = await _analyticsService.GetExtendedSalesAnalyticsAsync(startDate, endDate);
             var abcAnalysis = await _analyticsService.GetProductAbcAnalysisAsync(startDate, endDate);
+            var salesForecast = await _analyticsService.GetDemandForecastAsync(30, startDate, endDate);
             
             var viewModel = new SalesViewModel
             {
                 SalesAnalytics = salesData,
                 ExtendedAnalytics = extendedAnalytics,
-                AbcAnalysis = abcAnalysis
+                AbcAnalysis = abcAnalysis,
+                SalesForecast = salesForecast
             };
             
             return Partial("Shared/Analytics/Sales/_Sales", viewModel);
@@ -111,9 +113,14 @@ public class IndexModel : PageModel
         try
         {
             var ordersAnalytics = await _analyticsService.GetOrdersAnalyticsAsync(startDate, endDate);
+            var ordersTrend = await _analyticsService.GetSalesTrendAsync(
+                startDate ?? DateTime.UtcNow.AddDays(-30),
+                endDate ?? DateTime.UtcNow);
+                
             var viewModel = new OrdersViewModel
             {
-                OrdersAnalytics = ordersAnalytics
+                OrdersAnalytics = ordersAnalytics,
+                OrdersTrend = ordersTrend
             };
             
             return Partial("Shared/Analytics/Orders/_Orders", viewModel);

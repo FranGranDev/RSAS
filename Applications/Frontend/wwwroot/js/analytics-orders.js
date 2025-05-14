@@ -327,6 +327,25 @@ window.destroyOrdersCharts = function() {
     Orders.destroyCharts();
 };
 
+// Метод для инициализации графиков на странице печати
+window.initOrdersPrintCharts = function(data) {
+    if (!data || !data.ordersAnalytics) {
+        console.error('Данные для инициализации графиков отсутствуют');
+        return;
+    }
+
+    // Используем существующие методы инициализации графиков
+    const ordersData = data.ordersAnalytics;
+
+    // Инициализация графика статусов
+    Orders.initStatusChart(ordersData);
+
+    // Инициализация графика тренда
+    if (data.ordersTrend && Array.isArray(data.ordersTrend)) {
+        Orders.initTrendChart(data.ordersTrend);
+    }
+};
+
 // Инициализация при загрузке страницы
 $(document).ready(function() {
     Orders.init();

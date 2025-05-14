@@ -17,9 +17,15 @@ public class AnalyticsService : IAnalyticsService
     public async Task<DashboardViewModel> GetDashboardAnalyticsAsync(DateTime? startDate = null, DateTime? endDate = null)
     {
         var queryParams = BuildDateRangeQueryParams(startDate, endDate);
+        var dashboard = await _apiService.GetAsync<DashboardAnalyticsDto>($"{BaseUri}/dashboard{queryParams}");
+        var salesTrend = await GetSalesTrendAsync(
+            startDate ?? DateTime.UtcNow.AddDays(-30),
+            endDate ?? DateTime.UtcNow);
+            
         return new DashboardViewModel()
         {
-            Dashboard = await _apiService.GetAsync<DashboardAnalyticsDto>($"{BaseUri}/dashboard{queryParams}"),
+            Dashboard = dashboard,
+            SalesTrend = salesTrend
         };
     }
     

@@ -395,6 +395,15 @@ const Dashboard = {
     }
 };
 
+// Глобальная функция форматирования валюты
+window.formatCurrency = function(value) {
+    return new Intl.NumberFormat('ru-RU', {
+        style: 'currency',
+        currency: 'BYN',
+        maximumFractionDigits: 0
+    }).format(value);
+};
+
 // Экспортируем функции для использования в analytics.js
 window.initDashboardCharts = function(startDate, endDate) {
     Dashboard.initCharts(startDate, endDate);
@@ -402,6 +411,32 @@ window.initDashboardCharts = function(startDate, endDate) {
 
 window.destroyDashboardCharts = function() {
     Dashboard.destroyCharts();
+};
+
+// Метод для инициализации графиков на странице печати
+window.initDashboardPrintCharts = function(data) {
+    if (!data || !data.dashboard) {
+        console.error('Данные для инициализации графиков отсутствуют');
+        return;
+    }
+
+    // Используем существующие методы инициализации графиков
+    const dashboardData = data.dashboard;
+
+    // Инициализация графика тренда
+    if (data.salesTrend && Array.isArray(data.salesTrend)) {
+        const trendData = {
+            labels: data.salesTrend.map(item => moment(item.date).format('DD.MM.YYYY')),
+            revenue: data.salesTrend.map(item => item.revenue),
+            salesCount: data.salesTrend.map(item => item.salesCount)
+        };
+        Dashboard.initTrendChart(trendData);
+    }
+
+    // Инициализация графика топ товаров
+    if (dashboardData.topProducts && Array.isArray(dashboardData.topProducts)) {
+        Dashboard.initTopProductsChart(dashboardData.topProducts);
+    }
 };
 
 // Инициализация при загрузке страницы

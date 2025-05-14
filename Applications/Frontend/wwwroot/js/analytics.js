@@ -110,6 +110,17 @@ function initEventListeners() {
         }
         loadCurrentTabData();
     });
+
+    // Обработчик для кнопки печати
+    $('#printReport').on('click', function() {
+        const activeTab = $('.nav-link.active').attr('id');
+        const dateRange = $('#dateRangePicker').data('daterangepicker');
+        const startDate = dateRange.startDate.format('YYYY-MM-DD');
+        const endDate = dateRange.endDate.format('YYYY-MM-DD');
+        
+        const printUrl = `/Manager/Analytics/Print?section=${activeTab}&startDate=${startDate}&endDate=${endDate}`;
+        window.open(printUrl, '_blank');
+    });
 }
 
 // Загрузка данных для текущей вкладки

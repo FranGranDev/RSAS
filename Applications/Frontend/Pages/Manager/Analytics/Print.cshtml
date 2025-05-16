@@ -5,12 +5,22 @@
     Layout = "_PrintLayout";
 }
 
-<div class="container-fluid mt-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1 class="mb-0">Отчет</h1>
-        <button class="btn btn-primary no-print" id="downloadReport">
-            <i class="bi bi-download"></i> Скачать
-        </button>
+<div class="container-fluid print-page">
+    <div class="no-print">
+        <div class="d-flex justify-content-between align-items-center mb-2 mt-1">
+            <h1 class="mb-0">Отчет</h1>
+            <div class="btn-group">
+                <button class="btn btn-outline-secondary" id="downloadIcon" disabled style="pointer-events: none; opacity: 0.65;">
+                    <i class="bi bi-download"></i>
+                </button>
+                <button class="btn btn-primary" id="downloadPdf">
+                    <i class="bi bi-file-earmark-pdf"></i> PDF
+                </button>
+                <button class="btn btn-secondary" id="downloadHtml">
+                    <i class="bi bi-file-earmark-code"></i> HTML
+                </button>
+            </div>
+        </div>
     </div>
 
     <div class="mt-1">
@@ -39,6 +49,12 @@
     <script src="~/js/analytics-orders.js"></script>
     <script>
         $(document).ready(function() {
+            // Устанавливаем заголовок страницы сразу при загрузке
+            const sectionTitle = $(".card.mb-4 .bi-graph-up").closest('.col-md-3').find('p.mb-0').text().trim();
+            const periodTitle = $(".card.mb-4 .bi-calendar-range").closest('.col-md-3').find('p.mb-0').text().trim();
+            const filenameTitle = `${sectionTitle} за ${periodTitle}`;
+            document.title = filenameTitle;
+
             const section = '@Model.Section';
             
             // Инициализация графиков после загрузки контента
@@ -49,6 +65,47 @@
             } else if (section === 'orders' && typeof initOrdersPrintCharts === 'function') {
                 initOrdersPrintCharts(@Html.Raw(Json.Serialize(Model.OrdersData)));
             }
+
+            // Логика кнопки PDF
+            let restoreThemeOnPrint = false;
+            $('#downloadPdf').on('click', function() {
+                // Получаем значения из блока _ReportInfo
+                const section = $(".card.mb-4 .bi-graph-up").closest('.col-md-3').find('p.mb-0').text().trim();
+                const period = $(".card.mb-4 .bi-calendar-range").closest('.col-md-3').find('p.mb-0').text().trim();
+                const filename = `${section} за ${period}`;
+                document.title = filename;
+                if (window.setDashboardChartsLightTheme) window.setDashboardChartsLightTheme();
+                restoreThemeOnPrint = true;
+                // Ждем отрисовки смены темы
+                requestAnimationFrame(() => {
+                    requestAnimationFrame(() => {
+                        window.print();
+                    });
+                });
+            });
+            function tryRestoreThemeAfterPrint() {
+                if (restoreThemeOnPrint) {
+                    if (window.restoreDashboardChartsTheme) window.restoreDashboardChartsTheme();
+                    restoreThemeOnPrint = false;
+                }
+            }
+            window.addEventListener('focus', tryRestoreThemeAfterPrint);
+            window.addEventListener('afterprint', tryRestoreThemeAfterPrint);
+
+            function reloadAfterPrint() {
+                setTimeout(() => {
+                    window.location.reload();
+                }, 500);
+            }
+            window.addEventListener('afterprint', reloadAfterPrint);
+            window.addEventListener('focus', reloadAfterPrint);
+
+            // Универсальный обработчик смены темы графиков при печати
+            window.onbeforeprint = function() {
+                if (window.setDashboardChartsLightTheme) window.setDashboardChartsLightTheme();
+                if (window.setSalesChartsLightTheme) window.setSalesChartsLightTheme();
+                if (window.setOrdersChartsLightTheme) window.setOrdersChartsLightTheme();
+            };
         });
     </script>
 } 

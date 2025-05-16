@@ -24,6 +24,200 @@
                 padding: 20px;
             }
         }
+
+        /* Стили для страницы печати */
+        .print-page .dashboard-container {
+            margin-top: 0;
+        }
+        
+        .print-page .card {
+            margin-bottom: 0.5rem !important;
+        }
+        
+        .print-page .card-header {
+            padding: 0.5rem 1rem;
+        }
+        
+        .print-page .card-body {
+            padding: 0.5rem 1rem;
+        }
+        
+        .print-page .mb-4 {
+            margin-bottom: 0.5rem !important;
+        }
+        
+        .print-page .mt-4 {
+            margin-top: 0.5rem !important;
+        }
+        
+        .print-page .row {
+            margin-bottom: 0.5rem !important;
+        }
+        
+        .print-page .col-md-4,
+        .print-page .col-md-8,
+        .print-page .col-md-12 {
+            padding: 0.5rem;
+        }
+
+        /* Исправление ширины карточек */
+        .print-page #kpi-cards-container {
+            width: 100%;
+            max-width: 100%;
+        }
+
+        .print-page #kpi-cards-container .col-md-3 {
+            width: 25%;
+            flex: 0 0 25%;
+            max-width: 25%;
+            padding: 0.5rem;
+        }
+
+        .print-page #kpi-cards-container .card {
+            width: 100%;
+            margin: 0;
+        }
+
+        /* Стили для графиков на странице печати */
+        .print-page .sales-container canvas {
+            max-height: 440px !important;
+            height: 440px !important;
+        }
+
+        .print-page .sales-container .card {
+            height: auto !important;
+        }
+
+        .print-page .sales-container .card-body {
+            height: auto !important;
+            min-height: 490px;
+        }
+
+        /* Стили для графиков Orders на странице печати */
+        .print-page .orders-container canvas {
+            max-height: 880px !important;
+            height: 880px !important;
+        }
+
+        .print-page .orders-container .card {
+            height: auto !important;
+        }
+
+        .print-page .orders-container .card-body {
+            height: auto !important;
+            min-height: 930px;
+        }
+
+        /* Стили для KPI карточек в Orders */
+        .print-page .orders-container .col-md-3 {
+            width: 25%;
+            flex: 0 0 25%;
+            max-width: 25%;
+            padding: 0.5rem;
+        }
+
+        .print-page .orders-container .col-md-3 .card {
+            width: 100%;
+            margin: 0;
+            height: auto !important;
+        }
+
+        .print-page .orders-container .col-md-3 .card-body {
+            padding: 0.5rem 1rem;
+            height: auto !important;
+            min-height: auto !important;
+        }
+        
+        @@media print {
+            .print-page .dashboard-container {
+                margin-top: 0;
+            }
+            
+            .print-page .card {
+                margin-bottom: 0.5rem !important;
+                border: 1px solid #dee2e6;
+            }
+            
+            .print-page .card-header {
+                padding: 0.5rem 1rem;
+                background-color: transparent !important;
+                border-bottom: 1px solid #dee2e6;
+            }
+            
+            .print-page .card-body {
+                padding: 0.5rem 1rem;
+            }
+
+            /* Исправление ширины карточек при печати */
+            .print-page #kpi-cards-container {
+                width: 100%;
+                max-width: 100%;
+            }
+
+            .print-page #kpi-cards-container .col-md-3 {
+                width: 25%;
+                flex: 0 0 25%;
+                max-width: 25%;
+                padding: 0.5rem;
+            }
+
+            .print-page #kpi-cards-container .card {
+                width: 100%;
+                margin: 0;
+            }
+
+            /* Стили для графиков при печати */
+            .print-page .sales-container canvas {
+                max-height: 440px !important;
+                height: 440px !important;
+            }
+
+            .print-page .sales-container .card {
+                height: auto !important;
+                page-break-inside: avoid;
+            }
+
+            .print-page .sales-container .card-body {
+                height: auto !important;
+                min-height: 490px;
+            }
+
+            /* Стили для графиков Orders при печати */
+            .print-page .orders-container canvas {
+                max-height: 880px !important;
+                height: 880px !important;
+            }
+
+            .print-page .orders-container .card {
+                height: auto !important;
+                page-break-inside: avoid;
+            }
+
+            .print-page .orders-container .card-body {
+                height: auto !important;
+                min-height: 930px;
+            }
+
+            /* Стили для KPI карточек в Orders при печати */
+            .print-page .orders-container .col-md-3 {
+                width: 25%;
+                flex: 0 0 25%;
+                max-width: 25%;
+                padding: 0.5rem;
+            }
+
+            .print-page .orders-container .col-md-3 .card {
+                width: 100%;
+                margin: 0;
+                height: auto !important;
+            }
+
+            .print-page .orders-container .col-md-3 .card-body {
+                padding: 0.5rem 1rem;
+                height: auto !important;
+                min-height: auto !important;
+            }
+        }
     </style>
 </head>
 <body>

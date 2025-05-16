@@ -476,3 +476,24 @@ $(document).ready(function() {
         Sales.initCharts();
     }
 });
+
+// --- Смена темы графиков при печати ---
+(function() {
+    function setLightTheme(chart) {
+        if (!chart) return;
+        if (chart.options.scales?.x?.ticks) chart.options.scales.x.ticks.color = '#555';
+        if (chart.options.scales?.y?.ticks) chart.options.scales.y.ticks.color = '#555';
+        if (chart.options.scales?.y1?.ticks) chart.options.scales.y1.ticks.color = '#555';
+        if (chart.options.scales?.x?.title) chart.options.scales.x.title.color = '#555';
+        if (chart.options.scales?.y?.title) chart.options.scales.y.title.color = '#555';
+        if (chart.options.scales?.y1?.title) chart.options.scales.y1.title.color = '#555';
+        if (chart.options.plugins?.legend?.labels) chart.options.plugins.legend.labels.color = '#555';
+        if (chart.options.plugins?.title) chart.options.plugins.title.color = '#555';
+        chart.update();
+    }
+    window.setSalesChartsLightTheme = function() {
+        setLightTheme(Sales.categorySalesChart);
+        setLightTheme(Sales.forecastChart);
+        setLightTheme(Sales.abcAnalysisChart);
+    };
+})();

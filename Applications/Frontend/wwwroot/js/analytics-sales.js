@@ -347,7 +347,13 @@ const Sales = {
             'C': 'rgba(255, 99, 132, 0.8)'   // красный
         };
 
-        new Chart(ctx, {
+        // Уничтожаем предыдущий график, если он существует
+        if (this.abcAnalysisChart) {
+            this.abcAnalysisChart.destroy();
+        }
+
+        // Создаем новый график и сохраняем его в объект Sales
+        this.abcAnalysisChart = new Chart(ctx, {
             type: 'bar',
             data: {
                 labels: data.map(item => item.productName),
@@ -439,6 +445,9 @@ const Sales = {
     }
 };
 
+// Делаем Sales доступным глобально
+window.Sales = Sales;
+
 // Экспортируем функции для использования в analytics.js
 window.initSalesCharts = function(startDate, endDate) {
     Sales.initCharts(startDate, endDate);
@@ -491,9 +500,15 @@ $(document).ready(function() {
         if (chart.options.plugins?.title) chart.options.plugins.title.color = '#555';
         chart.update();
     }
+
     window.setSalesChartsLightTheme = function() {
         setLightTheme(Sales.categorySalesChart);
         setLightTheme(Sales.forecastChart);
         setLightTheme(Sales.abcAnalysisChart);
     };
+
+    // Добавляем обработчик для печати
+    window.addEventListener('beforeprint', function() {
+        window.setSalesChartsLightTheme();
+    });
 })();

@@ -318,6 +318,9 @@ const Orders = {
     }
 };
 
+// Делаем Orders доступным глобально
+window.Orders = Orders;
+
 // Экспортируем функции для использования в analytics.js
 window.initOrdersCharts = function(startDate, endDate) {
     Orders.initCharts(startDate, endDate);
@@ -360,12 +363,10 @@ window.initOrdersPrintCharts = function(data) {
         if (chart.options.plugins?.title) chart.options.plugins.title.color = '#555';
         chart.update();
     }
+
     window.setOrdersChartsLightTheme = function() {
         setLightTheme(Orders.statusChart);
         setLightTheme(Orders.trendChart);
-    };
-    window.onbeforeprint = function() {
-        window.setOrdersChartsLightTheme();
     };
 })();
 

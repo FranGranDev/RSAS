@@ -5,6 +5,8 @@
     Layout = "_PrintLayout";
 }
 
+<link rel="stylesheet" href="~/css/print-effects.css" asp-append-version="true"/>
+
 <div class="container-fluid print-page">
     <div class="no-print">
         <div class="d-flex justify-content-between align-items-center mb-2 mt-1">
@@ -47,6 +49,8 @@
     <script src="~/js/analytics-dashboard.js"></script>
     <script src="~/js/analytics-sales.js"></script>
     <script src="~/js/analytics-orders.js"></script>
+    <script src="~/js/analytics-print.js"></script>
+    <script src="~/js/analytics-html-download.js"></script>
     <script>
         $(document).ready(function() {
             // Устанавливаем заголовок страницы сразу при загрузке
@@ -66,46 +70,53 @@
                 initOrdersPrintCharts(@Html.Raw(Json.Serialize(Model.OrdersData)));
             }
 
+            // Функция для добавления эффекта блюра
+            function addDownloadEffect() {
+                $('.container-fluid').addClass('download-blur');
+                $('.btn-group').addClass('downloading');
+            }
+
             // Логика кнопки PDF
-            let restoreThemeOnPrint = false;
             $('#downloadPdf').on('click', function() {
                 // Получаем значения из блока _ReportInfo
                 const section = $(".card.mb-4 .bi-graph-up").closest('.col-md-3').find('p.mb-0').text().trim();
                 const period = $(".card.mb-4 .bi-calendar-range").closest('.col-md-3').find('p.mb-0').text().trim();
                 const filename = `${section} за ${period}`;
                 document.title = filename;
-                if (window.setDashboardChartsLightTheme) window.setDashboardChartsLightTheme();
-                restoreThemeOnPrint = true;
-                // Ждем отрисовки смены темы
-                requestAnimationFrame(() => {
+                
+                // Добавляем эффект блюра
+                addDownloadEffect();
+                
+                // Даем время для применения эффекта
+                setTimeout(() => {
+                    window.setAllChartsLightTheme();
+                    // Ждем отрисовки смены темы
                     requestAnimationFrame(() => {
                         window.print();
                     });
-                });
+                }, 150);
             });
+
+            // Логика кнопки HTML
+            $('#downloadHtml').on('click', function() {
+                // Добавляем эффект блюра
+                addDownloadEffect();
+            });
+
             function tryRestoreThemeAfterPrint() {
-                if (restoreThemeOnPrint) {
+                if (window.needsReload) {
                     if (window.restoreDashboardChartsTheme) window.restoreDashboardChartsTheme();
-                    restoreThemeOnPrint = false;
+                    window.needsReload = false;
+                    // Перезагружаем страницу только если была применена темная тема
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 300);
                 }
             }
+
+            // Обработчики событий печати
             window.addEventListener('focus', tryRestoreThemeAfterPrint);
             window.addEventListener('afterprint', tryRestoreThemeAfterPrint);
-
-            function reloadAfterPrint() {
-                setTimeout(() => {
-                    window.location.reload();
-                }, 500);
-            }
-            window.addEventListener('afterprint', reloadAfterPrint);
-            window.addEventListener('focus', reloadAfterPrint);
-
-            // Универсальный обработчик смены темы графиков при печати
-            window.onbeforeprint = function() {
-                if (window.setDashboardChartsLightTheme) window.setDashboardChartsLightTheme();
-                if (window.setSalesChartsLightTheme) window.setSalesChartsLightTheme();
-                if (window.setOrdersChartsLightTheme) window.setOrdersChartsLightTheme();
-            };
         });
     </script>
 } 

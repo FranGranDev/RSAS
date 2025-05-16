@@ -395,6 +395,9 @@ const Dashboard = {
     }
 };
 
+// Делаем Dashboard доступным глобально
+window.Dashboard = Dashboard;
+
 // Глобальная функция форматирования валюты
 window.formatCurrency = function(value) {
     return new Intl.NumberFormat('ru-RU', {
@@ -457,9 +460,6 @@ window.initDashboardPrintCharts = function(data) {
     window.setDashboardChartsLightTheme = function() {
         setLightTheme(Dashboard.trendChart);
         setLightTheme(Dashboard.topProductsChart);
-    };
-    window.onbeforeprint = function() {
-        window.setDashboardChartsLightTheme();
     };
 })();
 

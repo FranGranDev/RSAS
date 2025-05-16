@@ -1,0 +1,29 @@
+/* Эффект блюра при скачивании */
+.download-blur {
+    filter: blur(5px);
+    transition: filter 0.1s ease-in-out;
+    pointer-events: none;
+}
+
+/* Стили для кнопок во время скачивания */
+.downloading .btn {
+    opacity: 0.7;
+    pointer-events: none;
+}
+
+/* Анимация для иконки загрузки */
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.downloading .btn i {
+    animation: spin 1s linear infinite;
+}
+
+/* Отключаем эффект блюра при печати */
+@media print {
+    .download-blur {
+        filter: none !important;
+    }
+} 

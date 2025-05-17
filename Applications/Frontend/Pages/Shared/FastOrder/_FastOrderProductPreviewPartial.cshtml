@@ -1,0 +1,77 @@
+@model Frontend.Models.Catalog.CatalogProductViewModel
+@using Frontend.Models
+
+<!-- Модальное окно предпросмотра -->
+<div class="modal fade" id="productPreviewModal-@Model.Id" tabindex="-1" aria-labelledby="productPreviewModalLabel-@Model.Id" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title" id="productPreviewModalLabel-@Model.Id">@Model.Name</h2>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <h4 class="text-muted">@Model.Category</h4>
+                            <hr/>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <h5>Описание</h5>
+                            <p class="fs-6">@Model.Description</p>
+                        </div>
+                    </div>
+                    <div class="row mt-4">
+                        <div class="col-md-12">
+                            <h5>Детали товара</h5>
+                            <div class="d-flex justify-content-between align-items-center mt-2">
+                                <div class="d-flex align-items-center">
+                                    <span class="me-2">Штрих-код:</span>
+                                    <span class="badge bg-primary rounded-pill fs-6">@Model.Barcode</span>
+                                </div>
+                                <div class="d-flex align-items-center">
+                                    <span class="me-2">Цена:</span>
+                                    <span class="badge bg-success rounded-pill fs-6">@Model.Price.ToString("N2") @CurrencySettings.Symbol</span>
+                                </div>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center mt-2">
+                                <div class="d-flex align-items-center">
+                                    <span class="me-2">Наличие:</span>
+                                    @if (Model.MaxQuantity > 0)
+                                    {
+                                        <span class="badge bg-info rounded-pill fs-6">Доступно @Model.MaxQuantity шт.</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-danger rounded-pill fs-6">Нет на складе</span>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mt-4">
+                        <div class="col-md-6 align-content-center">
+                            <div class="input-group" style="width: 100%;">
+                                <button class="btn btn-outline-secondary btn-sm remove-cart" type="button" data-product-id="@Model.Id" @(Model.Quantity <= 0 ? "disabled" : "")>
+                                    <i class="bi bi-dash"></i>
+                                </button>
+                                <input type="number" class="form-control form-control-sm text-center quantity-input" 
+                                       data-product-id="@Model.Id" 
+                                       value="@Model.Quantity" 
+                                       min="0"
+                                       max="@Model.MaxQuantity"
+                                       data-max="@Model.MaxQuantity"
+                                       @(Model.MaxQuantity <= 0 ? "disabled" : "")>
+                                <button class="btn btn-outline-secondary btn-sm add-cart" type="button" data-product-id="@Model.Id" @(Model.Quantity >= Model.MaxQuantity ? "disabled" : "")>
+                                    <i class="bi bi-plus"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div> 

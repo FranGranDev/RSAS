@@ -102,4 +102,25 @@ namespace Application.DTOs
         [Required(ErrorMessage = "Информация о доставке обязательна")]
         public UpdateDeliveryDto Delivery { get; set; }
     }
+
+    public class FastOrderDto
+    {
+        [Required(ErrorMessage = "ID склада обязателен")]
+        public int StockId { get; set; }
+
+        [Required(ErrorMessage = "Имя клиента обязательно")]
+        [StringLength(100, ErrorMessage = "Имя клиента не должно превышать 100 символов")]
+        public string ClientName { get; set; }
+
+        [Required(ErrorMessage = "Контактный телефон обязателен")]
+        [Phone(ErrorMessage = "Некорректный формат телефона")]
+        public string ContactPhone { get; set; }
+
+        [Required(ErrorMessage = "Тип оплаты обязателен")]
+        public Order.PaymentTypes PaymentType { get; set; }
+
+        [Required(ErrorMessage = "Список товаров обязателен")]
+        [MinLength(1, ErrorMessage = "Заказ должен содержать хотя бы один товар")]
+        public IEnumerable<CreateOrderProductDto> Products { get; set; }
+    }
 }

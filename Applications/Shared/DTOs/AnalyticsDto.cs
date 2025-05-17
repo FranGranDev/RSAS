@@ -271,8 +271,14 @@ namespace Application.DTOs
         [Display(Name = "Выручка")]
         public decimal Revenue { get; set; }
 
+        [Display(Name = "Средний чек")]
+        public decimal AverageSaleAmount { get; set; }
+        
         [Display(Name = "Количество продаж")]
         public int SalesCount { get; set; }
+
+        [Display(Name = "Количество заказов")]
+        public int OrdersCount { get; set; }
     }
 
     /// <summary>

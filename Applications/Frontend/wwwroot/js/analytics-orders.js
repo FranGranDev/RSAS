@@ -183,7 +183,7 @@ const Orders = {
                 datasets: [
                     {
                         label: 'Количество заказов',
-                        data: data.map(item => item.salesCount),
+                        data: data.map(item => item.ordersCount),
                         borderColor: 'rgb(75, 192, 192)',
                         backgroundColor: 'rgba(75, 192, 192, 0.1)',
                         tension: 0.1,
@@ -192,7 +192,7 @@ const Orders = {
                     },
                     {
                         label: 'Средний чек',
-                        data: data.map(item => item.revenue),
+                        data: data.map(item => item.averageSaleAmount),
                         borderColor: 'rgb(255, 99, 132)',
                         backgroundColor: 'rgba(255, 99, 132, 0.1)',
                         tension: 0.1,

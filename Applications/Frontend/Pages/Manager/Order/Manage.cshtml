@@ -117,33 +117,42 @@
 
     <div class="row">
         <div class="col-12">
-            @if (Model.Order.State == Application.Models.Order.States.New || Model.Order.State == Application.Models.Order.States.InProcess)
+            @if (Model.Order.Delivery != null)
             {
-                @await Html.PartialAsync("Shared/Orders/_ManageDeliveryPartial", new Frontend.Models.Orders.DeliveryViewModel
+                @if (Model.Order.State == Application.Models.Order.States.New || Model.Order.State == Application.Models.Order.States.InProcess)
                 {
-                    City = Model.Order.Delivery.City,
-                    Street = Model.Order.Delivery.Street,
-                    House = Model.Order.Delivery.House,
-                    Flat = Model.Order.Delivery.Flat,
-                    PostalCode = Model.Order.Delivery.PostalCode,
-                    DeliveryDate = Model.Order.Delivery.DeliveryDate,
-                    Editable = true,
-                    OrderId = Model.Order.Id
-                })
+                    @await Html.PartialAsync("Shared/Orders/_ManageDeliveryPartial", new Frontend.Models.Orders.DeliveryViewModel
+                    {
+                        City = Model.Order.Delivery.City,
+                        Street = Model.Order.Delivery.Street,
+                        House = Model.Order.Delivery.House,
+                        Flat = Model.Order.Delivery.Flat,
+                        PostalCode = Model.Order.Delivery.PostalCode,
+                        DeliveryDate = Model.Order.Delivery.DeliveryDate,
+                        Editable = true,
+                        OrderId = Model.Order.Id
+                    })
+                }
+                else
+                {
+                    @await Html.PartialAsync("Shared/Orders/_DeliveryPartial", new Frontend.Models.Orders.DeliveryViewModel
+                    {
+                        City = Model.Order.Delivery.City,
+                        Street = Model.Order.Delivery.Street,
+                        House = Model.Order.Delivery.House,
+                        Flat = Model.Order.Delivery.Flat,
+                        PostalCode = Model.Order.Delivery.PostalCode,
+                        DeliveryDate = Model.Order.Delivery.DeliveryDate,
+                        Editable = false,
+                        OrderId = Model.Order.Id
+                    })
+                }
             }
             else
             {
-                @await Html.PartialAsync("Shared/Orders/_DeliveryPartial", new Frontend.Models.Orders.DeliveryViewModel
-                {
-                    City = Model.Order.Delivery.City,
-                    Street = Model.Order.Delivery.Street,
-                    House = Model.Order.Delivery.House,
-                    Flat = Model.Order.Delivery.Flat,
-                    PostalCode = Model.Order.Delivery.PostalCode,
-                    DeliveryDate = Model.Order.Delivery.DeliveryDate,
-                    Editable = false,
-                    OrderId = Model.Order.Id
-                })
+                <div class="alert alert-info">
+                    <i class="bi bi-info-circle"></i> Мгновенный заказ
+                </div>
             }
         </div>
     </div>

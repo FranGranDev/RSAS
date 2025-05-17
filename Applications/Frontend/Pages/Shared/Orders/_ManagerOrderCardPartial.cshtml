@@ -36,7 +36,14 @@
         </div>
         <div class="mb-2">
             <strong>Доставка:</strong>
-            <span>@Model.Delivery.FullAddress</span>
+            @if (Model.Delivery != null)
+            {
+                <span>@Model.Delivery.FullAddress</span>
+            }
+            else
+            {
+                <span>Мгновенный заказ</span>
+            }
         </div>
         <div class="mb-2">
             <strong>Телефон клиента:</strong>

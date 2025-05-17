@@ -365,5 +365,71 @@ namespace Application.Services
             await _orderRepository.UpdateAsync(order);
             return _mapper.Map<OrderDto>(order);
         }
+
+        public async Task<OrderDto> CreateFastOrderAsync(FastOrderDto fastOrderDto, string userId)
+        {
+            // Проверяем существование склада
+            var stock = await _stockRepository.GetByIdAsync(fastOrderDto.StockId);
+            if (stock == null)
+            {
+                throw new StockNotFoundException(fastOrderDto.StockId);
+            }
+
+            // Проверяем наличие всех товаров на складе
+            foreach (var product in fastOrderDto.Products)
+            {
+                var stockProduct = await _stockRepository.GetStockProductAsync(fastOrderDto.StockId, product.ProductId);
+                if (stockProduct == null || stockProduct.Quantity < product.Quantity)
+                {
+                    throw new InsufficientStockException(product.ProductId, product.Quantity, 0);
+                }
+            }
+
+            // Создаем базовый заказ
+            var order = new Order
+            {
+                UserId = userId,
+                StockId = fastOrderDto.StockId,
+                ClientName = fastOrderDto.ClientName,
+                ContactPhone = fastOrderDto.ContactPhone,
+                PaymentType = fastOrderDto.PaymentType,
+                OrderDate = SystemTime.Now,
+                ChangeDate = DateTime.UtcNow,
+                State = Order.States.New,
+                CancellationReason = "",
+                Products = new List<OrderProduct>()
+            };
+
+            // Добавляем продукты в заказ
+            foreach (var productDto in fastOrderDto.Products)
+            {
+                var orderProduct = _mapper.Map<OrderProduct>(productDto);
+                order.Products.Add(orderProduct);
+            }
+
+            // Сохраняем заказ
+            order = await _orderRepository.AddAsync(order);
+
+            // Списываем товары со склада
+            foreach (var product in order.Products)
+            {
+                var stockProduct = await _stockRepository.GetStockProductAsync(fastOrderDto.StockId, product.ProductId);
+                stockProduct.Quantity -= product.Quantity;
+                await _stockRepository.UpdateStockProductAsync(stockProduct);
+            }
+
+            // Обновляем статус заказа
+            order.State = Order.States.InProcess;
+            order.ChangeDate = DateTime.UtcNow;
+            await _orderRepository.UpdateAsync(order);
+
+            // Завершаем заказ и создаем продажу
+            order.State = Order.States.Completed;
+            order.ChangeDate = DateTime.UtcNow;
+            await _saleService.CreateFromOrderAsync(order.Id);
+            await _orderRepository.UpdateAsync(order);
+
+            return _mapper.Map<OrderDto>(order);
+        }
     }
 }

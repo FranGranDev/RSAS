@@ -131,8 +131,9 @@ function loadCurrentTabData() {
         return;
     }
 
-    const startDate = dates.startDate.utc().format('YYYY-MM-DD');
-    const endDate = dates.endDate.utc().format('YYYY-MM-DD');
+    // Используем локальное время для начала и конца дня
+    const startDate = dates.startDate.format('YYYY-MM-DD');
+    const endDate = dates.endDate.format('YYYY-MM-DD');
 
     // Получаем конфигурацию текущей вкладки
     const config = tabConfig[currentTab];

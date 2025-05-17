@@ -72,6 +72,11 @@ public class ManageModel : PageModel
             // Получаем информацию о доставке
             var delivery = await _apiService.GetAsync<DeliveryDto>($"/api/orders/{request.orderId}/delivery");
             
+            if (delivery == null)
+            {
+                return new JsonResult(new { success = false, error = "Доставка не найдена" });
+            }
+            
             // Создаем DTO для обновления с текущими данными
             var updateDeliveryDto = new UpdateDeliveryDto
             {

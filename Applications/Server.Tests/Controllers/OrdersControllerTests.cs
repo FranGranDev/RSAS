@@ -671,4 +671,183 @@ public class OrdersControllerTests : TestBase
         // Assert
         result.Result.Should().BeOfType<BadRequestObjectResult>();
     }
+
+    [Fact]
+    public async Task CreateFastOrder_WithValidData_ShouldCreateAndCompleteOrder()
+    {
+        // Arrange
+        await LoginAsManager();
+        
+        var fastOrderDto = new FastOrderDto
+        {
+            StockId = 1,
+            ClientName = "Test Client",
+            ContactPhone = "1234567890",
+            PaymentType = Order.PaymentTypes.Card,
+            Products = new List<CreateOrderProductDto>
+            {
+                new()
+                {
+                    ProductId = 1,
+                    Quantity = 2
+                }
+            }
+        };
+
+        var expectedOrder = CreateTestOrderDto();
+        expectedOrder.State = Order.States.Completed;
+        _orderServiceMock.Setup(x => x.CreateFastOrderAsync(fastOrderDto, "test-user-id"))
+            .ReturnsAsync(expectedOrder);
+
+        // Act
+        var result = await _controller.CreateFastOrder(fastOrderDto);
+
+        // Assert
+        var createdAtActionResult = result.Result.Should().BeOfType<CreatedAtActionResult>().Subject;
+        var order = createdAtActionResult.Value.Should().BeOfType<OrderDto>().Subject;
+        order.Should().BeEquivalentTo(expectedOrder);
+        order.State.Should().Be(Order.States.Completed);
+    }
+
+    [Fact]
+    public async Task CreateFastOrder_WithInvalidData_ShouldReturnBadRequest()
+    {
+        // Arrange
+        await LoginAsManager();
+        
+        var fastOrderDto = new FastOrderDto
+        {
+            ClientName = "",
+            ContactPhone = "",
+            Products = new List<CreateOrderProductDto>()
+        };
+        _controller.ModelState.AddModelError("ClientName", "Имя клиента обязательно для заполнения");
+
+        // Act
+        var result = await _controller.CreateFastOrder(fastOrderDto);
+
+        // Assert
+        result.Result.Should().BeOfType<BadRequestObjectResult>();
+    }
+
+    [Fact]
+    public async Task CreateFastOrder_WithInsufficientStock_ShouldReturnBadRequest()
+    {
+        // Arrange
+        await LoginAsManager();
+        
+        var fastOrderDto = new FastOrderDto
+        {
+            StockId = 1,
+            ClientName = "Test Client",
+            ContactPhone = "1234567890",
+            PaymentType = Order.PaymentTypes.Card,
+            Products = new List<CreateOrderProductDto>
+            {
+                new()
+                {
+                    ProductId = 1,
+                    Quantity = 2
+                }
+            }
+        };
+
+        _orderServiceMock.Setup(x => x.CreateFastOrderAsync(fastOrderDto, "test-user-id"))
+            .ThrowsAsync(new InsufficientStockException(1, 2, 1));
+
+        // Act
+        var result = await _controller.CreateFastOrder(fastOrderDto);
+
+        // Assert
+        result.Result.Should().BeOfType<BadRequestObjectResult>();
+        var badRequestResult = result.Result as BadRequestObjectResult;
+        badRequestResult.Value.Should().Be("Недостаточно товара на складе: Недостаточно товара с ID 1. Запрошено: 2, Доступно: 1");
+    }
+
+    [Fact]
+    public async Task CreateFastOrder_WithNonExistentStock_ShouldReturnNotFound()
+    {
+        // Arrange
+        await LoginAsManager();
+        
+        var fastOrderDto = new FastOrderDto
+        {
+            StockId = 999,
+            ClientName = "Test Client",
+            ContactPhone = "1234567890",
+            PaymentType = Order.PaymentTypes.Card,
+            Products = new List<CreateOrderProductDto>
+            {
+                new()
+                {
+                    ProductId = 1,
+                    Quantity = 2
+                }
+            }
+        };
+
+        _orderServiceMock.Setup(x => x.CreateFastOrderAsync(fastOrderDto, "test-user-id"))
+            .ThrowsAsync(new StockNotFoundException(999));
+
+        // Act
+        var result = await _controller.CreateFastOrder(fastOrderDto);
+
+        // Assert
+        result.Result.Should().BeOfType<NotFoundObjectResult>();
+        var notFoundResult = result.Result as NotFoundObjectResult;
+        notFoundResult.Value.Should().Be("Склад с ID 999 не найден");
+    }
+
+    [Fact]
+    public async Task CreateFastOrder_WithoutManagerRole_ShouldReturnForbidden()
+    {
+        // Arrange
+        await LoginAsClient();
+        
+        var fastOrderDto = new FastOrderDto
+        {
+            StockId = 1,
+            ClientName = "Test Client",
+            ContactPhone = "1234567890",
+            PaymentType = Order.PaymentTypes.Card,
+            Products = new List<CreateOrderProductDto>
+            {
+                new()
+                {
+                    ProductId = 1,
+                    Quantity = 2
+                }
+            }
+        };
+
+        // Act
+        var result = await _controller.CreateFastOrder(fastOrderDto);
+
+        // Assert
+        result.Result.Should().BeOfType<ForbidResult>();
+    }
+
+    [Fact]
+    public async Task CreateFastOrder_WithEmptyProducts_ShouldReturnBadRequest()
+    {
+        // Arrange
+        await LoginAsManager();
+        
+        var fastOrderDto = new FastOrderDto
+        {
+            StockId = 1,
+            ClientName = "Test Client",
+            ContactPhone = "1234567890",
+            PaymentType = Order.PaymentTypes.Card,
+            Products = new List<CreateOrderProductDto>()
+        };
+
+        // Act
+        var result = await _controller.CreateFastOrder(fastOrderDto);
+
+        // Assert
+        result.Result.Should().BeOfType<BadRequestObjectResult>();
+        var badRequestResult = result.Result as BadRequestObjectResult;
+        badRequestResult.Value.Should().Be("Заказ должен содержать хотя бы один товар");
+    }
 }

@@ -28,5 +28,8 @@ namespace Application.Services
 
         // Новый метод для получения информации о заказе с учетом наличия товаров на складе
         Task<OrderWithStockInfoDto> GetOrderWithStockInfoAsync(int orderId, int? stockId = null);
+
+        // Метод для быстрой продажи
+        Task<OrderDto> CreateFastOrderAsync(FastOrderDto fastOrderDto, string userId);
     }
 }

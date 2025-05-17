@@ -173,6 +173,7 @@ namespace Server.Services.Repository
         {
             // Получаем все продажи за период
             var sales = await _dbSet
+                .Include(s => s.Products)
                 .Where(s => s.SaleDate >= startDate && s.SaleDate <= endDate)
                 .ToListAsync();
 
@@ -210,8 +211,10 @@ namespace Server.Services.Repository
                 .Select(g => new SalesTrendResultDto
                 {
                     Date = g.Key,
-                    SalesCount = g.Count(),
-                    Revenue = g.Sum(s => s.TotalAmount)
+                    OrdersCount = g.Count(), // Количество заказов (продаж)
+                    SalesCount = g.Sum(s => s.Products.Sum(p => p.Quantity)), // Общее количество проданного товара
+                    Revenue = g.Sum(s => s.TotalAmount),
+                    AverageSaleAmount = g.Average(s => s.TotalAmount)
                 })
                 .OrderBy(x => x.Date)
                 .ToList();

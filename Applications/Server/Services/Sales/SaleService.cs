@@ -106,29 +106,46 @@ namespace Server.Services.Sales
             return _mapper.Map<IEnumerable<SaleDto>>(sales);
         }
 
+        private (DateTime? startDate, DateTime? endDate) ValidateDateRange(DateTime? startDate, DateTime? endDate)
+        {
+            if (startDate.HasValue && endDate.HasValue)
+            {
+                if (startDate > endDate)
+                    throw new InvalidDateRangeException("Дата начала не может быть позже даты окончания");
+
+                // Устанавливаем конечную дату на конец дня
+                endDate = endDate.Value.Date.AddDays(1).AddTicks(-1);
+            }
+
+            return (startDate, endDate);
+        }
+
         public async Task<decimal> GetTotalRevenueAsync(DateTime? startDate = null, DateTime? endDate = null)
         {
-            ValidateDateRange(startDate, endDate);
-            return await _saleRepository.GetTotalRevenueAsync(startDate, endDate);
+            var (formattedStartDate, formattedEndDate) = ValidateDateRange(startDate, endDate);
+            return await _saleRepository.GetTotalRevenueAsync(formattedStartDate, formattedEndDate);
         }
 
         public async Task<int> GetTotalSalesCountAsync(DateTime? startDate = null, DateTime? endDate = null)
         {
-            ValidateDateRange(startDate, endDate);
-            return await _saleRepository.GetTotalSalesCountAsync(startDate, endDate);
+            var (formattedStartDate, formattedEndDate) = ValidateDateRange(startDate, endDate);
+            return await _saleRepository.GetTotalSalesCountAsync(formattedStartDate, formattedEndDate);
         }
 
         public async Task<decimal> GetAverageSaleAmountAsync(DateTime? startDate = null, DateTime? endDate = null)
         {
-            ValidateDateRange(startDate, endDate);
+            var (formattedStartDate, formattedEndDate) = ValidateDateRange(startDate, endDate);
             var sales = await _saleRepository.GetByDateRangeAsync(
-                startDate ?? DateTime.MinValue,
-                endDate ?? DateTime.MaxValue);
+                formattedStartDate ?? DateTime.MinValue,
+                formattedEndDate ?? DateTime.MaxValue);
 
             if (!sales.Any())
                 return 0;
 
-            return sales.Average(s => s.TotalAmount);
+            // Считаем общую сумму всех продаж
+            var totalAmount = sales.Sum(s => s.TotalAmount);
+            // Делим на количество продаж
+            return totalAmount / sales.Count();
         }
 
         public async Task<IEnumerable<TopProductResultDto>> GetTopProductsAsync(
@@ -136,19 +153,19 @@ namespace Server.Services.Sales
             DateTime? startDate = null,
             DateTime? endDate = null)
         {
-            ValidateDateRange(startDate, endDate);
+            var (formattedStartDate, formattedEndDate) = ValidateDateRange(startDate, endDate);
             if (count <= 0)
                 throw new InvalidAnalyticsParametersException("Количество товаров должно быть больше 0");
 
-            return await _saleRepository.GetTopProductsAsync(count, startDate, endDate);
+            return await _saleRepository.GetTopProductsAsync(count, formattedStartDate, formattedEndDate);
         }
 
         public async Task<IEnumerable<CategorySalesResultDto>> GetCategorySalesAsync(
             DateTime? startDate = null,
             DateTime? endDate = null)
         {
-            ValidateDateRange(startDate, endDate);
-            return await _saleRepository.GetCategorySalesAsync(startDate, endDate);
+            var (formattedStartDate, formattedEndDate) = ValidateDateRange(startDate, endDate);
+            return await _saleRepository.GetCategorySalesAsync(formattedStartDate, formattedEndDate);
         }
 
         public async Task<IEnumerable<SalesTrendResultDto>> GetSalesTrendAsync(
@@ -156,8 +173,7 @@ namespace Server.Services.Sales
             DateTime endDate,
             string interval = "1d")
         {
-            if (startDate > endDate)
-                throw new InvalidDateRangeException("Дата начала не может быть позже даты окончания");
+            var (formattedStartDate, formattedEndDate) = ValidateDateRange(startDate, endDate);
 
             TimeSpan timeSpan;
             if (interval.EndsWith("d"))
@@ -192,16 +208,19 @@ namespace Server.Services.Sales
             if (timeSpan <= TimeSpan.Zero)
                 throw new InvalidAnalyticsParametersException("Интервал должен быть больше 0");
 
-            return await _saleRepository.GetSalesTrendAsync(startDate, endDate, timeSpan);
+            return await _saleRepository.GetSalesTrendAsync(
+                formattedStartDate ?? DateTime.MinValue,
+                formattedEndDate ?? DateTime.MaxValue,
+                timeSpan);
         }
 
         public async Task<DashboardAnalyticsDto> GetDashboardAnalyticsAsync(DateTime? startDate = null, DateTime? endDate = null)
         {
-            ValidateDateRange(startDate, endDate);
+            var (formattedStartDate, formattedEndDate) = ValidateDateRange(startDate, endDate);
             
             var sales = await _saleRepository.GetByDateRangeAsync(
-                startDate ?? DateTime.MinValue,
-                endDate ?? DateTime.MaxValue);
+                formattedStartDate ?? DateTime.MinValue,
+                formattedEndDate ?? DateTime.MaxValue);
 
             if (!sales.Any())
             {
@@ -215,10 +234,10 @@ namespace Server.Services.Sales
                 };
             }
             
-            var totalRevenue = await GetTotalRevenueAsync(startDate, endDate);
-            var totalSalesCount = await GetTotalSalesCountAsync(startDate, endDate);
-            var averageOrderAmount = await GetAverageSaleAmountAsync(startDate, endDate);
-            var topProducts = await GetTopProductsAsync(100, startDate, endDate);
+            var totalRevenue = await GetTotalRevenueAsync(formattedStartDate, formattedEndDate);
+            var totalSalesCount = await GetTotalSalesCountAsync(formattedStartDate, formattedEndDate);
+            var averageOrderAmount = await GetAverageSaleAmountAsync(formattedStartDate, formattedEndDate);
+            var topProducts = await GetTopProductsAsync(100, formattedStartDate, formattedEndDate);
 
             return new DashboardAnalyticsDto
             {
@@ -231,20 +250,20 @@ namespace Server.Services.Sales
 
         public async Task<SalesAnalyticsDto> GetSalesAnalyticsAsync(DateTime? startDate = null, DateTime? endDate = null)
         {
-            ValidateDateRange(startDate, endDate);
+            var (formattedStartDate, formattedEndDate) = ValidateDateRange(startDate, endDate);
 
-            var revenue = await GetTotalRevenueAsync(startDate, endDate);
-            var salesCount = await GetTotalSalesCountAsync(startDate, endDate);
-            var averageSaleAmount = await GetAverageSaleAmountAsync(startDate, endDate);
-            var categorySales = await GetCategorySalesAsync(startDate, endDate);
+            var revenue = await GetTotalRevenueAsync(formattedStartDate, formattedEndDate);
+            var salesCount = await GetTotalSalesCountAsync(formattedStartDate, formattedEndDate);
+            var averageSaleAmount = await GetAverageSaleAmountAsync(formattedStartDate, formattedEndDate);
+            var categorySales = await GetCategorySalesAsync(formattedStartDate, formattedEndDate);
             var salesTrend = await GetSalesTrendAsync(
-                startDate ?? DateTime.MinValue,
-                endDate ?? DateTime.MaxValue,
+                formattedStartDate ?? DateTime.MinValue,
+                formattedEndDate ?? DateTime.MaxValue,
                 "1d");
 
             return new SalesAnalyticsDto
             {
-                Period = GetPeriodString(startDate, endDate),
+                Period = GetPeriodString(formattedStartDate, formattedEndDate),
                 Revenue = revenue,
                 SalesCount = salesCount,
                 AverageSaleAmount = averageSaleAmount,
@@ -255,15 +274,15 @@ namespace Server.Services.Sales
 
         public async Task<OrdersAnalyticsDto> GetOrdersAnalyticsAsync(DateTime? startDate = null, DateTime? endDate = null)
         {
-            ValidateDateRange(startDate, endDate);
+            var (formattedStartDate, formattedEndDate) = ValidateDateRange(startDate, endDate);
 
             // Получаем заказы за период
             var orders = await _orderRepository.GetByDateRangeAsync(
-                startDate ?? DateTime.MinValue,
-                endDate ?? DateTime.MaxValue);
+                formattedStartDate ?? DateTime.MinValue,
+                formattedEndDate ?? DateTime.MaxValue);
 
             var ordersCount = orders.Count();
-            var averageOrderAmount = await GetAverageSaleAmountAsync(startDate, endDate);
+            var averageOrderAmount = await GetAverageSaleAmountAsync(formattedStartDate, formattedEndDate);
             var averageProcessingTime = orders.Any() 
                 ? TimeSpan.FromTicks((long)orders.Average(o => (o.ChangeDate - o.OrderDate).Ticks))
                 : TimeSpan.Zero;
@@ -296,7 +315,7 @@ namespace Server.Services.Sales
 
             return new OrdersAnalyticsDto
             {
-                Period = GetPeriodString(startDate, endDate),
+                Period = GetPeriodString(formattedStartDate, formattedEndDate),
                 OrdersCount = ordersCount,
                 AverageOrderAmount = averageOrderAmount,
                 AverageProductsPerOrder = averageProductsPerOrder,
@@ -308,11 +327,11 @@ namespace Server.Services.Sales
 
         public async Task<ExtendedSalesAnalyticsDto> GetExtendedAnalyticsAsync(DateTime? startDate = null, DateTime? endDate = null)
         {
-            ValidateDateRange(startDate, endDate);
+            var (formattedStartDate, formattedEndDate) = ValidateDateRange(startDate, endDate);
 
-            var conversionRate = await _saleRepository.GetSalesConversionRateAsync(startDate, endDate);
-            var averageOrderProcessingTime = await _saleRepository.GetAverageOrderProcessingTimeAsync(startDate, endDate);
-            var stockEfficiency = await _saleRepository.GetStockEfficiencyAsync(startDate, endDate);
+            var conversionRate = await _saleRepository.GetSalesConversionRateAsync(formattedStartDate, formattedEndDate);
+            var averageOrderProcessingTime = await _saleRepository.GetAverageOrderProcessingTimeAsync(formattedStartDate, formattedEndDate);
+            var stockEfficiency = await _saleRepository.GetStockEfficiencyAsync(formattedStartDate, formattedEndDate);
             var seasonality = await _saleRepository.GetSeasonalityAsync();
             var salesForecast = await _saleRepository.GetSalesForecastAsync();
 
@@ -328,8 +347,8 @@ namespace Server.Services.Sales
 
         public async Task<KpiDto> GetKpiAsync(DateTime? startDate = null, DateTime? endDate = null)
         {
-            ValidateDateRange(startDate, endDate);
-            return await _saleRepository.GetKpiAsync(startDate, endDate);
+            var (formattedStartDate, formattedEndDate) = ValidateDateRange(startDate, endDate);
+            return await _saleRepository.GetKpiAsync(formattedStartDate, formattedEndDate);
         }
 
         public async Task<ReportDto> GenerateReportAsync(
@@ -341,13 +360,13 @@ namespace Server.Services.Sales
             string? userId = null,
             string? userName = null)
         {
-            ValidateDateRange(startDate, endDate);
+            var (formattedStartDate, formattedEndDate) = ValidateDateRange(startDate, endDate);
 
             var report = new ReportDto
             {
                 Type = type,
                 Format = format,
-                Period = GetPeriodString(startDate, endDate),
+                Period = GetPeriodString(formattedStartDate, formattedEndDate),
                 CreatedAt = DateTime.UtcNow,
                 CreatedBy = userName ?? "System",
                 Version = "1.0",
@@ -358,7 +377,7 @@ namespace Server.Services.Sales
             switch (type)
             {
                 case ReportType.Sales:
-                    var salesAnalytics = await GetSalesAnalyticsAsync(startDate, endDate);
+                    var salesAnalytics = await GetSalesAnalyticsAsync(formattedStartDate, formattedEndDate);
                     report.Data.Metrics = new Dictionary<string, decimal>
                     {
                         { "Выручка", salesAnalytics.Revenue },
@@ -396,7 +415,7 @@ namespace Server.Services.Sales
                     break;
 
                 case ReportType.Orders:
-                    var ordersAnalytics = await GetOrdersAnalyticsAsync(startDate, endDate);
+                    var ordersAnalytics = await GetOrdersAnalyticsAsync(formattedStartDate, formattedEndDate);
                     report.Data.Metrics = new Dictionary<string, decimal>
                     {
                         { "Количество заказов", ordersAnalytics.OrdersCount },
@@ -425,7 +444,7 @@ namespace Server.Services.Sales
                     break;
 
                 case ReportType.KPI:
-                    var kpi = await GetKpiAsync(startDate, endDate);
+                    var kpi = await GetKpiAsync(formattedStartDate, formattedEndDate);
                     report.Data.Metrics = new Dictionary<string, decimal>
                     {
                         { "Конверсия продаж", kpi.SalesConversion },
@@ -452,9 +471,10 @@ namespace Server.Services.Sales
             string? userId = null,
             string? userName = null)
         {
-            var report = await GenerateReportAsync(type, format, startDate, endDate, formattingSettings, userId, userName);
+            var (formattedStartDate, formattedEndDate) = ValidateDateRange(startDate, endDate);
+            var report = await GenerateReportAsync(type, format, formattedStartDate, formattedEndDate, formattingSettings, userId, userName);
 
-            var extendedAnalytics = await GetExtendedAnalyticsAsync(startDate, endDate);
+            var extendedAnalytics = await GetExtendedAnalyticsAsync(formattedStartDate, formattedEndDate);
             
             report.Data.Metrics.Add("Конверсия продаж", extendedAnalytics.ConversionRate);
 
@@ -492,8 +512,8 @@ namespace Server.Services.Sales
             if (days <= 0)
                 throw new InvalidAnalyticsParametersException("Количество дней должно быть больше 0");
 
-            ValidateDateRange(startDate, endDate);
-            return await _saleRepository.GetDemandForecastAsync(days, startDate, endDate);
+            var (formattedStartDate, formattedEndDate) = ValidateDateRange(startDate, endDate);
+            return await _saleRepository.GetDemandForecastAsync(days, formattedStartDate, formattedEndDate);
         }
 
         public async Task<IEnumerable<SeasonalityImpactDto>> GetSeasonalityImpactAsync(
@@ -504,20 +524,20 @@ namespace Server.Services.Sales
             if (years <= 0)
                 throw new InvalidAnalyticsParametersException("Количество лет должно быть больше 0");
 
-            ValidateDateRange(startDate, endDate);
-            return await _saleRepository.GetSeasonalityImpactAsync(years, startDate, endDate);
+            var (formattedStartDate, formattedEndDate) = ValidateDateRange(startDate, endDate);
+            return await _saleRepository.GetSeasonalityImpactAsync(years, formattedStartDate, formattedEndDate);
         }
 
         public async Task<IEnumerable<ProductAbcAnalysisDto>> GetProductAbcAnalysisAsync(
             DateTime? startDate = null,
             DateTime? endDate = null)
         {
-            ValidateDateRange(startDate, endDate);
+            var (formattedStartDate, formattedEndDate) = ValidateDateRange(startDate, endDate);
 
             // Получаем все продажи за период
             var sales = await _saleRepository.GetByDateRangeAsync(
-                startDate ?? DateTime.MinValue,
-                endDate ?? DateTime.MaxValue);
+                formattedStartDate ?? DateTime.MinValue,
+                formattedEndDate ?? DateTime.MaxValue);
 
             // Группируем по продуктам и считаем выручку
             var productAnalysis = sales
@@ -572,12 +592,6 @@ namespace Server.Services.Sales
             }
 
             return result;
-        }
-
-        private void ValidateDateRange(DateTime? startDate, DateTime? endDate)
-        {
-            if (startDate.HasValue && endDate.HasValue && startDate > endDate)
-                throw new InvalidDateRangeException("Дата начала не может быть позже даты окончания");
         }
 
         private string GetPeriodString(DateTime? startDate, DateTime? endDate)

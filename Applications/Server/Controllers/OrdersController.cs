@@ -450,5 +450,52 @@ namespace Application.Controllers
                 return NotFound($"Заказ с ID {id} не найден");
             }
         }
+
+        /// <summary>
+        ///     Создать быструю продажу (только для менеджеров)
+        /// </summary>
+        /// <param name="fastOrderDto">Данные для быстрой продажи</param>
+        /// <returns>Созданный и выполненный заказ</returns>
+        /// <response code="400">Некорректные входные данные или недостаточно товаров на складе</response>
+        /// <response code="403">Недостаточно прав для создания быстрой продажи</response>
+        /// <response code="404">Склад не найден</response>
+        [HttpPost("fast")]
+        [Authorize(Policy = "RequireManagerRole")]
+        public async Task<ActionResult<OrderDto>> CreateFastOrder(FastOrderDto fastOrderDto)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            if (fastOrderDto.Products == null || !fastOrderDto.Products.Any())
+            {
+                return BadRequest("Заказ должен содержать хотя бы один товар");
+            }
+
+            try
+            {
+                var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                if (string.IsNullOrEmpty(userId))
+                {
+                    return BadRequest("Не удалось определить пользователя");
+                }
+
+                var order = await _orderService.CreateFastOrderAsync(fastOrderDto, userId);
+                return CreatedAtAction(nameof(GetOrder), new { id = order.Id }, order);
+            }
+            catch (StockNotFoundException)
+            {
+                return NotFound($"Склад с ID {fastOrderDto.StockId} не найден");
+            }
+            catch (InsufficientStockException ex)
+            {
+                return BadRequest($"Недостаточно товара на складе: {ex.Message}");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
     }
 }

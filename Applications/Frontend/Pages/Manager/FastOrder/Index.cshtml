@@ -1,0 +1,42 @@
+@page
+@model Frontend.Pages.Manager.FastOrder.IndexModel
+@{
+    ViewData["Title"] = "Быстрый заказ";
+}
+
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-2">
+        <div>
+            <h1>@ViewData["Title"]</h1>
+            <h5 class="text-muted">Выбор склада</h5>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="input-group">
+                <input type="text" class="form-control" id="searchInput" placeholder="Поиск по названию...">
+                <button class="btn btn-outline-secondary" type="button" id="searchButton">
+                    <i class="bi bi-search"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="row" id="stocksGrid">
+        @foreach (var stock in Model.Stocks)
+        {
+            <div class="col-md-4 col-lg-3 mb-4 stock-card" data-name="@stock.Name">
+                <partial name="Shared/Stocks/_StockPartial" model="@(new Frontend.Models.Stocks.StockCardViewModel 
+                                { 
+                                    Stock = stock,
+                                    ClickAction = Url.Page("/Manager/FastOrder/Catalog", new { stockId = stock.Id })
+                                })" />
+            </div>
+        }
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/stock-filter.js"></script>
+} 

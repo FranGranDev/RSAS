@@ -40,7 +40,8 @@ public class IndexModel : PageModel
     {
         try
         {
-            var dashboardData = await _analyticsService.GetDashboardAnalyticsAsync(startDate, endDate);
+            var (formattedStartDate, formattedEndDate) = FormatDateRange(startDate, endDate);
+            var dashboardData = await _analyticsService.GetDashboardAnalyticsAsync(formattedStartDate, formattedEndDate);
             return Partial("Shared/Analytics/Dashboard/_Dashboard", dashboardData);
         }
         catch (Exception ex)
@@ -54,10 +55,11 @@ public class IndexModel : PageModel
     {
         try
         {
+            var (formattedStartDate, formattedEndDate) = FormatDateRange(startDate, endDate);
             var topProducts = await _analyticsService.GetTopProductsAsync(
                 10,
-                startDate ?? DateTime.UtcNow.AddDays(-30),
-                endDate ?? DateTime.UtcNow);
+                formattedStartDate ?? DateTime.UtcNow.AddDays(-30).Date,
+                formattedEndDate ?? DateTime.UtcNow.Date.AddDays(1).AddTicks(-1));
             
             return Partial("Shared/Analytics/Dashboard/_TopProductsChart", topProducts);
         }
@@ -72,10 +74,11 @@ public class IndexModel : PageModel
     {
         try
         {
-            var salesData = await _analyticsService.GetSalesAnalyticsAsync(startDate, endDate);
-            var extendedAnalytics = await _analyticsService.GetExtendedSalesAnalyticsAsync(startDate, endDate);
-            var abcAnalysis = await _analyticsService.GetProductAbcAnalysisAsync(startDate, endDate);
-            var salesForecast = await _analyticsService.GetDemandForecastAsync(30, startDate, endDate);
+            var (formattedStartDate, formattedEndDate) = FormatDateRange(startDate, endDate);
+            var salesData = await _analyticsService.GetSalesAnalyticsAsync(formattedStartDate, formattedEndDate);
+            var extendedAnalytics = await _analyticsService.GetExtendedSalesAnalyticsAsync(formattedStartDate, formattedEndDate);
+            var abcAnalysis = await _analyticsService.GetProductAbcAnalysisAsync(formattedStartDate, formattedEndDate);
+            var salesForecast = await _analyticsService.GetDemandForecastAsync(30, formattedStartDate, formattedEndDate);
             
             var viewModel = new SalesViewModel
             {
@@ -112,10 +115,11 @@ public class IndexModel : PageModel
     {
         try
         {
-            var ordersAnalytics = await _analyticsService.GetOrdersAnalyticsAsync(startDate, endDate);
+            var (formattedStartDate, formattedEndDate) = FormatDateRange(startDate, endDate);
+            var ordersAnalytics = await _analyticsService.GetOrdersAnalyticsAsync(formattedStartDate, formattedEndDate);
             var ordersTrend = await _analyticsService.GetSalesTrendAsync(
-                startDate ?? DateTime.UtcNow.AddDays(-30),
-                endDate ?? DateTime.UtcNow);
+                formattedStartDate ?? DateTime.UtcNow.AddDays(-30).Date,
+                formattedEndDate ?? DateTime.UtcNow.Date.AddDays(1).AddTicks(-1));
                 
             var viewModel = new OrdersViewModel
             {
@@ -136,7 +140,8 @@ public class IndexModel : PageModel
     {
         try
         {
-            var ordersAnalytics = await _analyticsService.GetOrdersAnalyticsAsync(startDate, endDate);
+            var (formattedStartDate, formattedEndDate) = FormatDateRange(startDate, endDate);
+            var ordersAnalytics = await _analyticsService.GetOrdersAnalyticsAsync(formattedStartDate, formattedEndDate);
             return new JsonResult(ordersAnalytics);
         }
         catch (Exception ex)
@@ -150,10 +155,11 @@ public class IndexModel : PageModel
     {
         try
         {
+            var (formattedStartDate, formattedEndDate) = FormatDateRange(startDate, endDate);
             var topProducts = await _analyticsService.GetTopProductsAsync(
                 10,
-                startDate ?? DateTime.UtcNow.AddDays(-30),
-                endDate ?? DateTime.UtcNow);
+                formattedStartDate ?? DateTime.UtcNow.AddDays(-30).Date,
+                formattedEndDate ?? DateTime.UtcNow.Date.AddDays(1).AddTicks(-1));
             return new JsonResult(topProducts);
         }
         catch (Exception ex)
@@ -167,7 +173,8 @@ public class IndexModel : PageModel
     {
         try
         {
-            var salesData = await _analyticsService.GetSalesAnalyticsAsync(startDate, endDate);
+            var (formattedStartDate, formattedEndDate) = FormatDateRange(startDate, endDate);
+            var salesData = await _analyticsService.GetSalesAnalyticsAsync(formattedStartDate, formattedEndDate);
             return new JsonResult(salesData);
         }
         catch (Exception ex)
@@ -181,9 +188,10 @@ public class IndexModel : PageModel
     {
         try
         {
+            var (formattedStartDate, formattedEndDate) = FormatDateRange(startDate, endDate);
             var forecastData = await _analyticsService.GetDemandForecastAsync(30,
-                startDate ?? DateTime.UtcNow.AddDays(-30),
-                endDate ?? DateTime.UtcNow);
+                formattedStartDate ?? DateTime.UtcNow.AddDays(-30).Date,
+                formattedEndDate ?? DateTime.UtcNow.Date.AddDays(1).AddTicks(-1));
             return new JsonResult(forecastData);
         }
         catch (Exception ex)
@@ -197,7 +205,8 @@ public class IndexModel : PageModel
     {
         try
         {
-            var categorySales = await _analyticsService.GetCategorySalesAsync(startDate, endDate);
+            var (formattedStartDate, formattedEndDate) = FormatDateRange(startDate, endDate);
+            var categorySales = await _analyticsService.GetCategorySalesAsync(formattedStartDate, formattedEndDate);
             return new JsonResult(categorySales);
         }
         catch (Exception ex)
@@ -211,7 +220,8 @@ public class IndexModel : PageModel
     {
         try
         {
-            var abcAnalysis = await _analyticsService.GetProductAbcAnalysisAsync(startDate, endDate);
+            var (formattedStartDate, formattedEndDate) = FormatDateRange(startDate, endDate);
+            var abcAnalysis = await _analyticsService.GetProductAbcAnalysisAsync(formattedStartDate, formattedEndDate);
             return new JsonResult(abcAnalysis);
         }
         catch (Exception ex)
@@ -239,9 +249,10 @@ public class IndexModel : PageModel
     {
         try
         {
+            var (formattedStartDate, formattedEndDate) = FormatDateRange(startDate, endDate);
             var trendData = await _analyticsService.GetSalesTrendAsync(
-                startDate ?? DateTime.UtcNow.AddDays(-30),
-                endDate ?? DateTime.UtcNow,
+                formattedStartDate ?? DateTime.UtcNow.AddDays(-30).Date,
+                formattedEndDate ?? DateTime.UtcNow.Date.AddDays(1).AddTicks(-1),
                 interval);
             return new JsonResult(trendData);
         }
@@ -250,5 +261,13 @@ public class IndexModel : PageModel
             _logger.LogError(ex, "Ошибка при загрузке данных тренда");
             return StatusCode(500);
         }
+    }
+    
+    private (DateTime? startDate, DateTime? endDate) FormatDateRange(DateTime? startDate, DateTime? endDate)
+    {
+        return (
+            startDate?.Date,
+            endDate?.Date.AddDays(1).AddTicks(-1)
+        );
     }
 } 

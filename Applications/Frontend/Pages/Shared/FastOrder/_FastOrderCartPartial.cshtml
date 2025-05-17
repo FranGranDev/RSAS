@@ -1,0 +1,30 @@
+@model Frontend.Models.Catalog.CartViewModel
+@using Frontend.Models
+
+<div class="card shadow-sm">
+    <input type="hidden" id="currency-symbol" value="@CurrencySettings.Symbol" />
+    <div class="d-flex align-items-center m-1">
+        <div class="me-2 ms-1">
+            <i class="bi bi-cart3 fs-4"></i>
+            <span id="cart-total-quantity" class="badge bg-primary">@Model.TotalQuantity</span>
+        </div>
+        <span id="cart-total-price" class="badge bg-success fs-6 me-2 flex-shrink-0">@Model.TotalPrice.ToString("N2") @CurrencySettings.Symbol</span>
+        <div class="btn-group me-1">
+            <button id="clear-cart-btn" class="btn btn-outline-danger btn-sm" onclick="confirmClearCart()">
+                <i class="bi bi-trash"></i>
+            </button>
+            <a id="create-order-btn" asp-page="/Manager/FastOrder/Create" asp-route-stockId="@Model.StockId" 
+               class="btn btn-primary btn-sm fs-6 fw-normal" style="pointer-events: @(Model.TotalQuantity == 0 ? "none" : "auto"); opacity: @(Model.TotalQuantity == 0 ? "0.65" : "1")">
+                Оформить заказ
+            </a>
+        </div>
+    </div>
+</div>
+
+<script>
+    function confirmClearCart() {
+        if (confirm('Вы уверены, что хотите очистить корзину?')) {
+            clearCart();
+        }
+    }
+</script> 

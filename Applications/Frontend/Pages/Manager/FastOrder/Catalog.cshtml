@@ -1,13 +1,16 @@
-@page
-@model Frontend.Pages.Client.Catalog.IndexModel
+@page "{stockId:int}"
+@model Frontend.Pages.Manager.FastOrder.CatalogModel
 @{
-    ViewData["Title"] = "Каталог товаров";
+    ViewData["Title"] = "Быстрый заказ";
 }
 
 <div class="container-fluid">
     <div class="d-flex justify-content-between align-items-center mb-2">
-        <h1>@ViewData["Title"]</h1>
-        <partial name="Shared/Catalog/_CartPartial" model="Model.Catalog.Cart" />
+        <div>
+            <h1>@ViewData["Title"]</h1>
+            <h5 class="text-muted">Выбор товаров - @Model.StockName</h5>
+        </div>
+        <partial name="Shared/FastOrder/_FastOrderCartPartial" model="Model.Cart" />
     </div>
 
     <div class="row mb-4">
@@ -22,7 +25,7 @@
         <div class="col-md-3">
             <select class="form-select" id="categoryFilter">
                 <option value="">Все категории</option>
-                @foreach (var category in Model.Catalog.Categories)
+                @foreach (var category in Model.Products.Select(p => p.Category).Distinct().OrderBy(c => c))
                 {
                     <option value="@category">@category</option>
                 }
@@ -38,13 +41,13 @@
     </div>
 
     <div class="row" id="productsGrid">
-        @foreach (var product in Model.Catalog.Products)
+        @foreach (var product in Model.Products)
         {
             <div class="col-md-4 col-lg-3 mb-4 product-card"
                  data-name="@product.Name"
                  data-category="@product.Category"
                  data-price="@product.Price">
-                <partial name="Shared/Catalog/_CatalogProductPartial" model="product" />
+                <partial name="Shared/FastOrder/_FastOrderProductPartial" model="product" />
             </div>
         }
     </div>
@@ -60,5 +63,5 @@
 
 @section Scripts {
     <script src="~/js/product-filter.js"></script>
-    <script src="~/js/cart.js"></script>
+    <script src="~/js/fast-order-catalog.js"></script>
 } 

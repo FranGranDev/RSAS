@@ -1,0 +1,53 @@
+@model Frontend.Models.Catalog.CatalogProductViewModel
+@using Frontend.Models
+
+<div class="card h-100 shadow-sm" style="max-height: 300px; transition: transform 0.2s, box-shadow 0.2s;" 
+     onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='0 0.5rem 1rem rgba(0,0,0,0.15)'"
+     onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 0.125rem 0.25rem rgba(0,0,0,0.075)'">
+    <div class="card-body d-flex flex-column">
+        <!-- Область для открытия модального окна -->
+        <div style="cursor: pointer;" data-bs-toggle="modal" data-bs-target="#productPreviewModal-@Model.Id">
+            <h5 class="card-title text-truncate">@Model.Name</h5>
+            <h6 class="card-subtitle mb-2 text-muted">@Model.Category</h6>
+            <p class="card-text flex-grow-1 text-truncate" style="max-height: 3em; overflow: hidden;">@Model.Description</p>
+            <div class="d-flex flex-column mt-auto">
+                <div class="mb-2 d-flex align-items-center">
+                    <span class="badge bg-success fs-6 me-2 flex-shrink-0">@Model.Price.ToString("N2") @CurrencySettings.Symbol</span>
+                    <span class="badge bg-primary text-truncate flex-grow-1">@Model.Barcode</span>
+                </div>
+                <div class="mb-2">
+                    @if (Model.MaxQuantity > 0)
+                    {
+                        <span class="badge bg-info">Доступно: @Model.MaxQuantity шт.</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-danger">Нет на складе</span>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- Область управления количеством -->
+        <div class="d-flex justify-content-between align-items-center mt-2">
+            <div class="input-group" style="width: 100%;">
+                <button class="btn btn-outline-secondary btn-sm remove-cart" type="button" data-product-id="@Model.Id" @(Model.Quantity <= 0 ? "disabled" : "")>
+                    <i class="bi bi-dash"></i>
+                </button>
+                <input type="number" class="form-control form-control-sm text-center quantity-input" 
+                       data-product-id="@Model.Id" 
+                       value="@Model.Quantity" 
+                       min="0"
+                       max="@Model.MaxQuantity"
+                       data-max="@Model.MaxQuantity"
+                       @(Model.MaxQuantity <= 0 ? "disabled" : "")>
+                <button class="btn btn-outline-secondary btn-sm add-cart" type="button" data-product-id="@Model.Id" @(Model.Quantity >= Model.MaxQuantity ? "disabled" : "")>
+                    <i class="bi bi-plus"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Модальное окно предпросмотра -->
+<partial name="Shared/FastOrder/_FastOrderProductPreviewPartial" model="Model" /> 

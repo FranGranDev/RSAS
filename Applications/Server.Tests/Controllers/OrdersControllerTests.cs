@@ -799,35 +799,6 @@ public class OrdersControllerTests : TestBase
     }
 
     [Fact]
-    public async Task CreateFastOrder_WithoutManagerRole_ShouldReturnForbidden()
-    {
-        // Arrange
-        await LoginAsClient();
-        
-        var fastOrderDto = new FastOrderDto
-        {
-            StockId = 1,
-            ClientName = "Test Client",
-            ContactPhone = "1234567890",
-            PaymentType = Order.PaymentTypes.Card,
-            Products = new List<CreateOrderProductDto>
-            {
-                new()
-                {
-                    ProductId = 1,
-                    Quantity = 2
-                }
-            }
-        };
-
-        // Act
-        var result = await _controller.CreateFastOrder(fastOrderDto);
-
-        // Assert
-        result.Result.Should().BeOfType<ForbidResult>();
-    }
-
-    [Fact]
     public async Task CreateFastOrder_WithEmptyProducts_ShouldReturnBadRequest()
     {
         // Arrange

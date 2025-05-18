@@ -31,6 +31,7 @@ builder.Services.AddScoped<IClaimsService, ClaimsService>();
 builder.Services.AddScoped<IClientService, ClientService>();
 builder.Services.AddScoped<ICartService, CartService>();
 builder.Services.AddScoped<IAnalyticsService, AnalyticsService>();
+builder.Services.AddScoped<NavigationService>();
 
 // Configure authentication
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)

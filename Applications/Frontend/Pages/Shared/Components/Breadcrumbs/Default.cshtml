@@ -1,0 +1,23 @@
+@model List<Frontend.Services.NavigationService.BreadcrumbItem>
+
+<nav aria-label="breadcrumb" class="py-1 mt-n3">
+    <div class="container">
+        <ol class="breadcrumb mb-0">
+            @foreach (var item in Model)
+            {
+                if (item.IsActive)
+                {
+                    <li class="breadcrumb-item active" aria-current="page">@item.Title</li>
+                }
+                else if (item.IsClickable)
+                {
+                    <li class="breadcrumb-item"><a href="@item.Url">@item.Title</a></li>
+                }
+                else
+                {
+                    <li class="breadcrumb-item">@item.Title</li>
+                }
+            }
+        </ol>
+    </div>
+</nav> 

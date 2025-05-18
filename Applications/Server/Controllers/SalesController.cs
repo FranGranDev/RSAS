@@ -95,11 +95,6 @@ namespace Server.Controllers
                 return BadRequest("Начальная дата не может быть позже конечной");
             }
 
-            if (startDate.HasValue && startDate > DateTime.UtcNow)
-            {
-                return BadRequest("Начальная дата не может быть в будущем");
-            }
-
             try
             {
                 var analytics = await _saleService.GetSalesAnalyticsAsync(startDate, endDate);
@@ -125,11 +120,6 @@ namespace Server.Controllers
                 return BadRequest("Начальная дата не может быть позже конечной");
             }
 
-            if (startDate.HasValue && startDate > DateTime.UtcNow)
-            {
-                return BadRequest("Начальная дата не может быть в будущем");
-            }
-
             try
             {
                 var analytics = await _saleService.GetOrdersAnalyticsAsync(startDate, endDate);
@@ -153,11 +143,6 @@ namespace Server.Controllers
             if (startDate.HasValue && endDate.HasValue && startDate > endDate)
             {
                 return BadRequest("Начальная дата не может быть позже конечной");
-            }
-
-            if (startDate.HasValue && startDate > DateTime.UtcNow)
-            {
-                return BadRequest("Начальная дата не может быть в будущем");
             }
 
             try
@@ -196,11 +181,6 @@ namespace Server.Controllers
                 return BadRequest("Начальная дата не может быть позже конечной");
             }
 
-            if (startDate.HasValue && startDate > DateTime.UtcNow)
-            {
-                return BadRequest("Начальная дата не может быть в будущем");
-            }
-
             try
             {
                 var forecast = await _saleService.GetDemandForecastAsync(days, startDate, endDate);
@@ -236,12 +216,7 @@ namespace Server.Controllers
             {
                 return BadRequest("Начальная дата не может быть позже конечной");
             }
-
-            if (startDate.HasValue && startDate > DateTime.UtcNow)
-            {
-                return BadRequest("Начальная дата не может быть в будущем");
-            }
-
+            
             try
             {
                 var impact = await _saleService.GetSeasonalityImpactAsync(years, startDate, endDate);
@@ -268,11 +243,6 @@ namespace Server.Controllers
             if (startDate.HasValue && endDate.HasValue && startDate > endDate)
             {
                 return BadRequest("Начальная дата не может быть позже конечной");
-            }
-
-            if (startDate.HasValue && startDate > DateTime.UtcNow)
-            {
-                return BadRequest("Начальная дата не может быть в будущем");
             }
 
             try
@@ -318,11 +288,6 @@ namespace Server.Controllers
                 return BadRequest("Начальная дата не может быть позже конечной");
             }
 
-            if (startDate.HasValue && startDate > DateTime.UtcNow)
-            {
-                return BadRequest("Начальная дата не может быть в будущем");
-            }
-
             try
             {
                 var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -363,11 +328,6 @@ namespace Server.Controllers
                 return BadRequest("Начальная дата не может быть позже конечной");
             }
 
-            if (startDate.HasValue && startDate > DateTime.UtcNow)
-            {
-                return BadRequest("Начальная дата не может быть в будущем");
-            }
-
             try
             {
                 var analytics = await _saleService.GetExtendedAnalyticsAsync(startDate, endDate);
@@ -391,11 +351,6 @@ namespace Server.Controllers
             if (startDate.HasValue && endDate.HasValue && startDate > endDate)
             {
                 return BadRequest("Начальная дата не может быть позже конечной");
-            }
-
-            if (startDate.HasValue && startDate > DateTime.UtcNow)
-            {
-                return BadRequest("Начальная дата не может быть в будущем");
             }
 
             try
@@ -434,11 +389,6 @@ namespace Server.Controllers
                 return BadRequest("Начальная дата не может быть позже конечной");
             }
 
-            if (startDate.HasValue && startDate > DateTime.UtcNow)
-            {
-                return BadRequest("Начальная дата не может быть в будущем");
-            }
-
             try
             {
                 var topProducts = await _saleService.GetTopProductsAsync(count, startDate, endDate);
@@ -462,11 +412,6 @@ namespace Server.Controllers
             if (startDate.HasValue && endDate.HasValue && startDate > endDate)
             {
                 return BadRequest("Начальная дата не может быть позже конечной");
-            }
-
-            if (startDate.HasValue && startDate > DateTime.UtcNow)
-            {
-                return BadRequest("Начальная дата не может быть в будущем");
             }
 
             try
@@ -495,11 +440,6 @@ namespace Server.Controllers
                 return BadRequest("Начальная дата не может быть позже конечной");
             }
 
-            if (startDate.HasValue && startDate > DateTime.UtcNow)
-            {
-                return BadRequest("Начальная дата не может быть в будущем");
-            }
-
             try
             {
                 var trend = await _saleService.GetSalesTrendAsync(
@@ -526,11 +466,6 @@ namespace Server.Controllers
             if (startDate.HasValue && endDate.HasValue && startDate > endDate)
             {
                 return BadRequest("Начальная дата не может быть позже конечной");
-            }
-
-            if (startDate.HasValue && startDate > DateTime.UtcNow)
-            {
-                return BadRequest("Начальная дата не может быть в будущем");
             }
 
             try

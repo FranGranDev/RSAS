@@ -223,55 +223,105 @@
             
             $('#cancelOrderBtn').click(function() {
                 if (confirm('Вы уверены, что хотите отменить заказ?')) {
-                    $.post('?handler=CancelOrder', { orderId: @Model.Order.Id })
-                        .done(function(response) {
+                    $.ajax({
+                        type: 'POST',
+                        url: '?handler=CancelOrder',
+                        data: JSON.stringify({ orderId: @Model.Order.Id }),
+                        contentType: 'application/json',
+                        headers: {
+                            'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
+                        },
+                        success: function(response) {
                             if (response.success) {
                                 location.reload();
                                 notification.showSuccess('Заказ успешно отменен');
                             } else {
                                 notification.showError('Ошибка: ' + response.error);
                             }
-                        });
+                        },
+                        error: function(xhr, status, error) {
+                            console.error('Ошибка при отмене заказа:', error);
+                            notification.showError('Произошла ошибка при отмене заказа');
+                        }
+                    });
                 }
             });
             
             $('#completeOrderBtn').click(function() {
                 if (confirm('Вы уверены, что хотите завершить заказ?')) {
-                    $.post('?handler=CompleteOrder', { orderId: @Model.Order.Id })
-                        .done(function(response) {
+                    $.ajax({
+                        type: 'POST',
+                        url: '?handler=CompleteOrder',
+                        data: JSON.stringify({ orderId: @Model.Order.Id }),
+                        contentType: 'application/json',
+                        headers: {
+                            'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
+                        },
+                        success: function(response) {
                             if (response.success) {
                                 location.reload();
                                 notification.showSuccess('Заказ успешно завершен');
                             } else {
                                 notification.showError('Ошибка: ' + response.error);
                             }
-                        });
+                        },
+                        error: function(xhr, status, error) {
+                            console.error('Ошибка при завершении заказа:', error);
+                            notification.showError('Произошла ошибка при завершении заказа');
+                        }
+                    });
                 }
             });
 
             $('#holdOrderBtn').click(function() {
                 if (confirm('Вы уверены, что хотите отложить заказ?')) {
-                    $.post('?handler=HoldOrder', { orderId: @Model.Order.Id })
-                        .done(function(response) {
+                    $.ajax({
+                        type: 'POST',
+                        url: '?handler=HoldOrder',
+                        data: JSON.stringify({ orderId: @Model.Order.Id }),
+                        contentType: 'application/json',
+                        headers: {
+                            'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
+                        },
+                        success: function(response) {
                             if (response.success) {
                                 location.reload();
+                                notification.showSuccess('Заказ успешно отложен');
                             } else {
                                 notification.showError('Ошибка: ' + response.error);
                             }
-                        });
+                        },
+                        error: function(xhr, status, error) {
+                            console.error('Ошибка при отложении заказа:', error);
+                            notification.showError('Произошла ошибка при отложении заказа');
+                        }
+                    });
                 }
             });
 
             $('#resumeOrderBtn').click(function() {
                 if (confirm('Вы уверены, что хотите возобновить заказ?')) {
-                    $.post('?handler=ResumeOrder', { orderId: @Model.Order.Id })
-                        .done(function(response) {
+                    $.ajax({
+                        type: 'POST',
+                        url: '?handler=ResumeOrder',
+                        data: JSON.stringify({ orderId: @Model.Order.Id }),
+                        contentType: 'application/json',
+                        headers: {
+                            'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
+                        },
+                        success: function(response) {
                             if (response.success) {
                                 location.reload();
+                                notification.showSuccess('Заказ успешно возобновлен');
                             } else {
                                 notification.showError('Ошибка: ' + response.error);
                             }
-                        });
+                        },
+                        error: function(xhr, status, error) {
+                            console.error('Ошибка при возобновлении заказа:', error);
+                            notification.showError('Произошла ошибка при возобновлении заказа');
+                        }
+                    });
                 }
             });
 

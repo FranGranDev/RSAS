@@ -118,11 +118,11 @@ public class ManageModel : PageModel
         }
     }
     
-    public async Task<IActionResult> OnPostCancelOrderAsync(int orderId)
+    public async Task<IActionResult> OnPostCancelOrderAsync([FromBody] CancelOrderRequest request)
     {
         try
         {
-            await _apiService.PostAsync<object, object>($"/api/orders/{orderId}/cancel", null);
+            await _apiService.PostAsync<object, object>($"/api/orders/{request.orderId}/cancel", null);
             TempData["success"] = "Заказ успешно отменен";
             return new JsonResult(new { success = true });
         }
@@ -133,11 +133,11 @@ public class ManageModel : PageModel
         }
     }
     
-    public async Task<IActionResult> OnPostCompleteOrderAsync(int orderId)
+    public async Task<IActionResult> OnPostCompleteOrderAsync([FromBody] CompleteOrderRequest request)
     {
         try
         {
-            await _apiService.PostAsync<object, object>($"/api/orders/{orderId}/complete", null);
+            await _apiService.PostAsync<object, object>($"/api/orders/{request.orderId}/complete", null);
             TempData["success"] = "Заказ успешно завершен";
             return new JsonResult(new { success = true });
         }
@@ -148,11 +148,11 @@ public class ManageModel : PageModel
         }
     }
 
-    public async Task<IActionResult> OnPostHoldOrderAsync(int orderId)
+    public async Task<IActionResult> OnPostHoldOrderAsync([FromBody] HoldOrderRequest request)
     {
         try
         {
-            await _apiService.PostAsync<object, object>($"/api/orders/{orderId}/hold", null);
+            await _apiService.PostAsync<object, object>($"/api/orders/{request.orderId}/hold", null);
             TempData["success"] = "Заказ успешно отложен";
             return new JsonResult(new { success = true });
         }
@@ -163,11 +163,11 @@ public class ManageModel : PageModel
         }
     }
 
-    public async Task<IActionResult> OnPostResumeOrderAsync(int orderId)
+    public async Task<IActionResult> OnPostResumeOrderAsync([FromBody] ResumeOrderRequest request)
     {
         try
         {
-            await _apiService.PostAsync<object, object>($"/api/orders/{orderId}/resume", null);
+            await _apiService.PostAsync<object, object>($"/api/orders/{request.orderId}/resume", null);
             TempData["success"] = "Заказ успешно возобновлен";
             return new JsonResult(new { success = true });
         }
@@ -209,6 +209,26 @@ public class ExecuteOrderRequest
 }
 
 public class DeleteOrderRequest
+{
+    public int orderId { get; set; }
+}
+
+public class CancelOrderRequest
+{
+    public int orderId { get; set; }
+}
+
+public class CompleteOrderRequest
+{
+    public int orderId { get; set; }
+}
+
+public class HoldOrderRequest
+{
+    public int orderId { get; set; }
+}
+
+public class ResumeOrderRequest
 {
     public int orderId { get; set; }
 } 

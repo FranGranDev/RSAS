@@ -14,36 +14,106 @@
                     </h5>
                 </div>
                 <div class="card-body">
+                    <!-- KPI карточки -->
+                    @await Html.PartialAsync("Shared/Analytics/Dashboard/_KpiCards", Model.Dashboard.Dashboard)
+
+                    <hr class="my-3">
+
+                    <!-- Карточки навигации -->
                     <div class="row">
-                        <div class="col-md-6">
-                            <div class="card mb-3">
-                                <div class="card-body">
-                                    <h5 class="card-title">
-                                        <i class="bi bi-box me-2"></i>Управление товарами
-                                    </h5>
-                                    <p class="card-text">Управление ассортиментом товаров, их категориями и характеристиками.</p>
-                                    <a href="/Manager/Products/Index" class="btn btn-primary">
-                                        <i class="bi bi-arrow-right me-2"></i>Перейти
-                                    </a>
+                        <div class="col-md-3">
+                            <a href="/Manager/Order/Index" class="text-decoration-none">
+                                <div class="card mb-1 h-100 nav-card">
+                                    <div class="card-body d-flex flex-column">
+                                        <h5 class="card-title">
+                                            <i class="bi bi-bag-check me-2 nav-icon"></i>Управление заказами
+                                        </h5>
+                                        <p class="card-text">Просмотр и обработка заказов клиентов.</p>
+                                    </div>
                                 </div>
-                            </div>
+                            </a>
                         </div>
-                        <div class="col-md-6">
-                            <div class="card mb-3">
-                                <div class="card-body">
-                                    <h5 class="card-title">
-                                        <i class="bi bi-building me-2"></i>Управление складами
-                                    </h5>
-                                    <p class="card-text">Управление складами, остатками товаров и их перемещением.</p>
-                                    <a href="/Manager/Stocks/Index" class="btn btn-primary">
-                                        <i class="bi bi-arrow-right me-2"></i>Перейти
-                                    </a>
+                        <div class="col-md-3">
+                            <a href="/Manager/FastOrder/Index" class="text-decoration-none">
+                                <div class="card mb-1 h-100 nav-card">
+                                    <div class="card-body d-flex flex-column">
+                                        <h5 class="card-title">
+                                            <i class="bi bi-lightning me-2 nav-icon"></i>Быстрый заказ
+                                        </h5>
+                                        <p class="card-text">Создание и обработка быстрых заказов.</p>
+                                    </div>
                                 </div>
-                            </div>
+                            </a>
                         </div>
+                        <div class="col-md-3">
+                            <a href="/Manager/Products/Index" class="text-decoration-none">
+                                <div class="card mb-1 h-100 nav-card">
+                                    <div class="card-body d-flex flex-column">
+                                        <h5 class="card-title">
+                                            <i class="bi bi-box me-2 nav-icon"></i>Управление товарами
+                                        </h5>
+                                        <p class="card-text">Управление ассортиментом товаров, их категориями и характеристиками.</p>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="col-md-3">
+                            <a href="/Manager/Stocks/Index" class="text-decoration-none">
+                                <div class="card mb-1 h-100 nav-card">
+                                    <div class="card-body d-flex flex-column">
+                                        <h5 class="card-title">
+                                            <i class="bi bi-building me-2 nav-icon"></i>Управление складами
+                                        </h5>
+                                        <p class="card-text">Управление складами, остатками товаров и их перемещением.</p>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+
+                    <hr class="my-3">
+
+                    <!-- Последние заказы -->
+                    <div class="row">
+                        @foreach (var order in Model.RecentOrders)
+                        {
+                            <div class="col-md-4 mb-4">
+                                <partial name="Shared/Orders/_ManagerOrderCardPartial" model="order" />
+                            </div>
+                        }
                     </div>
                 </div>
             </div>
         </div>
     </div>
-</div> 
+</div>
+
+<style>
+    .nav-card {
+        transition: all 0.2s ease-in-out;
+        cursor: pointer;
+    }
+
+    .nav-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.15);
+        border-color: var(--bs-primary);
+    }
+
+    .nav-card .card-body {
+        color: inherit;
+    }
+
+    .nav-icon {
+        color: #dc3545;
+        transition: all 0.2s ease-in-out;
+    }
+
+    .nav-card:hover .nav-icon {
+        transform: scale(1.2);
+    }
+</style>
+
+@section Scripts {
+    <script src="~/js/analytics-dashboard.js"></script>
+} 

@@ -1,0 +1,601 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1" GroupingSetting="Access" MembersFormat="FullSignature">
+  <Comment CommentText="Исключения">
+    <Position X="16.75" Y="14.5" Height="0.363" Width="15.651" />
+  </Comment>
+  <Comment CommentText="Сервисы">
+    <Position X="2.75" Y="7" Height="0.426" Width="12.008" />
+  </Comment>
+  <Comment CommentText="Контроллеры">
+    <Position X="2.75" Y="0.75" Height="0.426" Width="12.008" />
+  </Comment>
+  <Comment CommentText="Репозитории данных">
+    <Position X="15" Y="0.75" Height="0.404" Width="17.306" />
+  </Comment>
+  <Comment CommentText="Прочтие компоненты">
+    <Position X="11.5" Y="14.5" Height="0.363" Width="5.039" />
+  </Comment>
+  <Comment CommentText="База данных">
+    <Position X="15" Y="7" Height="0.363" Width="10.263" />
+  </Comment>
+  <Class Name="Application.Attributes.ValidateDateRange">
+    <Position X="15" Y="16.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Attributes\ValidateDateRange.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Application.Controllers.AuthController">
+    <Position X="13.25" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAABAAAAAAAgCAAAABAAAAAAAABAAAAAABQAAAAAAA=</HashCode>
+      <FileName>Controllers\AuthController.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Application.Controllers.ClientsController">
+    <Position X="8" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAABAABAAAAAAAAAAIACAAAAAEAgEAAAAAhoABBAAA=</HashCode>
+      <FileName>Controllers\ClientsController.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Application.Controllers.EmployeesController">
+    <Position X="11.5" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAgBAAAAAIIhBCAAAIAAAAAgAAAIAAIAAAgAAAAAAA=</HashCode>
+      <FileName>Controllers\EmployeesController.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Application.Controllers.OrdersController">
+    <Position X="4.5" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AQAICQESAAAQAAIAgAAAAAAAAAAggAAACGAwAAAAAAA=</HashCode>
+      <FileName>Controllers\OrdersController.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Application.Controllers.ProductsController">
+    <Position X="6.25" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>IAAAAAQAAKAAAAAACQQAAAiAAAAAAAAAQAAACAAAAAA=</HashCode>
+      <FileName>Controllers\ProductsController.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Application.Controllers.StocksController">
+    <Position X="2.75" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAgAAAIgJgAABAAIAIAAAAACCAAAAiAAIAEAAAgQAA=</HashCode>
+      <FileName>Controllers\StocksController.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Server.Controllers.SalesController">
+    <Position X="9.75" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AABAIBgAIBABAAIAAAAAEAAAAAIAAgEAAgAAAgAAAIA=</HashCode>
+      <FileName>Controllers\SalesController.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Application.Data.AppDbConfigure">
+    <Position X="15" Y="13" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAEAAAAAAAAIAAAAAAAAAAAA=</HashCode>
+      <FileName>Data\AppDbConfigure.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Application.Data.AppDbContext">
+    <Position X="15" Y="7.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAEAAAAhAQAAAAAAECAABAAAmAAAAAAAAAAAAACAAAQ=</HashCode>
+      <FileName>Data\AppDbContext.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Application.Exceptions.BusinessException">
+    <Position X="31" Y="15.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Exceptions\BusinessExceptions.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Application.Exceptions.ProductNotFoundException">
+    <Position X="18.75" Y="17.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Exceptions\BusinessExceptions.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Application.Exceptions.ClientNotFoundException">
+    <Position X="20.75" Y="17.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Exceptions\BusinessExceptions.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Application.Exceptions.EmployeeNotFoundException">
+    <Position X="22.75" Y="17.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Exceptions\BusinessExceptions.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Application.Exceptions.OrderNotFoundException">
+    <Position X="24.75" Y="17.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Exceptions\BusinessExceptions.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Application.Exceptions.StockNotFoundException">
+    <Position X="26.75" Y="17.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Exceptions\BusinessExceptions.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Application.Exceptions.InsufficientStockException">
+    <Position X="28.75" Y="15.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Exceptions\BusinessExceptions.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Application.Exceptions.InvalidOrderStateException">
+    <Position X="16.75" Y="15.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Exceptions\BusinessExceptions.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Application.Exceptions.DeliveryNotFoundException">
+    <Position X="16.75" Y="17.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Exceptions\BusinessExceptions.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Application.Exceptions.InvalidDateRangeException">
+    <Position X="18.75" Y="15.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Exceptions\BusinessExceptions.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Application.Exceptions.InvalidAnalyticsParametersException">
+    <Position X="20.75" Y="15.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Exceptions\BusinessExceptions.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Application.Exceptions.ReportGenerationException">
+    <Position X="22.75" Y="15.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Exceptions\BusinessExceptions.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Application.Exceptions.AnalyticsDataNotFoundException">
+    <Position X="24.75" Y="15.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Exceptions\BusinessExceptions.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Application.Exceptions.SaleNotFoundException">
+    <Position X="26.75" Y="15.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Exceptions\BusinessExceptions.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Application.Extensions.EnumHelper">
+    <Position X="13.25" Y="17.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Extentions\EnumHelper.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Application.Middleware.ErrorHandlingMiddleware">
+    <Position X="11.5" Y="16.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAQAAAAAAAAAAAAAAAIAAAAAAwAAAAAAAAAAA=</HashCode>
+      <FileName>Middleware\ErrorHandlingMiddleware.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Server.Migrations.AppDbContextModelSnapshot">
+    <Position X="15" Y="11.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAA=</HashCode>
+      <FileName>Migrations\AppDbContextModelSnapshot.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Application.Services.ClientService" BaseTypeListCollapsed="true">
+    <Position X="13.25" Y="8.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAIAIAAAAAACBABAAAIAAAAACAAAAIABAAAAAI=</HashCode>
+      <FileName>Services\Clients\ClientService.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Application.Services.EmployeeService" BaseTypeListCollapsed="true">
+    <Position X="11.5" Y="8.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AABAAAAAAAEAEEAAAAAJAAAIBACAAAAAACAAEAAAAAA=</HashCode>
+      <FileName>Services\Employees\EmployeeService.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="Application.Services.OrderService" BaseTypeListCollapsed="true">
+    <Position X="9.75" Y="8.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>SAAAABABAAgCAAAIEEAhgAAAAAAGBAQAAgCAILAYAAA=</HashCode>
+      <FileName>Services\Orders\OrderService.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Application.Services.ProductService" BaseTypeListCollapsed="true">
+    <Position X="8" Y="8.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAIAAAAAIAAAAAAAgCkJAAAAAAABAAAAAAAAAAYAAAI=</HashCode>
+      <FileName>Services\Products\ProductService.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Application.Services.JwtService" BaseTypeListCollapsed="true">
+    <Position X="2.75" Y="8.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEQAAAACAA=</HashCode>
+      <FileName>Services\JwtService.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Application.Services.MappingProfile">
+    <Position X="15" Y="15" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Services\MappingProfile.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Server.Services.Repository.ClientRepository">
+    <Position X="17.25" Y="3.75" Width="1.5" />
+    <InheritanceLine Type="Server.Services.Repository.Repository&lt;TEntity, TKey&gt;" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="15.75" Y="3" />
+        <Point X="15.75" Y="2.625" />
+        <Point X="16.875" Y="2.625" />
+        <Point X="16.875" Y="3.375" />
+        <Point X="19.125" Y="3.375" />
+        <Point X="19.125" Y="4.125" />
+        <Point X="18.75" Y="4.125" />
+      </Path>
+    </InheritanceLine>
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAgAAAAAIAAACAAAIAAAAAAAAAAAABAQAAQA=</HashCode>
+      <FileName>Services\Repository\ClientRepository.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Server.Services.Repository.DeliveryRepository">
+    <Position X="21.75" Y="3.75" Width="1.5" />
+    <InheritanceLine Type="Server.Services.Repository.Repository&lt;TEntity, TKey&gt;" FixedFromPoint="true">
+      <Path>
+        <Point X="15.75" Y="3" />
+        <Point X="15.75" Y="2.625" />
+        <Point X="16.875" Y="2.625" />
+        <Point X="16.875" Y="3.375" />
+        <Point X="21.375" Y="3.375" />
+        <Point X="21.375" Y="5.935" />
+        <Point X="22.5" Y="5.935" />
+        <Point X="22.5" Y="5.56" />
+      </Path>
+    </InheritanceLine>
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAgAAAAAAAAAIAAAAAAAAAAAQAAA=</HashCode>
+      <FileName>Services\Repository\DeliveryRepository.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Server.Services.Repository.EmployeeRepository">
+    <Position X="26.25" Y="3.75" Width="1.5" />
+    <InheritanceLine Type="Server.Services.Repository.Repository&lt;TEntity, TKey&gt;" FixedFromPoint="true">
+      <Path>
+        <Point X="15.75" Y="3" />
+        <Point X="15.75" Y="2.625" />
+        <Point X="16.875" Y="2.625" />
+        <Point X="16.875" Y="3.375" />
+        <Point X="25.875" Y="3.375" />
+        <Point X="25.875" Y="6.512" />
+        <Point X="27" Y="6.512" />
+        <Point X="27" Y="6.137" />
+      </Path>
+    </InheritanceLine>
+    <TypeIdentifier>
+      <HashCode>AAABAAAAAgAAAAAIAAAAAgAIAAAAAAAAAAAAAAQAAAA=</HashCode>
+      <FileName>Services\Repository\EmployeeRepository.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Server.Services.Repository.OrderRepository">
+    <Position X="19.5" Y="3.75" Width="1.5" />
+    <InheritanceLine Type="Server.Services.Repository.Repository&lt;TEntity, TKey&gt;" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="15.75" Y="3" />
+        <Point X="15.75" Y="2.625" />
+        <Point X="16.875" Y="2.625" />
+        <Point X="16.875" Y="3.375" />
+        <Point X="21.375" Y="3.375" />
+        <Point X="21.375" Y="4" />
+        <Point X="21" Y="4" />
+      </Path>
+    </InheritanceLine>
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAgAAIKAAAAAAACAAAAAAAQAAAAAAQAAA=</HashCode>
+      <FileName>Services\Repository\OrderRepository.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Server.Services.Repository.ProductRepository">
+    <Position X="24" Y="3.75" Width="1.5" />
+    <InheritanceLine Type="Server.Services.Repository.Repository&lt;TEntity, TKey&gt;" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="15.75" Y="3" />
+        <Point X="15.75" Y="2.625" />
+        <Point X="16.875" Y="2.625" />
+        <Point X="16.875" Y="3.375" />
+        <Point X="25.875" Y="3.375" />
+        <Point X="25.875" Y="4.125" />
+        <Point X="25.5" Y="4.125" />
+      </Path>
+    </InheritanceLine>
+    <TypeIdentifier>
+      <HashCode>AAAABAAAAAAAAAAKAgAAAAAAAAABAAAAEAAAAAQAAAA=</HashCode>
+      <FileName>Services\Repository\ProductRepository.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Server.Services.Repository.Repository&lt;TEntity, TKey&gt;">
+    <Position X="15" Y="3" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAEAAIAAAAAABEAAAAAAIAEAAAAAAAgAAAAAIAAAIIA=</HashCode>
+      <FileName>Services\Repository\Repository.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Server.Services.Repository.SaleRepository">
+    <Position X="28.5" Y="3.75" Width="1.5" />
+    <NestedTypes>
+      <Class Name="Server.Services.Repository.SaleRepository.HistoricalSalesData" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Services\Repository\SaleRepository.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Class Name="Server.Services.Repository.SaleRepository.DailySalesData" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Services\Repository\SaleRepository.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+    </NestedTypes>
+    <InheritanceLine Type="Server.Services.Repository.Repository&lt;TEntity, TKey&gt;" ManuallyRouted="true" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="15.75" Y="3" />
+        <Point X="15.75" Y="2.625" />
+        <Point X="16.875" Y="2.625" />
+        <Point X="16.875" Y="3.375" />
+        <Point X="30.375" Y="3.375" />
+        <Point X="30.375" Y="3.938" />
+        <Point X="30" Y="3.938" />
+      </Path>
+    </InheritanceLine>
+    <TypeIdentifier>
+      <HashCode>ICAABoAAAIBAAAgiEgAAAAAACAAPAgEoQCAAKCAQAEA=</HashCode>
+      <FileName>Services\Repository\SaleRepository.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Server.Services.Repository.StockRepository">
+    <Position X="30.75" Y="3.75" Width="1.5" />
+    <InheritanceLine Type="Server.Services.Repository.Repository&lt;TEntity, TKey&gt;" FixedFromPoint="true">
+      <Path>
+        <Point X="15.75" Y="3" />
+        <Point X="15.75" Y="2.625" />
+        <Point X="16.875" Y="2.625" />
+        <Point X="16.875" Y="3.375" />
+        <Point X="30.375" Y="3.375" />
+        <Point X="30.375" Y="7.089" />
+        <Point X="31.5" Y="7.089" />
+        <Point X="31.5" Y="6.714" />
+      </Path>
+    </InheritanceLine>
+    <TypeIdentifier>
+      <HashCode>AAIABAACAAAAAAAIAAAAAAAAAAABAAQQAAAAAAQgAAA=</HashCode>
+      <FileName>Services\Repository\StockRepository.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Server.Services.Sales.SaleService" BaseTypeListCollapsed="true">
+    <Position X="4.5" Y="8.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>QCFCBoAiANBAAAACAgABAgiACAAAAgEgAAAAIBAQIAg=</HashCode>
+      <FileName>Services\Sales\SaleService.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Application.Services.Stocks.StockService" BaseTypeListCollapsed="true">
+    <Position X="6.25" Y="8.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>BCiAAQQGIAAAAAAAAQABAAEAEAADAAQAAgAIEAAIAAA=</HashCode>
+      <FileName>Services\Stocks\StockService.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Application.Utils.SystemTime">
+    <Position X="13.25" Y="15" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AIAQAAAAAAAABAABAAAAAAAAACAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Utils\SystemTime.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Application.Program">
+    <Position X="11.5" Y="15" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAA=</HashCode>
+      <FileName>Program.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Application.Models.Delivery">
+    <Position X="16.75" Y="7.5" Width="1.5" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="Application.Models.Order">
+    <Position X="16.75" Y="10.25" Width="1.5" />
+    <NestedTypes>
+      <Class Name="Application.Models.Order.PaymentTypes" Collapsed="true">
+        <TypeIdentifier />
+      </Class>
+      <Class Name="Application.Models.Order.States" Collapsed="true">
+        <TypeIdentifier />
+      </Class>
+    </NestedTypes>
+    <TypeIdentifier />
+  </Class>
+  <Class Name="Application.Models.OrderProduct">
+    <Position X="20.25" Y="7.5" Width="1.5" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="Server.Models.Sale">
+    <Position X="20.25" Y="10.25" Width="1.5" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="Server.Models.SaleProduct">
+    <Position X="22" Y="7.5" Width="1.5" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="Application.Models.Product">
+    <Position X="22" Y="10.75" Width="1.5" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="Application.Models.Stock">
+    <Position X="18.5" Y="7.5" Width="1.5" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="Application.Models.StockProducts">
+    <Position X="18.5" Y="10.25" Width="1.5" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="Application.Models.AppUser">
+    <Position X="18.5" Y="12.75" Width="1.5" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="Application.Models.Client">
+    <Position X="23.75" Y="10" Width="1.5" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="Application.Models.Employee">
+    <Position X="23.75" Y="7.5" Width="1.5" />
+    <TypeIdentifier />
+  </Class>
+  <Interface Name="Application.Services.IClientService" Collapsed="true">
+    <Position X="13.25" Y="7.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAIAAAAAACBAAAAAIAAAAACAAAAIABAAAAAI=</HashCode>
+      <FileName>Services\Clients\IClientService.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="Application.Services.IEmployeeService" Collapsed="true">
+    <Position X="11.5" Y="7.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AABAAAAAAAEAEEAAAAAIAAAIBACAAAAAAAAAEAAAAAA=</HashCode>
+      <FileName>Services\Employees\IEmployeeService.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="Application.Services.IOrderService" Collapsed="true">
+    <Position X="9.75" Y="7.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>SAAAAAABAAgCAAAIEEAggAAAAAAEBAQAAgCAIKAYAAA=</HashCode>
+      <FileName>Services\Orders\IOrderService.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="Application.Services.IProductService" Collapsed="true">
+    <Position X="8" Y="7.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAIAAAAAIAAAAAAAgCkIAAAAAAABAAAAAAAAAAYAAAI=</HashCode>
+      <FileName>Services\Products\IProductService.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="Application.Services.IJwtService" Collapsed="true">
+    <Position X="2.75" Y="7.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAACAA=</HashCode>
+      <FileName>Services\JwtService.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="Server.Services.Repository.IClientRepository" Collapsed="true">
+    <Position X="17.25" Y="2.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAgAAAAAIAAACAAAIAAAAAAAAAAAABAQAAQA=</HashCode>
+      <FileName>Services\Repository\IClientRepository.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="Server.Services.Repository.IDeliveryRepository" Collapsed="true">
+    <Position X="21.75" Y="2.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAgAAAAAAAAAIAAAAAAAAAAAQAAA=</HashCode>
+      <FileName>Services\Repository\IDeliveryRepository.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="Server.Services.Repository.IEmployeeRepository" Collapsed="true">
+    <Position X="26.25" Y="2.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAABAAAAAgAAAAAIAAAAAgAIAAAAAAAAAAAAAAQAAAA=</HashCode>
+      <FileName>Services\Repository\IEmployeeRepository.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="Server.Services.Repository.IOrderRepository" Collapsed="true">
+    <Position X="19.5" Y="2.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAgAAIKAAAAAAACAAAAAAAQAAAAAAQAAA=</HashCode>
+      <FileName>Services\Repository\IOrderRepository.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="Server.Services.Repository.IRepository&lt;TEntity, TKey&gt;" Collapsed="true">
+    <Position X="15" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAEAAIAAAAAAAEAAAAAAAAEAAAAAAAgAAAAAIAAAIIA=</HashCode>
+      <FileName>Services\Repository\IRepository.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="Server.Services.Repository.ISaleRepository" Collapsed="true">
+    <Position X="28.5" Y="2.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ACAABoAAAIBAAAACEgAAAAAACAAKAgEoQAAAKCAQAAA=</HashCode>
+      <FileName>Services\Repository\ISaleRepository.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="Application.Services.Repository.IProductRepository" Collapsed="true">
+    <Position X="24" Y="2.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAABAAAAAAAAAAKAgAAAAAAAAABAAAAEAAAAAQAAAA=</HashCode>
+      <FileName>Services\Repository\IProductRepository.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="Application.Services.Repository.IStockRepository" Collapsed="true">
+    <Position X="30.75" Y="2.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAIABAACAAAAAAAIAAAAAAAAAAABAAQQAAAAAAQgAAA=</HashCode>
+      <FileName>Services\Repository\IStockRepository.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="Server.Services.Sales.ISaleService" Collapsed="true">
+    <Position X="4.5" Y="7.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>QCFCBoAiANBAAAACAgAAAAAACAAAAgEgAAAAIAAQIAg=</HashCode>
+      <FileName>Services\Sales\ISaleService.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="Application.Services.Stocks.IStockService" Collapsed="true">
+    <Position X="6.25" Y="7.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>BCiAAQQGAAAAAAAAAQAAAAEAEAABAAQAAgAIEAAIAAA=</HashCode>
+      <FileName>Services\Stocks\IStockService.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

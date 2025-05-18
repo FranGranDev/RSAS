@@ -672,42 +672,42 @@ public class OrdersControllerTests : TestBase
         result.Result.Should().BeOfType<BadRequestObjectResult>();
     }
 
-    [Fact]
-    public async Task CreateFastOrder_WithValidData_ShouldCreateAndCompleteOrder()
+[Fact]
+public async Task CreateFastOrder_WithValidData_ShouldCreateAndCompleteOrder()
+{
+    // Arrange
+    await LoginAsManager();
+    
+    var fastOrderDto = new FastOrderDto
     {
-        // Arrange
-        await LoginAsManager();
-        
-        var fastOrderDto = new FastOrderDto
+        StockId = 1,
+        ClientName = "Test Client",
+        ContactPhone = "1234567890",
+        PaymentType = Order.PaymentTypes.Card,
+        Products = new List<CreateOrderProductDto>
         {
-            StockId = 1,
-            ClientName = "Test Client",
-            ContactPhone = "1234567890",
-            PaymentType = Order.PaymentTypes.Card,
-            Products = new List<CreateOrderProductDto>
+            new()
             {
-                new()
-                {
-                    ProductId = 1,
-                    Quantity = 2
-                }
+                ProductId = 1,
+                Quantity = 2
             }
-        };
+        }
+    };
 
-        var expectedOrder = CreateTestOrderDto();
-        expectedOrder.State = Order.States.Completed;
-        _orderServiceMock.Setup(x => x.CreateFastOrderAsync(fastOrderDto, "test-user-id"))
-            .ReturnsAsync(expectedOrder);
+    var expectedOrder = CreateTestOrderDto();
+    expectedOrder.State = Order.States.Completed;
+    _orderServiceMock.Setup(x => x.CreateFastOrderAsync(fastOrderDto, "test-user-id"))
+        .ReturnsAsync(expectedOrder);
 
-        // Act
-        var result = await _controller.CreateFastOrder(fastOrderDto);
+    // Act
+    var result = await _controller.CreateFastOrder(fastOrderDto);
 
-        // Assert
-        var createdAtActionResult = result.Result.Should().BeOfType<CreatedAtActionResult>().Subject;
-        var order = createdAtActionResult.Value.Should().BeOfType<OrderDto>().Subject;
-        order.Should().BeEquivalentTo(expectedOrder);
-        order.State.Should().Be(Order.States.Completed);
-    }
+    // Assert
+    var createdAtActionResult = result.Result.Should().BeOfType<CreatedAtActionResult>().Subject;
+    var order = createdAtActionResult.Value.Should().BeOfType<OrderDto>().Subject;
+    order.Should().BeEquivalentTo(expectedOrder);
+    order.State.Should().Be(Order.States.Completed);
+}
 
     [Fact]
     public async Task CreateFastOrder_WithInvalidData_ShouldReturnBadRequest()
